@@ -28,6 +28,7 @@ invariants. Judgment mechanism deliberately unspecified (re-execution consensus 
 deterministic claim classes; zk/optimistic beyond).
 
 Repo (MIT, reference implementation + tests + benchmark harness): https://github.com/yubbi-sketch/bonded-validation
+Live on Sepolia (Sourcify-verified): BondedValidator `0x8cB0e4Ce4cA043eb357Fd5841C94e329c44EcCF9` — see docs/deployments.md
 Draft spec: https://github.com/yubbi-sketch/bonded-validation/blob/main/docs/erc-draft-bonded-validation.md
 
 Questions for the group:
