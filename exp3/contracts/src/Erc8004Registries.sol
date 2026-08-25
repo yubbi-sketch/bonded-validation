@@ -97,4 +97,35 @@ contract ValidationRegistry {
     function getAgentValidations(uint256 agentId) external view returns (bytes32[] memory) {
         return agentReqs[agentId];
     }
+
+    /// @notice 특정 태그를 제외한 (건수, 평균) — 기권 중립 평판의 원료 (Exp6).
+    ///         스펙의 tag 필터 인자를 제외형으로 구현: "abstain"을 빼고 집계하면
+    ///         기권이 평판을 깎지 않는다. 기권 건수는 getSummaryByTag로 별도 관측.
+    function getSummaryExcluding(uint256 agentId, string calldata tag)
+        external view returns (uint64 count, uint256 avgResponse)
+    {
+        bytes32 t = keccak256(bytes(tag));
+        bytes32[] storage reqs = agentReqs[agentId];
+        uint256 sum;
+        for (uint256 i = 0; i < reqs.length; i++) {
+            Val storage v = vals[reqs[i]];
+            if (v.responded && keccak256(bytes(v.tag)) != t) {
+                count++;
+                sum += v.response;
+            }
+        }
+        avgResponse = count == 0 ? 0 : sum / count;
+    }
+
+    /// @notice 특정 태그만의 건수 — 기권률 등 별도 신호 관측용.
+    function getSummaryByTag(uint256 agentId, string calldata tag)
+        external view returns (uint64 count)
+    {
+        bytes32 t = keccak256(bytes(tag));
+        bytes32[] storage reqs = agentReqs[agentId];
+        for (uint256 i = 0; i < reqs.length; i++) {
+            Val storage v = vals[reqs[i]];
+            if (v.responded && keccak256(bytes(v.tag)) == t) count++;
+        }
+    }
 }
