@@ -22,10 +22,18 @@ contract ReputationLens {
         bonded = BondedValidator(bonded_);
     }
 
-    /// @notice 신용 점수 0~100 = 기권 제외 평균 검증 점수. 이력 없으면 0.
+    string public constant DISPUTED_TAG = "disputed";
+
+    /// @notice 신용 점수 0~100 = 기권·분쟁환급 제외 평균 검증 점수. 이력 없으면 0.
+    /// @dev 분쟁 타임아웃 환급은 점수 50 고정 태그 "disputed"로 기록되므로
+    ///      (JudgePanelV2), 합계에서 50×건수를 걷어내면 중립화된다 — 분쟁은
+    ///      에이전트의 잘못이 증명된 게 아니므로 신용에 중립이어야 한다.
     function creditScore(uint256 agentId) public view returns (uint256 score, uint64 answered) {
         (uint64 count, uint256 avg) = valReg.getSummaryExcluding(agentId, ABSTAIN_TAG);
-        return (avg, count);
+        uint64 d = valReg.getSummaryByTag(agentId, DISPUTED_TAG);
+        if (count <= d) return (0, 0);
+        answered = count - d;
+        score = (avg * count - 50 * uint256(d)) / answered;
     }
 
     /// @notice 기권률(bp, 0~10000) — 감점이 아니라 정보로 노출.
