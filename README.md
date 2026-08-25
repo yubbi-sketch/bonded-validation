@@ -23,7 +23,7 @@ attaches at the moment of utterance, not at audit time.
 | `exp1/` | Neuro-symbolic pipeline: 24k-param extractor + symbolic logic verifier vs end-to-end baselines (pure NumPy, zero deps, own autograd) |
 | `exp2/` | Calibrated abstention: risk–coverage sweeps and bond economics |
 | `exp5/` | Live demo: 300 bonded utterances on Anvil against 8004-style registries |
-| `docs/` | Protocol design notes |
+| `docs/` | Protocol design notes, [ERC draft](docs/erc-draft-bonded-validation.md), [Sepolia deployments](docs/deployments.md) |
 | `grants/` | EF ESP application materials |
 
 ## Measured results (all reproducible on a laptop)
@@ -37,6 +37,11 @@ attaches at the moment of utterance, not at audit time.
 - **Hallucination gets a price:** over 300 bonded utterances, a hallucinating agent
   went bankrupt (50 → 0 tokens); a verifier-backed agent with abstention finished
   lossless (50 → 50). Contract suite: 16/16 Foundry tests.
+
+## Live on Sepolia
+
+BondedValidator v0 and companion registries are deployed and Sourcify-verified on Sepolia —
+see [docs/deployments.md](docs/deployments.md). BondedValidator: `0x8cB0e4Ce4cA043eb357Fd5841C94e329c44EcCF9`.
 
 ## Reproduce
 
