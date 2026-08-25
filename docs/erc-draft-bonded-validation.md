@@ -81,6 +81,11 @@ Events: `Staked`, `ClaimBonded`, `ClaimSettled(agentId, requestHash, score, slas
 - Reputation consumers SHOULD read abstentions separately (tag filter) so that
   abstaining is not penalized as low score.
 - Griefing via dust claims is bounded by `minBondPerClaim`.
+- **Commitment binding:** `requestHash` MUST be a commitment to the full claim —
+  at minimum (claim content, agent response, model/version identifier, evidence
+  reference). An index-style or opaque hash binds nothing and reduces "proven
+  speech" to "numbered speech". (This was caught by external review of our own
+  early demo runs — the reference drivers now commit full content.)
 
 ## Reference Implementation
 

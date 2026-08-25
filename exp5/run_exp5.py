@@ -91,8 +91,13 @@ def enc(selector, args):
     return selector + "".join(heads) + "".join(tails)
 
 
-def claim_hash(agent, i):
-    return "0x" + hashlib.sha256(f"exp5:{agent}:{i}".encode()).hexdigest()
+MODEL_VER = "extractor-v1-d64-bidir-tau0.9"
+
+
+def claim_hash(agent, i, content="", answer=""):
+    """내용 커밋: (에이전트, 문제 원문, 답, 모델 버전)을 전부 묶는다."""
+    pre = f"exp5:{agent}:{i}:{MODEL_VER}:{content}:{answer}"
+    return "0x" + hashlib.sha256(pre.encode()).hexdigest()
 
 
 def main():
@@ -182,9 +187,10 @@ def main():
                 "extractor": (ans_ext, conf < TAU),
                 "hallucinator": (int(coin.integers(2)), False),
             }
+            content = " | ".join(prob["sents"])
             for name, (ans, abstain) in moves.items():
                 aid, w = agent_ids[name], wallets[name]
-                h = claim_hash(name, i)
+                h = claim_hash(name, i, content, "abstain" if abstain else str(ans))
                 send(w, bv, enc(s_req, [("u", aid), ("s", ""), ("b32", h)]))
                 if abstain:
                     score, tag = 0, "abstain"

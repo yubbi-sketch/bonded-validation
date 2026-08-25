@@ -193,7 +193,7 @@ def main():
         "complexity_bench": bench,
         "verdict": verdict,
         "train_seconds": round(train_secs, 1),
-        "n_train": N_TRAIN, "n_test": N_TEST,
+        "n_train": len(ytr), "n_test": len(yte),
     }
     with open("out/results.json", "w") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
