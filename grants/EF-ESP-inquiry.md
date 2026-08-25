@@ -17,6 +17,8 @@ We have a working open-source prototype and measured results, all reproducible o
 
 We are asking for a small grant to turn this prototype into a public good for the 8004 ecosystem: (1) a hardened open-source reference implementation plus a **specified interface (IBondedValidator) proposed as an ERC draft** so speaker-bonding composes with validator-network designs rather than fragmenting them; (2) public testnet deployment against the canonical 8004 registries with a reproducible benchmark harness; (3) a research report on abstention economics for bonded agents (how slash ratios should set abstention thresholds), with all datasets and code released. Everything is already MIT licensed and public; the draft interface and Ethereum Magicians thread accompany this inquiry.
 
+**Repository (public, MIT):** https://github.com/yubbi-sketch/bonded-validation
+
 Honest limitations we are explicit about: current verdicts come from a trusted judge (decentralizing judgment via re-execution consensus for deterministic claims, and zk/optimistic paths for the rest, is the research core of the grant period); results to date are toy-scale and synthetic; ERC-8004 is still in Review and we treat registry interfaces as adapters.
 
 **Team:** Independent researcher (Korea/Australia) working with an AI-assisted research pipeline; prior work includes an account-abstraction policy-enforcement prototype (Foundry, 25/25 tests) that we retired after our own adversarial review concluded ERC-7710/7780 + caveat enforcers already occupy that slot — we would rather kill our own idea than ship a redundant standard. Git history documents the full research trail.

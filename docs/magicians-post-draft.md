@@ -27,8 +27,8 @@ neutrality, no-hit-and-run withdrawal delay, and registry-truth as normative
 invariants. Judgment mechanism deliberately unspecified (re-execution consensus for
 deterministic claim classes; zk/optimistic beyond).
 
-Repo (MIT, reference implementation + tests + benchmark harness): [링크 — 공개 후 삽입]
-Draft spec: [링크]
+Repo (MIT, reference implementation + tests + benchmark harness): https://github.com/yubbi-sketch/bonded-validation
+Draft spec: https://github.com/yubbi-sketch/bonded-validation/blob/main/docs/erc-draft-bonded-validation.md
 
 Questions for the group:
 1. Does a speaker-bond interface belong as a separate ERC, or as an extension
