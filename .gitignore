@@ -1,0 +1,9 @@
+# 키·가중치·생성물만 제외 — 핵심 코드·수식은 커밋한다(IP 타임스탬프)
+*.env
+*_key*
+out/
+**/out/
+contracts/cache/
+contracts/out/
+__pycache__/
+*.pyc
