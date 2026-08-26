@@ -69,6 +69,9 @@ one step further:
   estimated halo2 rows: replacing "3-of-5 honest re-executors" with a zk proof of
   correct re-execution looks tractable for deterministic claim classes.
 
+Whitepaper draft v0.2 (protocol, threat model, machine-checked theorems,
+stated limitations): https://github.com/yubbi-sketch/bonded-validation/blob/wp-v0.2/docs/whitepaper-draft-v0.2.md
+
 Sepolia (all Sourcify-verified): BondedValidator v0.2.1
 `0xE9bA0f2904955D57546911Ef57a75ffd5a03F0f0` · BondedJudgePanelV2
 `0x666F90ae34d7119756CF6E41f99F6A49b0FC5775` — full table in docs/deployments.md.
