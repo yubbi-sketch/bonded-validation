@@ -49,12 +49,28 @@ check("COR p ≤ 30/31이면 비수익", unsat, And(cur, p <= Q(30, 31), profit 
 check("COR p > 30/31에선 수익 가능 (임계의 타이트함)", sat,
       And(cur, p > Q(30, 31), b == (1 - p) * Bj, profit > 0))
 
+# ── T2b·T2c: 지급 스케줄 불변성 — 조건부 매수에서도 같은 하한 ─────────
+# 실패시만 지급 b_f: 판정자 수락 ⟺ (1-p)(b_f − B_j) ≥ 0 ⟹ b_f ≥ B_j
+#   공격자 기대지출 = (1-p)·m·b_f ≥ m(1-p)B_j  (같은 하한)
+bf = Real("b_f")
+check("T2b 실패시지급 스케줄도 같은 하한", unsat,
+      And(DOMAIN, bf >= Bj, Bj * m * (1 - p) >= p * Ba,
+          p * Ba - m * (1 - p) * bf > 0))
+# 성공시만 지급 b_s: 수락 ⟺ p·b_s − (1-p)B_j ≥ 0 ⟹ b_s ≥ (1-p)B_j/p (p>0)
+#   공격자 기대지출 = p·m·b_s ≥ m(1-p)B_j  (같은 하한)
+bs = Real("b_s")
+check("T2c 성공시지급 스케줄도 같은 하한", unsat,
+      And(DOMAIN, p > 0, bs * p >= (1 - p) * Bj, Bj * m * (1 - p) >= p * Ba,
+          p * Ba - m * p * bs > 0))
+
 # ── T3: 보상금 반례 — 같은 매개변수에서 (보상금 ⇒ 흑자, 무보상금 ⇒ 손실) ──
 b_bounty = (1 - p) * Bj - p * w                  # 보상금이 수락 제약을 완화
 profit_bounty = p * Ba - m * b_bounty
 profit_nobounty = p * Ba - m * ((1 - p) * Bj)
-witness = check("T3 보상금 존재 반례 (승자 상금 = 매수 자금)", sat,
-                And(DOMAIN, w > 0, b_bounty >= 0,
+# 예산 실현성: 5인 패널 과반3·소수2 → 승자 1인당 보상금 ≤ (2/3)·B_j
+# (몰수분에서만 지급 가능 — 외부 리뷰 지적 반영: 실현 불가능한 w 배제)
+witness = check("T3 보상금 존재 반례 (예산 실현 가능 w ≤ 2/3·B_j)", sat,
+                And(DOMAIN, w > 0, w <= Q(2, 3) * Bj, b_bounty >= 0,
                     profit_bounty > 0,           # 보상금 설계: 공격 흑자
                     profit_nobounty <= 0),       # 무보상금: 같은 조건서 손실
                 show_model=True)
