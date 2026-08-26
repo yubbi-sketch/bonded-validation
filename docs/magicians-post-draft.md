@@ -40,3 +40,35 @@ Questions for the group:
 
 We are aware of prior art in validator-side bonding and would welcome corrections
 if a speaker-side interface already exists.
+
+---
+
+## Update draft — v0.2 / v0.2.1 (2026-08-26, post after thread approval)
+
+Since the original post, the judge role itself is now bonded and decentralized
+one step further:
+
+- **Bonded judges (v0.2)** — judging is itself a bonded utterance: judges register
+  an 8004 identity and post collateral; each case locks a per-case bond. Initial
+  panels of 3 are drawn by weighted lottery (newcomers pay a 1.5× entry premium and
+  carry 1/5 lottery weight); a dissent escalates to a fresh 5-judge expanded trial,
+  and voters against the final majority verdict are slashed.
+- **No winner's bounty** — our attack simulations (Monte Carlo, 20k trials/cell)
+  showed a UMA-style winner's reward turns profitable for a briber at ~30% panel
+  capture. So slashed funds are half-burned and half paid to the agent whose bond
+  was frozen; judges earn only a fixed outcome-independent fee. Sybil capture of 5%
+  of the pool costs ~300× an honest judge's bond under the newcomer premium.
+- **Training wheels removed** — the owner-arbiter escape hatch from v0.1 is gone;
+  the only backstop is a lossless timeout refund (tag `disputed`, no slash).
+- **Commit-reveal lottery (v0.2.1)** — case opening commits a block number; the
+  panel is drawn next block from that block's hash, so no one can grind request
+  hashes for a favorable panel. (Proposer-level bias remains — external VRF is
+  acknowledged future work.)
+- **zkML recon** — our 24k-parameter extractor survives fixed-point quantization
+  with zero accuracy loss down to scale 2^8, and censuses at ~79k MACs ≈ 2^19
+  estimated halo2 rows: replacing "3-of-5 honest re-executors" with a zk proof of
+  correct re-execution looks tractable for deterministic claim classes.
+
+Sepolia (all Sourcify-verified): BondedValidator v0.2.1
+`0xE9bA0f2904955D57546911Ef57a75ffd5a03F0f0` · BondedJudgePanelV2
+`0x666F90ae34d7119756CF6E41f99F6A49b0FC5775` — full table in docs/deployments.md.

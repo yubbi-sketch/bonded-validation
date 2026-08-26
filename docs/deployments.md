@@ -1,5 +1,25 @@
 # Deployments
 
+## Sepolia testnet — v0.2.1 (2026-08-26)
+
+Exp9 fixed the lottery's weak point: v0.2 drew panels with prevrandao inside the
+opening transaction, letting an opener grind request hashes for a favorable panel.
+v0.2.1 splits commit (openCase records the block number — the seed does not exist
+yet) from reveal (drawPanel/drawExpanded next block, seeded by that block's hash),
+with recommit after the 256-block hash window and a lossless timeout refund for
+abandoned commits (fee returned to the opener). Proposer-level bias remains — an
+acknowledged limitation; external VRF is future work.
+
+| Contract | Address |
+|---|---|
+| BondedValidator v0.2.1 (judge = panel below) | [`0xE9bA0f2904955D57546911Ef57a75ffd5a03F0f0`](https://sepolia.etherscan.io/address/0xE9bA0f2904955D57546911Ef57a75ffd5a03F0f0) |
+| BondedJudgePanelV2 (commit-reveal lottery) | [`0x666F90ae34d7119756CF6E41f99F6A49b0FC5775`](https://sepolia.etherscan.io/address/0x666F90ae34d7119756CF6E41f99F6A49b0FC5775) |
+
+- Same economic rules as v0.2 (bonded judges, expanded trials, no winner bounty,
+  no arbiter). Reuses the v0 LabToken / registries. Both Sourcify-verified (exact match).
+- Panel params: `perCaseBond = 10e18`, `judgeFee = 1e18`, `voteTimeout = 3600s`,
+  `disputeTimeout = 86400s`, `veteranThreshold = 3`, `SEED_WINDOW = 256 blocks`.
+
 ## Sepolia testnet — v0.2 (2026-08-26)
 
 Exp8 attack simulations (K1–K4 all passed) promoted the design to v0.2: bonded judges,
