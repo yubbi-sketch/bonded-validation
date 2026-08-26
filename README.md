@@ -39,8 +39,11 @@ from forfeitures — functions as a bribery subsidy. Repository state pinned at 
 
 ## Measured results (all reproducible on a laptop)
 
-- **Neuro-symbolic beats end-to-end** on natural-language multi-hop logic:
-  98.4% vs 65.6% at comparable parameter budgets (910 tests, pre-registered kill criteria).
+- **Decomposition enables cheap intermediate supervision:** the extractor+verifier
+  pipeline reaches 98.4% vs 65.6% end-to-end on natural-language multi-hop logic
+  (910 tests, pre-registered kill criteria). Disclosed confound: the extractor
+  received gold slot-level supervision and a larger training budget that the
+  end-to-end baselines did not — see whitepaper §8.1.
 - **Errors are localizable:** 100% of observed pipeline errors sat in the lowest
   7.3% of model confidence.
 - **Abstention buys correctness:** confidence threshold τ=0.9 → 0 observed wrong
@@ -51,7 +54,11 @@ from forfeitures — functions as a bribery subsidy. Repository state pinned at 
 
 ## Live on Sepolia
 
-**v0.2 (current):** bonded judges with weighted-lottery panels, expanded trials with
+**v0.2.1 (current):** commit-reveal lottery closes request-hash grinding.
+BondedValidator v0.2.1 `0xE9bA0f2904955D57546911Ef57a75ffd5a03F0f0` ·
+BondedJudgePanelV2 `0x666F90ae34d7119756CF6E41f99F6A49b0FC5775`.
+
+**v0.2:** bonded judges with weighted-lottery panels, expanded trials with
 minority slashing, and **no winner bounty** — Exp8 attack simulations showed a winner's
 bounty becomes the attacker's bribe budget, so slashed funds are half-burned and half
 paid to the frozen agent, while judges earn only a fixed outcome-independent fee. The
