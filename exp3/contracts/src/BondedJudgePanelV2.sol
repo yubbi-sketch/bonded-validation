@@ -209,7 +209,9 @@ contract BondedJudgePanelV2 {
         emit Recommitted(requestHash, block.number);
     }
 
-    function _revealSeed(bytes32 requestHash, CaseData storage c) internal view returns (bytes32) {
+    /// @dev virtual은 검증 가능 설계 — 증명 하네스가 결정론 시드로 오버라이드해
+    ///      정산 계층을 심볼릭 증명한다(추첨 분포는 확률적 성질이라 증명 범위 밖).
+    function _revealSeed(bytes32 requestHash, CaseData storage c) internal view virtual returns (bytes32) {
         require(block.number > c.commitBlock, "seed not born"); // 같은 블록 리빌 불가
         require(block.number <= uint256(c.commitBlock) + SEED_WINDOW, "seed expired: recommit");
         return keccak256(abi.encodePacked(blockhash(c.commitBlock), requestHash, address(this)));
