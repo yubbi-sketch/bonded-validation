@@ -1,0 +1,54 @@
+[
+  {
+    "id": "exp8_judge_bond_attack_sim",
+    "title": "Exp8 판정자 담보 loser-pays 공격 시뮬레이션",
+    "question": "판정자 담보 + 확대재판 소수파 몰수 설계가 K1~K4 공격 기준을 통과할 수 있는가?",
+    "context_files": [
+      "docs/exp8-판정자담보-설계서.md",
+      "exp3/contracts/src/JudgePanelV2.sol",
+      "exp3/contracts/test/JudgePanelV2.t.sol",
+      "exp6/EXP6.md",
+      "exp7/EXP7.md"
+    ],
+    "acceptance": [
+      "K1 다수 매수 역공격의 비용/성공률 시뮬레이션 계획이 수치 파라미터와 함께 제시된다.",
+      "K2 시빌 판정자 공격에 대해 신참 할증과 추첨 가중의 방어 한계가 분리된다.",
+      "K3 소수=틀림 미증명 문제를 결정론 범주 한정으로 좁히고 남는 신뢰 가정을 명시한다.",
+      "K4 타임아웃 직전 스팸 공격에 대해 큐 비용과 분쟁 담보의 관계가 계산 가능해야 한다.",
+      "구현 착수 여부가 pass/retry/ask_user 중 하나로 판정된다."
+    ],
+    "test_commands": [
+      {
+        "cmd": "forge test",
+        "cwd": "exp3/contracts"
+      }
+    ],
+    "ask_user_when": [
+      "판정자 담보 슬래싱을 구현으로 승격할지, 시뮬레이션만 먼저 할지 선택해야 할 때",
+      "오너 상급심을 유지할지 제거할지 정책 결정이 필요할 때"
+    ],
+    "max_rounds": 2
+  },
+  {
+    "id": "erc_draft_adversarial_review",
+    "title": "ERC 초안 적대 리뷰",
+    "question": "현재 ERC 초안이 발화 내용 커밋, 기권 중립, 판정자 패널 한계를 충분히 명시하는가?",
+    "context_files": [
+      "docs/erc-draft-bonded-validation.md",
+      "docs/8004-bonded-validation-설계서-v1.md",
+      "docs/magicians-post-draft.md",
+      "docs/deployments.md"
+    ],
+    "acceptance": [
+      "MUST/SHOULD/MAY 수준의 규범 오류가 식별된다.",
+      "선행 표준과 겹치는 범위가 있으면 명시된다.",
+      "수정이 필요한 문단과 대체 문구가 나온다."
+    ],
+    "test_commands": [],
+    "ask_user_when": [
+      "표준 초안의 범위를 좁힐지 넓힐지 선택해야 할 때",
+      "외부 포럼에 공개할 문구 승인이 필요할 때"
+    ],
+    "max_rounds": 2
+  }
+]

@@ -8,3 +8,4 @@ contracts/out/
 __pycache__/
 *.pyc
 papers/*.pdf
+swarm/runs/

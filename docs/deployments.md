@@ -1,6 +1,29 @@
 # Deployments
 
-## Sepolia testnet (2026-08-26)
+## Sepolia testnet — v0.2 (2026-08-26)
+
+Exp8 attack simulations (K1–K4 all passed) promoted the design to v0.2: bonded judges,
+weighted-lottery panels, expanded trials with minority slashing, **no winner bounty**
+(slashed funds are half-burned, half paid to the frozen agent as compensation; judges
+earn only a fixed outcome-independent fee), and the owner arbiter (training wheels)
+removed — the only backstop is the lossless timeout refund.
+
+| Contract | Address |
+|---|---|
+| BondedValidator v0.2 (judge = panel below) | [`0x8213B2ac495E5e5d4be6C8f642dedf1DeDF9811c`](https://sepolia.etherscan.io/address/0x8213B2ac495E5e5d4be6C8f642dedf1DeDF9811c) |
+| BondedJudgePanel v0.2 | [`0xf66d53726F7677ffD3D033b3eF74Ef2598232421`](https://sepolia.etherscan.io/address/0xf66d53726F7677ffD3D033b3eF74Ef2598232421) |
+
+- Reuses the v0 LabToken / IdentityRegistry / ValidationRegistry below.
+- Constructor params: validator `minBondPerClaim = 1e18 IISLAB`, `unbondDelay = 3600s`;
+  panel `perCaseBond = 10e18`, `judgeFee = 1e18`, `voteTimeout = 3600s`,
+  `disputeTimeout = 86400s`, `veteranThreshold = 3`.
+- The panel address was CREATE-predicted (deployer nonce 5) and passed as the
+  validator's judge at nonce 4 — no owner key holds any privileged role.
+- Both Sourcify-verified (exact match, creation + runtime).
+- Known prototype limits (stated in source): prevrandao-seeded lottery (proposer bias —
+  VRF is future work); minority-slash justification restricted to deterministic claims.
+
+## Sepolia testnet — v0 (2026-08-26)
 
 | Contract | Address |
 |---|---|

@@ -23,6 +23,7 @@ attaches at the moment of utterance, not at audit time.
 | `exp1/` | Neuro-symbolic pipeline: 24k-param extractor + symbolic logic verifier vs end-to-end baselines (pure NumPy, zero deps, own autograd) |
 | `exp2/` | Calibrated abstention: risk–coverage sweeps and bond economics |
 | `exp5/` | Live demo: 300 bonded utterances on Anvil against 8004-style registries |
+| `swarm/` | Multi-LLM research orchestrator: planner/builder/critic/judge/scribe loop with transcripts |
 | `docs/` | Protocol design notes, [ERC draft](docs/erc-draft-bonded-validation.md), [Sepolia deployments](docs/deployments.md) |
 | `grants/` | EF ESP application materials |
 
@@ -40,8 +41,16 @@ attaches at the moment of utterance, not at audit time.
 
 ## Live on Sepolia
 
-BondedValidator v0 and companion registries are deployed and Sourcify-verified on Sepolia —
-see [docs/deployments.md](docs/deployments.md). BondedValidator: `0x8cB0e4Ce4cA043eb357Fd5841C94e329c44EcCF9`.
+**v0.2 (current):** bonded judges with weighted-lottery panels, expanded trials with
+minority slashing, and **no winner bounty** — Exp8 attack simulations showed a winner's
+bounty becomes the attacker's bribe budget, so slashed funds are half-burned and half
+paid to the frozen agent, while judges earn only a fixed outcome-independent fee. The
+owner arbiter (training wheels) is removed. BondedValidator v0.2:
+`0x8213B2ac495E5e5d4be6C8f642dedf1DeDF9811c` · BondedJudgePanel:
+`0xf66d53726F7677ffD3D033b3eF74Ef2598232421`.
+
+v0 remains live for comparison (`0x8cB0e4Ce4cA043eb357Fd5841C94e329c44EcCF9`). All
+contracts Sourcify-verified — see [docs/deployments.md](docs/deployments.md).
 
 ## Reproduce
 
@@ -55,6 +64,9 @@ cd ../exp3/contracts && forge test
 
 # Live bonded-utterance demo (starts a local Anvil)
 cd ../../exp5 && python3 run_exp5.py
+
+# Multi-LLM research loop (mock works without API keys)
+cd ../.. && python3 swarm/orchestrator.py --provider mock --problem exp8_judge_bond_attack_sim
 ```
 
 ## Honest limitations
