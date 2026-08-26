@@ -9,3 +9,4 @@ __pycache__/
 *.pyc
 papers/*.pdf
 swarm/runs/
+.venv*/
