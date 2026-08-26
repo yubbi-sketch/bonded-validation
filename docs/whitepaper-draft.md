@@ -1,6 +1,6 @@
 # Bonded Validation: Speaker-Bonded Accountability for AI Agents, with Machine-Checked Settlement Rules
 
-**Whitepaper draft v0.2 — 2026-08-27**
+**Whitepaper draft v0.3 — 2026-08-27**
 *IIS Lab — an independent, currently pseudonymous research effort. Contact: github.com/yubbi-sketch (repo issues) · yubbi85@gmail.com.*
 Repository: github.com/yubbi-sketch/bonded-validation (MIT) · Contracts on Sepolia, Sourcify-verified (§7)
 No token launch, no sale: the experiment token is valueless by construction and testnet-only.
@@ -33,7 +33,7 @@ the identical mechanism becomes expected-profitable to attack: within this
 model, a winner's bounty functions as a bribery subsidy. This is our sharpest
 point of departure from redistributive designs (UMA, Kleros).
 
-We also report nine experiments (six with pre-registered kill criteria) on a
+We also report ten experiments (seven with pre-registered kill criteria) on a
 synthetic multi-hop logic benchmark, including scripted 300-utterance runs on a
 local Anvil chain in which a hallucinating agent's bond is exhausted while a
 verifier-backed agent with calibrated abstention finishes lossless, and a
@@ -185,7 +185,7 @@ for either.
 
 ## 4. Empirical Results
 
-Scope statement: Exp1, 2, 6, 7, 8, 10 carry pre-registered kill criteria in
+Scope statement: Exp1, 2, 6, 7, 8, 10, 14 carry pre-registered kill criteria in
 their experiment files; Exp3 and Exp5 are scripted fixed-seed runs without
 pre-registered criteria; Exp9 is contract-property verification (Foundry tests,
 `BondedJudgePanelV2.t.sol`), not an experiment. All are re-runnable from the
@@ -204,6 +204,7 @@ but were not the venue of these runs.
 | Exp7 | Can one corrupt judge steal? | Single corrupt judge: 14/100 unjust seizures. 3-judge unanimous re-execution: 0, with all 14 disputes recorded on-chain. |
 | Exp8 | Does judge bonding survive attack (in simulation)? | Monte Carlo, 20k trials/cell: bribery expected profit ≤ 0 across 5–50% bribed fractions in the no-bounty design; the winner-bounty control turns profitable from ~30%. Sybil capture of **5%** of the pool costs ~300× an honest bond (the cost of larger captures was not measured). ε = 0 → exactly 0 unjust slashes; ε = 1% → 0.6%. |
 | Exp9 | Can openers grind the lottery? | Contract-property verification: drawing in the commit block reverts ("seed not born"); expired seeds force recommit; abandoned commits refund losslessly with the fee returned to the opener. |
+| Exp14 | Does the extractor actually prove? | Full forward pass proven and verified (ezkl/halo2): logrows 18, prove 17.2s, verify 0.1s, proof 40KB, peak 5.3GB; circuit argmax = float argmax on 20/20 sentences. Kill criteria pre-registered (K1–K3), all passed. Single-sentence proofs only; on-chain verifier unmeasured. |
 | Exp10 | Is the extractor ZK-feasible? | Fixed-point quantization: accuracy change 0.00pp at scales 2^10–2^14 and −0.05pp (slightly *higher*) at 2^8 (n = 4,372); op census 78,976 MACs, 92 lookups → ≈2^19 rows **by a stated heuristic (4 rows/MAC + 2/lookup)**. No prover was run; proving time is unmeasured (§6). |
 
 ## 5. Formal Results

@@ -17,7 +17,7 @@ attaches at the moment of utterance, not at audit time.
 ## 📜 Whitepaper
 
 **[Bonded Validation: Speaker-Bonded Accountability for AI Agents, with
-Machine-Checked Settlement Rules](docs/whitepaper-draft-v0.2.md)** (draft v0.2) —
+Machine-Checked Settlement Rules](docs/whitepaper-draft.md)** (draft v0.3) —
 protocol, threat model, nine experiments, eight symbolic-execution theorems over
 the deployed bytecode, and conditional bribery-resistance theorems (z3) including
 the no-bounty result: within our model, a winner's reward — even one funded only
