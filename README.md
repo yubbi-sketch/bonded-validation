@@ -14,6 +14,16 @@ attaches at the moment of utterance, not at audit time.
 > matter how capable the attacker (or the agent) becomes, because they rest on
 > mathematics and consensus rather than vigilance.
 
+## 📜 Whitepaper
+
+**[Bonded Validation: Speaker-Bonded Accountability for AI Agents, with
+Machine-Checked Settlement Rules](docs/whitepaper-draft-v0.2.md)** (draft v0.2) —
+protocol, threat model, nine experiments, eight symbolic-execution theorems over
+the deployed bytecode, and conditional bribery-resistance theorems (z3) including
+the no-bounty result: within our model, a winner's reward — even one funded only
+from forfeitures — functions as a bribery subsidy. Repository state pinned at tag
+`wp-v0.2`. Reviews, refutations, and reproduction attempts are welcome via issues.
+
 ## What's here
 
 | Path | Contents |
