@@ -21,10 +21,13 @@
                             z3-10 술어수준('질권도 매도?' — 사건B의 *지배적* 모호성) ·
                             z3-12 미커밋 gradable · z3-13 Ω 미검증 false-positive
 """
+import json
+from pathlib import Path
 from z3 import And, Bool, If, Int, Not, Or, Implies, Solver, sat, unsat
 
 YES, NO = 1, 0
 PASS = []
+LOG = []
 
 
 def check(cid, note, expect, cons, witness=None):
@@ -37,6 +40,7 @@ def check(cid, note, expect, cons, witness=None):
         m = s.model()
         print("        증인: " + ", ".join(f"{v}={m[v]}" for v in witness))
     PASS.append(ok)
+    LOG.append({"id": cid, "note": note, "expected": str(expect), "result": str(r), "ok": ok})
     assert ok, cid
     return s
 
@@ -131,6 +135,21 @@ check("z3-13", "Ω 미검증 false-positive(불건전)", sat,
 # z3-14: 검증자가 ω*∈Ω_committed(et==dt) 멤버십 강제 → false-positive 불가 (UNSAT)
 check("z3-14", "Ω 멤버십 가드로 건전성 회복", unsat,
       [et == dt, by(et) != by(dt)])
+
+Path("results.json").write_text(json.dumps({
+    "experiment": "exp25",
+    "title": "Bonded Specification — detection layer (Case B: Strategy BTC sale market)",
+    "layer": "specification (NOT verdict) — orthogonal to exp13/exp24 slashing",
+    "z3_version": "4.12.6",
+    "generated_by": "exp25/prove.py (verified run, 14 checks)",
+    "checks": LOG,
+    "summary": (f"{sum(PASS)}/{len(PASS)} pass. 6 UNSAT (closure/vacuity) + 8 SAT "
+                "(Strategy reproduction + honest boundaries). z3-9 UNSAT is the machine proof "
+                "that bonded spec does NOT fix Case B (no independent event oracle -> event-pin "
+                "== disclosure-pin). Dominant real ambiguity is predicate-level (z3-10) / "
+                "unenumerated (z3-5), outside detection. Only detection layer is machine-verified; "
+                "contract invariants INV-1..10 and the incentive dilemma are unverified prose."),
+}, ensure_ascii=False, indent=2))
 
 print("\n" + "=" * 70)
 u = sum(PASS)

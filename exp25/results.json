@@ -1,17 +1,108 @@
 {
   "experiment": "exp25",
-  "title": "Bonded Specification — ambiguity layer (Case B: Strategy BTC sale market)",
+  "title": "Bonded Specification — detection layer (Case B: Strategy BTC sale market)",
   "layer": "specification (NOT verdict) — orthogonal to exp13/exp24 slashing",
   "z3_version": "4.12.6",
+  "generated_by": "exp25/prove.py (verified run, 14 checks)",
   "checks": [
-    {"id": "z3-1", "what": "Strategy reproduced: underspecified 'sold' is ambiguous (event<=deadline & disclosure>deadline -> two readings disagree)", "result": "sat", "expected": "sat"},
-    {"id": "z3-2", "what": "pin to event-time => unambiguous (two readings collapse to one, disagreement impossible)", "result": "unsat", "expected": "unsat"},
-    {"id": "z3-3", "what": "UNDEFINED leak: spec references a field absent in omega -> R=UNDEFINED", "result": "sat", "expected": "sat"},
-    {"id": "z3-4", "what": "pin to disclosure-time also unambiguous (symmetry: fix is 'pick one', not 'which one')", "result": "unsat", "expected": "unsat"},
-    {"id": "z3-5", "what": "n>=3 blind spot: unenumerated 3rd reading (settlement-time) disagrees even after event-pin", "result": "sat", "expected": "sat"},
-    {"id": "z3-6", "what": "boundary inclusivity (<= vs <) at event==deadline is a separate ambiguity axis", "result": "sat", "expected": "sat"},
-    {"id": "z3-7", "what": "totalizing domain guard eliminates UNDEFINED", "result": "unsat", "expected": "unsat"},
-    {"id": "z3-8", "what": "oracle dispute: two oracles read same omega differently (measurement layer, survives a fully unambiguous spec)", "result": "sat", "expected": "sat"}
+    {
+      "id": "z3-1",
+      "note": "사건B 타이밍 모호성 재현",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "z3-2",
+      "note": "event-pin 무모호 증명",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "z3-4",
+      "note": "disclosure-pin 무모호(대칭)",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "z3-3",
+      "note": "UNDEFINED 구멍 존재",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "z3-7",
+      "note": "가드로 UNDEFINED 닫힘",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "z3-9",
+      "note": "event-pin≡disclosure-pin(사건B 철회)",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "z3-5",
+      "note": "열거밖 제3해석(settlement)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "z3-6",
+      "note": "비교자 포함성 축",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "z3-8",
+      "note": "오라클 측정분쟁(별 층)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "z3-10",
+      "note": "술어수준('질권도 매도?')=사건B 지배 모호성",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "z3-12",
+      "note": "미커밋 gradable 누출",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "z3-11",
+      "note": "gradable threshold 커밋으로 닫힘",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "z3-13",
+      "note": "Ω 미검증 false-positive(불건전)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "z3-14",
+      "note": "Ω 멤버십 가드로 건전성 회복",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    }
   ],
-  "summary": "8/8 pass. 3 UNSAT (unambiguity proofs) + 5 SAT (Strategy reproduction + honest boundaries). Bonded spec surfaces/prices definition-ambiguity BEFORE funds; it does not adjudicate the 'correct' reading, and does not touch oracle-measurement disputes or unenumerated interpretations."
+  "summary": "14/14 pass. 6 UNSAT (closure/vacuity) + 8 SAT (Strategy reproduction + honest boundaries). z3-9 UNSAT is the machine proof that bonded spec does NOT fix Case B (no independent event oracle -> event-pin == disclosure-pin). Dominant real ambiguity is predicate-level (z3-10) / unenumerated (z3-5), outside detection. Only detection layer is machine-verified; contract invariants INV-1..10 and the incentive dilemma are unverified prose."
 }
