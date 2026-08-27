@@ -86,6 +86,13 @@ cd ../../exp5 && python3 run_exp5.py
 cd ../.. && python3 swarm/orchestrator.py --provider mock --problem exp8_judge_bond_attack_sim
 ```
 
+## Reproduction
+
+An independent reproduction audit (all experiments re-run from a clean state) is in
+[REPRODUCTION.md](REPRODUCTION.md): all 17 items reproduce; it also caught and
+corrected two Exp8 overclaims and documents setup friction. Deps in
+[requirements.txt](requirements.txt).
+
 ## Honest limitations
 
 - Verdicts in v0 come from a trusted judge; decentralizing judgment

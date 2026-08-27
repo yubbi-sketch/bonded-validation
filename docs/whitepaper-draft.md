@@ -198,7 +198,7 @@ against a **local Anvil chain**; Sepolia deployments (§8) are the same contract
 | Exp5 | Runs on 8004 interfaces? | Abstaining verifier-backed agent lossless 50 → 50 (16 abstain, 84 correct); hallucinator 50 → 0; on-chain reputation 100/84/50. |
 | Exp6 | Does honesty pay in reputation? | Abstention-neutral scoring restores 84 → 100 (abstention rate separate); 0.5× collateral for proven agents. |
 | Exp7 | Can one corrupt judge steal? | Single corrupt judge 14/100 unjust seizures; 3-judge unanimous re-execution 0, all 14 disputes on-chain. |
-| Exp8 | Judge bonding survives attack (sim)? | Monte Carlo 20k/cell: bribery E[profit] ≤ 0 across 5–50% capture (no-bounty); winner-bounty control profitable from ~30%. Sybil capture of **5%** costs ~300× an honest bond (larger captures unmeasured). ε = 0 → 0 unjust slashes; ε = 1% → 0.6%. |
+| Exp8 | Judge bonding survives attack (sim)? | Monte Carlo 20k/cell: bribery E[profit] ≤ 0 across 5–50% capture (no-bounty); the winner-bounty control raises E[profit] toward zero at *every* fraction (subsidizing the attack) — least-negative −0.29 at 50% — but does **not** cross positive in this sim; the *profitable* bounty regime is established analytically (Theorem 3, Exp13), not by this Monte Carlo (**correction from wp-v1.0, which mis-stated a ~30% positive crossover** — see REPRODUCTION.md). Sybil capture of **5%** costs ~300× an honest bond (larger captures unmeasured). ε = 0 → 0 unjust slashes; **ε = 1% → 0.048 wrongful slashes/panel (≈0.96%/judge)** (< 2% limit). |
 | Exp9 | Can openers grind the lottery? | Contract-property: drawing in the commit block reverts; expired seeds force recommit; abandoned commits refund losslessly, fee returned to opener. |
 | Exp10 | Extractor ZK-feasible? | Quantization: 0.00 pp change at scales 2^10–2^14, −0.05 pp at 2^8 (n = 4,372); census 78,976 MACs → ≈2^19 rows by a stated heuristic. Prover not yet run (see Exp14). |
 | Exp13 | Is "no bounty" provable, not just simulated? | The Exp8 result formalized: seven z3 checks — bond-ratio threshold, payment-schedule invariance, and a budget-feasible bounty counterexample — all pass (§5.2). Formal verification, not a kill-criteria experiment. |
@@ -237,7 +237,7 @@ unpartitioned 8-vote refinement exceeded practical SMT budget and remains open.
 Model: quorum m ≥ 3; judge per-case bond B_j; agent claim bond B_a; capture
 probability p ∈ [0,1), exogenous. Five load-bearing assumptions: **A1** rational
 judges, honest re-execution zero-slash-risk (idealizes the deterministic class —
-Exp8 measured 0.6% unjust slash at ε = 1%; any positive risk weakens the bound in
+Exp8 measured ≈0.96% wrongful slash per judge at ε = 1% (0.048/panel); any positive risk weakens the bound in
 a stated direction); **A2** no-bounty (forfeitures flow only to burn + agent
 damages; judge income exactly the fee — discharged at bytecode by PB); **A3**
 bribe acceptance (a bribed judge accepts only if compensated for expected bond
@@ -369,7 +369,7 @@ dependency, decided in the open).
    extractor had gold intermediate supervision and more epochs than baselines —
    Exp1 shows decomposition *makes intermediate supervision available*, not
    like-for-like superiority. Slashing justification is deterministic-class only;
-   ε-sensitivity measured (0.6% at ε = 1%), not eliminated.
+   ε-sensitivity measured (≈0.96%/judge at ε = 1%), not eliminated.
 2. **Conditional economics.** Theorem 2 is conditional on bond ratio, capture
    probability, and A1–A5; p → 1 defeats it; judges are risk-neutral, one-shot;
    reputation and repeated play unmodeled; external-stake attacks (A5)

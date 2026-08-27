@@ -1,0 +1,9 @@
+# 재현 의존성 — 모든 실험은 이 패키지들이 있는 파이썬 환경에서 실행된다.
+# 권장: python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+numpy>=2.0
+z3-solver        # exp13 무보상금 정리
+onnx             # exp14/16 zkML (ONNX 조립)
+ezkl>=23         # exp14/15/16 zkML 증명·온체인 검증 (SRS 다운로드에 네트워크 필요)
+matplotlib       # 실험 그래프 출력 (결과 JSON은 그래프 없이도 생성됨)
+# 온체인 실험(exp3/5/7/15/16/19)·형식 검증은 Foundry(forge·anvil·cast)와
+# Halmos가 별도로 필요하다: https://getfoundry.sh · pip install halmos
