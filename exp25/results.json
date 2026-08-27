@@ -1,0 +1,17 @@
+{
+  "experiment": "exp25",
+  "title": "Bonded Specification — ambiguity layer (Case B: Strategy BTC sale market)",
+  "layer": "specification (NOT verdict) — orthogonal to exp13/exp24 slashing",
+  "z3_version": "4.12.6",
+  "checks": [
+    {"id": "z3-1", "what": "Strategy reproduced: underspecified 'sold' is ambiguous (event<=deadline & disclosure>deadline -> two readings disagree)", "result": "sat", "expected": "sat"},
+    {"id": "z3-2", "what": "pin to event-time => unambiguous (two readings collapse to one, disagreement impossible)", "result": "unsat", "expected": "unsat"},
+    {"id": "z3-3", "what": "UNDEFINED leak: spec references a field absent in omega -> R=UNDEFINED", "result": "sat", "expected": "sat"},
+    {"id": "z3-4", "what": "pin to disclosure-time also unambiguous (symmetry: fix is 'pick one', not 'which one')", "result": "unsat", "expected": "unsat"},
+    {"id": "z3-5", "what": "n>=3 blind spot: unenumerated 3rd reading (settlement-time) disagrees even after event-pin", "result": "sat", "expected": "sat"},
+    {"id": "z3-6", "what": "boundary inclusivity (<= vs <) at event==deadline is a separate ambiguity axis", "result": "sat", "expected": "sat"},
+    {"id": "z3-7", "what": "totalizing domain guard eliminates UNDEFINED", "result": "unsat", "expected": "unsat"},
+    {"id": "z3-8", "what": "oracle dispute: two oracles read same omega differently (measurement layer, survives a fully unambiguous spec)", "result": "sat", "expected": "sat"}
+  ],
+  "summary": "8/8 pass. 3 UNSAT (unambiguity proofs) + 5 SAT (Strategy reproduction + honest boundaries). Bonded spec surfaces/prices definition-ambiguity BEFORE funds; it does not adjudicate the 'correct' reading, and does not touch oracle-measurement disputes or unenumerated interpretations."
+}
