@@ -1,0 +1,142 @@
+{
+  "experiment": "exp26",
+  "title": "Challenger-supply DILEMMA (Exp25 KILL-5): (W) anti-wash vs (S) value-scaling",
+  "generated_by": "exp26/prove.py (verified run, 19 checks)",
+  "z3_version": "4.12.6",
+  "checks": [
+    {
+      "id": "A1-wash",
+      "note": "R>B → wash 이득>0",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "A2-close",
+      "note": "(W)⟺R≤B 닫힘",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "FORFEIT-INV",
+      "note": "몰수조달=결속(스칼라 아님)",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "C1-underscale",
+      "note": "상수 보상 under-scaling",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "CORE-WS",
+      "note": "★이중모순 헤드라인",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "F-INDEP-1",
+      "note": "W와 F 무충돌",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "F-INDEP-2",
+      "note": "S와 F 무충돌",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "F-UNDER",
+      "note": "free-rider 과소공급(느슨)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "F-DISSOLVE",
+      "note": "amortization이면 (F) 소멸",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "F-HORN",
+      "note": "무보상→과소공급(반대 뿔)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "REGIME-Vcap",
+      "note": "V유계면 해 존재(조건부)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "E1-W",
+      "note": "탈출1 (W) 자명화(bonus=0)",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "E1-PART",
+      "note": "탈출1 참여식(VACUOUS)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "E1-COLLAPSE",
+      "note": "★침묵매수 붕괴=relabeling",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "E1-SEAL",
+      "note": "봉합=value-coupling 재수입",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "E2-SCALE",
+      "note": "★진짜 탈출(공격자 담보)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "E2-UNOBS",
+      "note": "탈출2 게이트(관측 필요)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "E3-DYNBOND",
+      "note": "탈출3 동적담보(V-오라클 대가)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "E4-GAP",
+      "note": "탈출4 (S) 규모갭 잔존",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    }
+  ],
+  "summary": "19/19 pass (5 UNSAT + 14 SAT). CORE-WS UNSAT = (W R<=B_spec) & (S R>=sigma*V) infeasible when sigma*V>B_spec. FORFEIT-INV UNSAT: binding property is forfeiture-funding, not scalar (rank/lottery/difficulty all bounded by B_spec). It is a DILEMMA, not a trilemma: (F) free-rider is independent (F-INDEP) and can dissolve (F-DISSOLVE). Conditional, not unconditional (REGIME-Vcap SAT). Bonded-auditor subscription escape is RELABELING (E1-COLLAPSE SAT, E1-SEAL UNSAT -> sealing = re-importing value-coupling = Exp24 unsolved). Genuine escape: move V-scaling to the ATTACKER's attack-time bond, reward stays flat (E2-SCALE SAT), gated on attack-time V observability (E2-UNOBS SAT)."
+}
