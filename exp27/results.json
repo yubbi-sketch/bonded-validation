@@ -1,0 +1,324 @@
+{
+  "experiment": "exp27",
+  "title": "Human Halt & Resume — LOCKED spec EAL-X (bonded-halt track KILLED)",
+  "lock_0": "우리가 증명하는 것은 'AI가 멈춘다'가 아니라 '온체인 권한이 소멸한다'이다.",
+  "generated_by": "exp27/prove.py (verified run, 38 checks)",
+  "z3_version": "4.12.6",
+  "killed": [
+    "정지보증금 H",
+    "시간비례 소각 ρ",
+    "에스컬레이션 ρ_k",
+    "윈도 W",
+    "역담보 즉시재개 R2",
+    "정지자 보상 R_h",
+    "θ(n) 일몰 사다리",
+    "'반-그리핑 달성' 주장"
+  ],
+  "checks": [
+    {
+      "id": "I1-WASHCLOSE",
+      "label": "[THM]",
+      "note": "반-wash 닫힘 R_h≤B_ag → 자작정지 이득 불가",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "I1b-CORE-RECUR",
+      "label": "[THM]",
+      "note": "★Exp26 CORE-WS 완전재현: 가치스케일 정지보상 불가",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "I2-NAO",
+      "label": "[THM]",
+      "note": "★H27-1: 내생 판정자 없으면 (무손실정직)∧(반그리핑) 불가",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "I3a-STEPWIT",
+      "label": "[THM]",
+      "note": "★H27-3(1/2): ∀λ>0. 반례 지속시간 Δt=σ/2λ 는 항상 양수",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "I3b-STEP",
+      "label": "[THM]",
+      "note": "★H27-3(2/2): 그 Δt에서 정지비용 λΔt < 피해 σ (∀λ)",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "I4-R2KILL",
+      "label": "[ENC]",
+      "note": "★H27-4: R2(역담보 즉시재개) 있으면 보장 정지시간 Δ>0 불가",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "I4b-R2COST",
+      "label": "[WIT]",
+      "note": "슬라이스 밖에선 역담보 몰수사유 0 → 원권리자 순소각 0",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "I5a-WRESET",
+      "label": "[WIT]",
+      "note": "★H27-5(a): 윈도 W 유한 → 카운터 리셋, T가 예산에 선형(로그상한 파기)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "I5b-NOWINDOW",
+      "label": "[WIT]",
+      "note": "★H27-5(b): W 무한 → 정직한 k회차 단가 2^(k−1) 폭발(정직정지 사멸)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "I6-DOUBLECLAIM",
+      "label": "[THM]",
+      "note": "★H27-6: 정합성 슬래시가 s_act 전액 선점 → 정지보상 V-스케일 불가",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "I6b-SPLIT",
+      "label": "[WIT]",
+      "note": "σ 분할하면 가능하나 각 청구권 실효 스케일이 σ/2로 하락",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "A1-UPGRADE",
+      "label": "[WIT]",
+      "note": "★업그레이더 존재 → 폐기 후 권한 복원 가능(모든 성질이 조건부로 강등)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "A2-IMMUTABLE",
+      "label": "[ENC]",
+      "note": "업그레이더 없음(불변배포) → 폐기는 되돌릴 수 없음",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "A3-REGISTRAR",
+      "label": "[WIT]",
+      "note": "★레지스트라가 사실상 최고권한: 미등록 스코프는 폐기가 닿지 않음",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "A4a-ELIG-HOSTILE",
+      "label": "[WIT]",
+      "note": "★적대적 Elig에게 무제한 revoke를 주면 영구 권한부정(=원안 붕괴)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "A4b-ELIG-VETO",
+      "label": "[ENC]",
+      "note": "★귀속-불변: Elig가 적대적이어도 veto는 현 에폭 갱신만 차단 → 신규 서명으로 권한 회복 가능(영구부정 불가)",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "A5-RENEWKEY",
+      "label": "[WIT]",
+      "note": "★가장 싼 영구정지는 무료다: 갱신키 강압·분실 → 비용 0의 영구 소멸",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "S1-LAPSE",
+      "label": "[ENC]",
+      "note": "무갱신 → 권한 자동소멸(권한자 0명, 비용 0)",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "S2-FAILCLOSED",
+      "label": "[ENC]",
+      "note": "모듈 일몰/장애 → 권한도 소멸(fail-open 아님)",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "S3-MODULE-SPOF",
+      "label": "[WIT]",
+      "note": "★그 대가: 모듈 브릭 → 전 스코프 영구 소멸, 복구경로 없음",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "S4-AUTORENEW",
+      "label": "[WIT]",
+      "note": "★완전 자동갱신 → 소멸 기본값이 공허해짐(G3 상속)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "S5-NOUNPAUSE",
+      "label": "[ENC]",
+      "note": "폐기에는 해제 함수가 없다(un-revoke 변수 부재)",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "S6a-REISSUE",
+      "label": "[WIT]",
+      "note": "★id 단위 폐기면 원권리자가 동일 스코프로 즉시 재발급(무비용 회피)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "S6b-SCOPEBIND",
+      "label": "[ENC]",
+      "note": "스코프 노드 단위로 못박으면 재발급 회피 불가(대가: 원권리자 검열벡터)",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "X1-EXIT-LIVE",
+      "label": "[ENC]",
+      "note": "폐기 중에도 원권리자 인출 생존(구문 불변식)",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "X2-NOBYPASS",
+      "label": "[ENC]",
+      "note": "에이전트 키로 인출 경로 우회 불가",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "X2b-DESTFREE",
+      "label": "[WIT]",
+      "note": "★수취인 제한을 빼면 우회가 열린다(제한의 필요성)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "X3-CUSTODY-BASE",
+      "label": "[WIT]",
+      "note": "★기본 사례(예외 아님): 원권리자 키 침해 시 탈출차선이 곧 탈취로",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "X4-DECAY",
+      "label": "[WIT]",
+      "note": "★탈출차선이 살아 있어도 폐기 자체가 손실을 만든다(만기·헤지·경매)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "C1-INFLIGHT",
+      "label": "[ENC]",
+      "note": "실행시점 검사(단일 정의) → 폐기 후 채굴되는 선서명 tx 무효",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    },
+    {
+      "id": "C2-SAMEBLOCK",
+      "label": "[WIT]",
+      "note": "★동일블록 잔여창(수정 불가, ≤1블록 · L1 · 검열 없음 가정)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "C3-CENSOR",
+      "label": "[WIT]",
+      "note": "★시퀀서 검열: 강제포함 지연 d_force 동안 모든 행동이 유효(창이 블록이 아니라 시간 단위 — 체인별 실측 미확인)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "C4-PREAPPROVE",
+      "label": "[WIT]",
+      "note": "★지배적 누수: 권한 있을 때 발급한 선행 외부승인(approve)은 폐기 후에도 생존",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "C5-UNREG",
+      "label": "[WIT]",
+      "note": "미등록 권한경로(타 체인·오프체인 키)는 폐기가 닿지 않음",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "C6-FRAGMENT",
+      "label": "[WIT]",
+      "note": "★스코프 파편화 선택압: 루트 N개면 veto 비용 N·P, 에이전트 비용 불변",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "V1-NOTANTIGRIEF",
+      "label": "[WIT]",
+      "note": "★veto는 반-그리핑이 아니다: 정액비용 P, 피해는 무계(I3 적용)",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "V2-NOHUMAN",
+      "label": "[WIT]",
+      "note": "★이 실험 전체의 핵심 한계: 온체인은 '신선한 서명'만 증명한다. '사람이 했다'는 증명 불가",
+      "expected": "sat",
+      "result": "sat",
+      "ok": true
+    },
+    {
+      "id": "V3-VETO-BOUNDED",
+      "label": "[ENC]",
+      "note": "veto는 에폭당 1회·연장 불가 → 무한 연장(OP/Aztec 결함) 재현 없음",
+      "expected": "unsat",
+      "result": "unsat",
+      "ok": true
+    }
+  ],
+  "all_ok": true
+}
