@@ -17,12 +17,12 @@ attaches at the moment of utterance, not at audit time.
 ## 📜 Whitepaper
 
 **[Bonded Validation: Speaker-Bonded Accountability for AI Agents, with
-Machine-Checked Settlement Rules](docs/whitepaper-draft.md)** (draft v0.3) —
-protocol, threat model, nine experiments, eight symbolic-execution theorems over
-the deployed bytecode, and conditional bribery-resistance theorems (z3) including
-the no-bounty result: within our model, a winner's reward — even one funded only
-from forfeitures — functions as a bribery subsidy. Repository state pinned at tag
-`wp-v0.2`. Reviews, refutations, and reproduction attempts are welcome via issues.
+Machine-Checked Settlement Rules](docs/whitepaper-draft.md)** (v1.0) —
+protocol, threat model, sixteen experiments, eight symbolic-execution theorems
+over the deployed bytecode, conditional bribery-resistance theorems (z3) — a
+winner's reward is a bribery subsidy within our model — a zk re-execution proof
+measured on-chain (verify 864,652 gas), and a living economy where autonomous
+agents reach the theorem-predicted honest equilibrium on the deployed contract. Repository state pinned at tag `wp-v1.0`. Reviews, refutations, and reproduction attempts are welcome via issues.
 
 ## What's here
 
@@ -50,7 +50,7 @@ from forfeitures — functions as a bribery subsidy. Repository state pinned at 
   answers / 910 at 92.7% coverage (observed, not a guarantee).
 - **Hallucination gets a price:** over 300 bonded utterances, a hallucinating agent
   went bankrupt (50 → 0 tokens); a verifier-backed agent with abstention finished
-  lossless (50 → 50). Contract suite: 16/16 Foundry tests.
+  lossless (50 → 50). Contract suite: 63/63 Foundry tests; machine proofs via Halmos + z3.
 
 ## Live on Sepolia
 
