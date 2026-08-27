@@ -1,6 +1,9 @@
 # Bonded Validation: Speaker-Bonded Accountability for AI Agents, Machine-Checked and On-Chain
 
-**Whitepaper v1.0 — 2026-08-27**
+**Whitepaper v1.0 + addendum §6.1 — 2026-08-27**
+*Addendum (post-v1.0): §6.1 adds the post-quantum proof-layer path (Exp21–23) and the
+implemented ZkVerdictGate (Exp20). The §4 experiment table still reflects the v1.0
+set; Exp20–23 are described in §6 and in `docs/{quantum-resistance,stark-migration}.md`.*
 *IIS Lab — an independent, currently pseudonymous research effort. Contact: github.com/yubbi-sketch (repo issues) · yubbi85@gmail.com.*
 Repository: github.com/yubbi-sketch/bonded-validation (MIT) · Contracts on Sepolia, Sourcify-verified (§8)
 No token launch, no sale: the experiment token is valueless by construction and testnet-only.
@@ -307,6 +310,53 @@ score determination; the override and conflict-slashing rules must be redesigned
 does not become a Theorem-3 bounty, non-retroactive same-phase slashing) before
 they are safe. Implementation is gated on that binding and on a charter decision,
 and is deferred — we present the design, not a deployed rule change.
+
+The safe subset of that design **is** implemented: a `ZkVerdictGate` (Exp20)
+that sits as the validator's judge, forces `instances[0] == requestHash`
+(closing the wrong-input attack) and `instances[1] == score` (closing the
+partial-pipeline attack), settles the deterministic case, and reimburses the
+prover a capped, outcome-independent amount (not a Theorem-3 bounty). Its
+decision logic — binding, score determination, single-settlement, capped
+reimbursement — is machine-checked (Halmos). It deliberately omits panel
+override and conflict-slashing, which the deliberation killed as unsafe until
+binding is complete; the gate settles directly, so no conflicting vote exists to
+mis-slash.
+
+### 6.1 Post-quantum: the proof layer's transparent path (Exp21–23)
+
+The verifier above (halo2-KZG) is **pairing-based, hence not post-quantum**: a
+quantum adversary with Shor's algorithm forges proofs. A dependency audit
+(Exp21) classifies the whole stack — ECDSA and KZG are Shor-broken; keccak and
+Poseidon are only Grover-weakened (256→128 bit, safe); and the economic core
+(bonds, slashing, Theorems 2–3) is **hardness-assumption-free**, hence invariant
+to a quantum adversary *as mathematics*. The composition caveat is stated
+explicitly: those theorems presuppose an unforgeable signature/verdict layer, so
+"quantum-invariant economic core" describes the model, not the deployed system's
+survival — which holds only once the cryptographic shell is replaced.
+
+We took two concrete steps on that shell. For **speech authentication**, a
+hash-only signature (WOTS, the SLH-DSA/FIPS-205 leaf primitive; Exp21) — correct,
+forgery-resistant, and one-time-safe on 200 utterances, resting only on
+collision resistance (≈128-bit classical). For the **proof layer**, we
+demonstrated the transparent replacement end-to-end: a hash-only FRI low-degree
+proof (Exp22) over our scan recurrence — Fiat-Shamir-bound, with genuinely
+β-dependent folding, rejecting high-degree, forged, and tampered inputs, using
+SHA-256 with no pairing and no trusted setup. (This is educational-grade over a
+31-bit field; an adversarial review caught and we fixed a broken first version.)
+
+The **production migration decision** (Exp23) is risc0 zkVM as primary: port the
+forward pass — validated as an exact integer computation whose argmax matches the
+float model on 100/100 sentences — as a Rust guest and prove it with a STARK/FRI
+receipt. **Critical caveat, stated because it undoes the whole point if missed:**
+risc0's default pipeline wraps the STARK in a Groth16-on-BN254 SNARK (a pairing
+*and* a trusted setup), so a post-quantum deployment **must keep the succinct
+STARK receipt and refuse the Groth16 wrap**. Public benchmarks put our workload
+at single-digit-to-tens-of-seconds proving, <1–2 GB GPU memory, tens-of-KB
+succinct proof. The full production proof was **not run** here — it needs a Rust
+toolchain absent from our environment — so this is a designed, primitive-
+demonstrated, migration-decided path, not an executed one; Fiat-Shamir's quantum
+knowledge-soundness also remains an open academic question. See
+`docs/quantum-resistance.md` and `docs/stark-migration.md`.
 
 ## 7. The Proven Incentives, Made Real
 
