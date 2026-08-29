@@ -1,0 +1,36 @@
+{
+  "payload": {
+    "certificate": "Bonded Audit Certificate v0.1",
+    "id": "BAC-20260829T2114-5B429B",
+    "issued_at": "2026-08-29T21:14:07Z",
+    "issuer": "Sejong Project / JEONGEUM (research outfit, not a licensed auditor)",
+    "client": "SEJONG-SELFTEST",
+    "assertion": {
+      "check_id": "erc4626-dilution",
+      "title": "ERC-4626 볼트 · 예치 희석 불변식",
+      "property": "어떤 (S,T,a)로도 예치가 기존 주주의 상환 백킹을 줄이지 않는다",
+      "bound": "S,T,a < 2^64 (곱셈 오버플로 배제 범위)",
+      "variant": "fixed",
+      "variant_desc": "convertToShares=mulDivDown (한 줄 수정)"
+    },
+    "verdict": {
+      "label": "no-counterexample-in-bound",
+      "human": "경계 내 반례 없음 (≠ 전체 안전 — 아래 '검사하지 않은 것' 참조)"
+    },
+    "not_checked": "볼트 전체 정확성·다중사용자 회계·재진입·오라클은 검사 안 함(별개)",
+    "reproduce": [
+      "cd ~/iis-lab/vending && python3 run_check.py check erc4626-dilution --variant fixed",
+      "cd ~/iis-lab/demo-proofpack && cat README.md  # 3-command reproduction pack"
+    ],
+    "bond": {
+      "type": "fee-capped refund",
+      "fee_usd": "0",
+      "clause": "발급자가 오판했을 경우 수령한 요금 전액을 한도로 환불한다. 그 이상의 배상·보증·보험이 아니다.",
+      "misjudgment_definition": "오판 = 본 증명서의 reproduce 명령을 제3자가 동일 환경 사양으로 재실행한 결과가 verdict.label과 불일치하는 것. 성질(property)·경계(bound) 밖의 사건은 오판이 아니다."
+    },
+    "honesty": "이 증명서는 위 성질 하나를 위 경계 안에서만 판정한다. 보안 감사가 아니며, 컨트랙트 전체의 안전을 보증하지 않는다.",
+    "evidence_log_sha256": "40eb26a3850e8f47b0185f76595b0263844c7b5ede2df895d1b568add2bc7991"
+  },
+  "signature_ssh_ed25519": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAg19j0perPcBNocpnebADnQmQ3oU\nih+GsMi1l4qoopcucAAAAMamVvbmdldW0tYmFjAAAAAAAAAAZzaGE1MTIAAABTAAAAC3Nz\naC1lZDI1NTE5AAAAQMXQ07hzI2uQ3ZGYy+99BtOYkv2RlNco4/qbX5o57X8nNS+7UYsCQw\n/e2WFjWq+ZONXLZLsk9mBEyQ5xf098OQE=\n-----END SSH SIGNATURE-----\n",
+  "verify_cmd": "ssh-keygen -Y verify -f allowed_signers -I jeongeum -n jeongeum-bac -s cert.sig < payload.json"
+}
