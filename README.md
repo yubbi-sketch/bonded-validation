@@ -14,6 +14,30 @@ attaches at the moment of utterance, not at audit time.
 > matter how capable the attacker (or the agent) becomes, because they rest on
 > mathematics and consensus rather than vigilance.
 
+## ⏱️ Start here (3 minutes)
+
+New here? Don't read the whole repo. Run the one thing that shows what we do — a
+stateful ERC-4626 deposit-dilution bug that clean unit tests **pass**, caught as a
+concrete counterexample, and proven absent on the fix:
+
+```bash
+cd demo-proofpack
+forge test -vv      # unit + fuzz: buggy caught, fixed passes
+```
+
+Then get a **signed Bonded Audit Certificate** for the fix — a machine verdict you
+can re-run without us, with a fee-capped refund clause if our verdict is wrong:
+
+```bash
+python3 vending/certificate.py issue erc4626-dilution --variant fixed
+python3 vending/certificate.py verify certs/<the-file>.json   # signature check
+```
+
+Honest by construction: verdicts are only `counterexample` / `no-counterexample-in-bound`
+/ `no-result` — never a bare "safe". See [`docs/bonded-assertion-spec-v0.1.md`](docs/bonded-assertion-spec-v0.1.md)
+for the record format and [`docs/responsible-disclosure.md`](docs/responsible-disclosure.md)
+for how we handle a counterexample found in someone else's code.
+
 ## 📜 Whitepaper
 
 **[Bonded Validation: Speaker-Bonded Accountability for AI Agents, with
