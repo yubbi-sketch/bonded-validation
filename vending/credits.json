@@ -1,0 +1,45 @@
+{
+  "balance": 95,
+  "history": [
+    {
+      "op": "grant",
+      "amount": 100,
+      "note": "Stage0 test grant"
+    },
+    {
+      "op": "check",
+      "check": "erc4626-dilution",
+      "variant": "fixed",
+      "result": "no-counterexample-in-bound"
+    },
+    {
+      "op": "check",
+      "check": "erc4626-dilution",
+      "variant": "buggy",
+      "result": "counterexample"
+    },
+    {
+      "op": "grant",
+      "amount": 98,
+      "note": "Stage0 test grant"
+    },
+    {
+      "op": "check",
+      "check": "erc4626-dilution",
+      "variant": "fixed",
+      "result": "no-counterexample-in-bound"
+    },
+    {
+      "op": "check",
+      "check": "erc4626-dilution",
+      "variant": "fixed",
+      "result": "no-counterexample-in-bound"
+    },
+    {
+      "op": "check",
+      "check": "erc4626-dilution",
+      "variant": "fixed",
+      "result": "no-counterexample-in-bound"
+    }
+  ]
+}

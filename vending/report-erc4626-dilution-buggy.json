@@ -1,0 +1,16 @@
+{
+  "check": "erc4626-dilution",
+  "variant": "buggy",
+  "result_label": "counterexample",
+  "human": "취약점 발견 (반례)",
+  "property": "어떤 (S,T,a)로도 예치가 기존 주주의 상환 백킹을 줄이지 않는다",
+  "bound": "S,T,a < 2^64 (곱셈 오버플로 배제 범위)",
+  "not_proven": "볼트 전체 정확성·다중사용자 회계·재진입·오라클은 검사 안 함(별개)",
+  "credit_spent": 1,
+  "balance_after": 98,
+  "reproduce": [
+    "cd ~/iis-lab/demo-proofpack",
+    "cat README.md   # 3-command reproduction",
+    "halmos --function check_no_dilution_on_deposit   # buggy → counterexample"
+  ]
+}
