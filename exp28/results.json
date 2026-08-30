@@ -1,0 +1,84 @@
+{
+  "experiment": "exp28-judge-honesty",
+  "total": 9,
+  "passed": 9,
+  "kill": {
+    "A_rerun_replaces_honesty": true,
+    "B_bribe_undetectable": true,
+    "C_nobounty": true
+  },
+  "results": [
+    {
+      "id": "A1-INDEP",
+      "label": "재실행자 존재 시 틀린 판정 미탐지 불가(정확성⊥정직성)",
+      "kind": "THM",
+      "expect": "unsat",
+      "got": "unsat",
+      "ok": true
+    },
+    {
+      "id": "A2-NORERUN",
+      "label": "재실행자 0명이면 틀린 판정 미탐지 가능(방어원천=재실행)",
+      "kind": "WIT",
+      "expect": "sat",
+      "got": "sat",
+      "ok": true
+    },
+    {
+      "id": "A3-BRIBE-DEAD",
+      "label": "재검증 도메인: 매수 순이익 ≥ 0 불가(정정+무보상금)",
+      "kind": "THM",
+      "expect": "unsat",
+      "got": "unsat",
+      "ok": true
+    },
+    {
+      "id": "A4-LAZY-DEAD",
+      "label": "재검증 도메인: 게으름으로 슬래시 회피 보장 불가",
+      "kind": "THM",
+      "expect": "unsat",
+      "got": "unsat",
+      "ok": true
+    },
+    {
+      "id": "B1-BRIBE-OPAQUE",
+      "label": "주관 주장: 온체인 신호 동일한 매수-오판/정직-정답 공존",
+      "kind": "WIT",
+      "expect": "sat",
+      "got": "sat",
+      "ok": true
+    },
+    {
+      "id": "B2-LAZY-OPAQUE",
+      "label": "주관 주장: 게으른 모방과 독립검토가 동일 표 → 판별불가",
+      "kind": "WIT",
+      "expect": "sat",
+      "got": "sat",
+      "ok": true
+    },
+    {
+      "id": "B3-RULE-BLIND",
+      "label": "온체인 규칙은 O만 읽음 → 동일 O에 다른 슬래시 불가",
+      "kind": "ENC",
+      "expect": "unsat",
+      "got": "unsat",
+      "ok": true
+    },
+    {
+      "id": "C1-NOBOUNTY",
+      "label": "무보상금: 매수자 슬래시 회수 > 0 불가",
+      "kind": "THM",
+      "expect": "unsat",
+      "got": "unsat",
+      "ok": true
+    },
+    {
+      "id": "C2-EXTERNAL",
+      "label": "무보상금이어도 외부-파괴 동기 매수는 성립(주관 주장)",
+      "kind": "WIT",
+      "expect": "sat",
+      "got": "sat",
+      "ok": true
+    }
+  ]
+}
