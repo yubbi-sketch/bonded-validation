@@ -1,0 +1,3 @@
+tau*=0.8333 tau_ask=0.8417 grid-violations=0/500 vacuous-asks=0/200 delta0-asks=0/200
+option-value negative cases: 0/10000
+policy selftest OK

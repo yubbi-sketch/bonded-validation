@@ -1,0 +1,9 @@
+[THM] Z1 tau* characterization (Chow 1970 affine form): unsat (PASS)
+[THM] Z2 option value of asking is non-negative: unsat (PASS)
+[THM] Z3 tau_ask = tau* + kappa/(delta(B+R)): unsat (PASS)
+[THM] Z4 tau_ask >= tau* (asking never lowers the bar): unsat (PASS)
+[WIT] Z5 hold-semantics lock exceeds any bound T (witness): sat (PASS)
+[ENC] Z6 ours: lock <= W regardless of t_ans and depth n: unsat (PASS)
+[THM] Z7 abstain-fee from bond lowers tau* (why kappa must be separate): unsat (PASS)
+
+[THM] 5 · [WIT] 1 · [ENC] 1 · FAIL 0 []
