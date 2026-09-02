@@ -1,0 +1,18 @@
+# K2(c) start 2026-09-02T21:43:11Z · BV3 0xd881d52F10220687297651DeC4d55C1644d3a2A7 · requestHash = keccak256("exp30-k2c-claim-1-2026-09-03") = 0xa4f55aa9d15b3847884b887662e1b9562f3c96abb2453abeef6a9fcec9579740
+1 mint(1e18→deployer): tx=0xc4e14de63d73b85e7fcdb06d28ae4368fbe179005f102043a35c94d123b13a74 status=1 block=11622281 gasUsed=68341
+2 register(agent://exp30-k2c): tx=0x0bab34db936a353459ca354df1d6022e37feb4fc01d9242f19ad02841342eb86 status=1 block=11622282 gasUsed=74503
+agentId=1 wallet=0x47b3FB71726e9AA8b121C4bA5649f4Bff8dd9FD1
+3 approve(BV3,1e18): tx=0x634e98de43e5da1569b0d0837802f786d44503f6ffb9deea674564260f32e34f status=1 block=11622283 gasUsed=46173
+4 stake(1,1e18): tx=0x5547dd8020b2552dbbf137dbd115f8573ba0301cd52008fc8ecb9328cc27841a status=1 block=11622285 gasUsed=82114
+5 requestValidation: tx=0x249d2bce2f09a122e371bcee34225b4e8e3a60d218078fcb119f333fb6093a42 status=1 block=11622286 gasUsed=290734
+--- read-back ---
+claimedAt=1788385464 [1.788e9] ()
+--- read-back (re-run 21:44:49Z, no new tx) ---
+claimedAt=1788385464 (2026-09-02T21:44:24Z)
+lapse_eligible_at=1788471864 (2026-09-03T21:44:24Z) — settleUnchallenged reverts 'window open' while block.timestamp < claimedAt+W
+claim tx block 11622286 timestamp=1788385464
+engaged=false claimExists=true claimSettled=false windowOpen=true claimAgent=1
+agents[1] bonded/atRisk/unlockAt/slashedTotal = 1000000000000000000/1000000000000000000/0/0/
+freeBond=0
+valReg.vals[h] validator/agentId/response/tag/exists/responded = 0xd881d52F10220687297651DeC4d55C1644d3a2A7 1 0 0x0000000000000000000000000000000000000000000000000000000000000000 "" 1788385464 true false 
+deployer ETH after: 0.033027066531499691 · nonce: 15

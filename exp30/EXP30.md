@@ -697,3 +697,83 @@ forge clean && ../../.venv-halmos/bin/halmos --contract BondedValidatorV3Proofs 
 ../../.venv-halmos/bin/halmos --contract ZkVerdictGateProofs                                 # 5 passed
 git checkout -- exp3/contracts/cache/solidity-files-cache.json         # 도구 부산물 복원
 ```
+
+## 16. K2(c) 진행 — v0.3 Sepolia 배포·실주장 1건 미개설 (2026-09-03 · `main` · 오너 결재 ② 실행)
+
+오너 결재 ②("v0.3 Sepolia 재배포, W 는 실측 후 하한 규칙으로 확정")의 실행. §15 K1 PASS(`main` `5f156d1`)를 전제로 v0.3 쌍을 Sepolia 에 배포하고, §5 K2(c) 첫 문장("실주장 1건 미개설 → W 경과 → 제3자 EOA `settleUnchallenged` 성공")의 **전반부(주장 생성·미개설)만** 실행했다. W 경과 후의 `settleUnchallenged` 와 둘째 문장(W−60 s 개설·풀 0·리셋 후 소멸)은 별도 실행이다(16.4). 메인넷 배포 없음. LabToken 은 기존 무가치 토큰 재사용.
+
+### 16.1 W 확정 — 하한 규칙 W ≥ k·D + voteTimeout (실측 2026-09-02 21:27~21:30 UTC · 팀 입력 데이터)
+
+| 체인 | 포함 지연 D | 근거(요약) |
+|---|---|---|
+| Ethereum L1(Sepolia) 정상 | 24 s (1~3 슬롯) | 공개 RPC 실측: 최근 1,000 블록 평균 12.24 s/블록(누락 슬롯 ≈20), 200 블록 연속 최대 간격 24 s. Sepolia 는 허가형 검증자 집합 — 메인넷 MEV-Boost 검열 구조가 그대로 적용되지 않음 |
+| Ethereum L1 검열 시나리오(메인넷 데이터, 확률적) | 348 s | L1 에 강제포함 프로토콜 없음(FOCIL/EIP-7805 Draft, 2026 미가동). 비검열 제안자 1명이면 포함 → P(n 슬롯 초과)=cⁿ: 2023 정점 c=0.72 → 99.99 % 29 슬롯 = 348 s (mevwatch 2026-09-02 24 h c=0.274 → 8 슬롯 96 s; c=0.95 가정 → 2,160 s) |
+| **Ethereum L1 보수적 상한(라이브니스 사고)** | **23,400 s** | 머지 이후 최악의 L1 포함 정지: Sepolia Pectra 사고 2025-03-05 — 빈 블록만 3.5 h, 전 노드 수정까지 ≈6.5 h(EF 블로그·van der Wijden 회고). 메인넷 참고 2023-05 파이널리티 지연 25~64 min 은 블록 생산 지속. 원인은 Sepolia 전용 설정이라 메인넷 재현 불가 — 그래도 **D_L1 로 채택** |
+| Arbitrum One / Arbitrum Sepolia | 86,400 s | SequencerInbox `maxTimeVariation = (7200, 64, 86400, 768)` 온체인 실측(2026-09-02), `forceInclusion` 은 블록 조건(7,200 L1 블록 ≈ 86,400~88,128 s), delayBuffer 는 시퀀서 오작동 뒤에만 창 단축. 시퀀서가 L2 `block.timestamp` 를 −86,400~+768 s 범위에서 배정 가능 → L2 에서 W 를 timestamp 로 재면 최대 24 h 왜곡(k ≥ 2 근거) |
+| OP Mainnet (OP Stack) | 43,200 s | superchain-registry `op.toml` `seq_window_size = 3600` L1 블록 × 12 s(누락 슬롯 반영 ≈44,000 s); 표준 체인 요건 [3600, 3600] |
+| Base (OP Stack) | 43,200 s | 같은 표준 파라미터 — **입력 데이터가 이 행에서 절단돼 수치만 수신, 근거 원문 미확인** |
+
+계산: k = 2, D = D_L1 = 23,400 s, voteTimeout = 3,600 s → **W ≥ 50,400 s**. 잠정값 86,400 s(§4 R9 · §12.7)가 하한을 만족(여유 36,000 s = 10 h, D_L1 의 1.54 배)하므로 **W = 86,400 s 로 확정**. 규칙이 86,400 을 산출한 것이 아니라 잠정값이 하한 검사를 통과한 것이다 — 더 작은 W(예 50,400 s)도 규칙상 가능했으나 (i) 인간 도전자의 하루 주기, (ii) `disputeTimeout` 과 동일값의 단순성을 이유로 잠정값을 유지했다.
+**L2 금지:** 같은 규칙으로 Arbitrum 은 W ≥ 176,400 s, OP Stack 은 W ≥ 90,000 s — 86,400 s 는 둘 다 미달. W 는 immutable 이므로 이 배포본을 L2 에 그대로 올리면 안 되고, L2 는 별도 W 로 새 배포가 필요하다(deployments.md v0.3 절에 동일 명기).
+
+### 16.2 배포 (`main` `5f156d1` · forge 1.7.1 · solc 0.8.28 · optimizer 200 · 2026-09-02 21:40 UTC = 09-03 07:40 AEST · `logs/sepolia-v03-deploy.log`)
+
+| 항목 | 값 |
+|---|---|
+| 배포자 | `0x47b3FB71726e9AA8b121C4bA5649f4Bff8dd9FD1` (docs/sepolia-deployer-address.txt · nonce 8 → 10) — 키는 Keychain, 값은 어디에도 기록하지 않음 |
+| BondedValidatorV3 | **`0xd881d52F10220687297651DeC4d55C1644d3a2A7`** · tx `0xd36c6db949ca47be78acfe1f6e34836e34fe32f0e667988a59876822715d5731` (nonce 8) |
+| BondedJudgePanelV3 | **`0xfDf23d7B16462795659Acd4b2d40d81E842Aa18E`** · tx `0xd7829f6dc8e808acb81524be6f08689e3003ad16b7ec851b189112f400be8d72` (nonce 9, CREATE 예측 주소 = 실제 주소) |
+| 결합 확인 | `validator.judge() == panel` · `panel.bonded() == validator` · `panel.token() == LabToken` (배포 직후 읽기) |
+| 재사용 | LabToken `0x236781293F7387292F1cc0a674c607b2aCF35fec` · IdentityRegistry `0x784B1238EB74Efe1AF8bD8cf358B613f799D8f28` · ValidationRegistry `0x6e44ADBa5CCc034a372A00c4c9eaBC7deE5e5aB5` (v0) |
+| 생성자 | validator `(token, idReg, valReg, judge = panel, minBondPerClaim 1e18, unbondDelay 3600, challengeWindow 86400)` · panel `(validator, perCaseBond 10e18, judgeFee 1e18, voteTimeout 3600, disputeTimeout 86400, veteranThreshold 3)` · `SEED_WINDOW` 256 상수 — 배포 후 전부 읽기 대조 일치 |
+| Sourcify | 둘 다 **exact_match**(creation · runtime, 2026-09-02T21:41:51Z / :52Z) — `logs/sepolia-v03-sourcify.log` |
+| 특권 키 | 0 (v0.2 와 동일 — 오너 함수 없음) |
+| 가스 단가 | 0.94 gwei 시점, 배포자 잔액 0.0386 → 0.0330 ETH(Sepolia) |
+
+### 16.3 K2(c) 전반부 — 실주장 1건 미개설 (`logs/sepolia-v03-k2c-start.log`)
+
+| 순서 | tx | 블록 | 내용 |
+|---|---|---|---|
+| 1 | `0xc4e14de63d73b85e7fcdb06d28ae4368fbe179005f102043a35c94d123b13a74` | 11622281 | `LabToken.mint(배포자, 1e18)` — minter = 배포자 |
+| 2 | `0x0bab34db936a353459ca354df1d6022e37feb4fc01d9242f19ad02841342eb86` | 11622282 | `IdentityRegistry.register("agent://exp30-k2c")` → **agentId 1** (이 Sepolia 레지스트리의 첫 등록 — v0·v0.2 실측은 Anvil 이었음) |
+| 3 | `0x634e98de43e5da1569b0d0837802f786d44503f6ffb9deea674564260f32e34f` | 11622283 | `approve(validator, 1e18)` |
+| 4 | `0x5547dd8020b2552dbbf137dbd115f8573ba0301cd52008fc8ecb9328cc27841a` | 11622285 | `stake(1, 1e18)` |
+| 5 | **`0x249d2bce2f09a122e371bcee34225b4e8e3a60d218078fcb119f333fb6093a42`** | **11622286** | `requestValidation(1, "agent://exp30-k2c/claim-1", h)` · **h = keccak256("exp30-k2c-claim-1-2026-09-03") = `0xa4f55aa9d15b3847884b887662e1b9562f3c96abb2453abeef6a9fcec9579740`** · gas 290,734 |
+
+읽기 확인(21:44:49Z): `claimExists = true` · `engaged = false` · `claimSettled = false` · `windowOpen = true` · `claimAgent = 1` · `agents[1] = (bonded 1e18, atRisk 1e18, unlockAt 0, slashedTotal 0)` · `freeBond = 0` · `valReg.vals[h] = (validator = BV3, agentId 1, exists, !responded)`.
+
+**claimedAt = 1788385464 = 2026-09-02T21:44:24Z** (블록 11622286 timestamp 와 동일).
+**소멸 가능 시각 = claimedAt + W = 1788471864 = 2026-09-03T21:44:24Z** (AEST 09-04 07:44:24). 그 전에는 `settleUnchallenged(h)` 가 `'window open'` 으로 되돌려진다(R4 · `windowOpen` 엄격 부등호 — 경계 초 1788471864 자체는 '닫힘'); 그 시각 이상의 timestamp 를 가진 블록부터 누구든 호출 가능.
+
+### 16.4 다음 실행 (별도 — 이 소절에서 하지 않은 것)
+
+1. **2026-09-03T21:44:24Z 이후**: **제3자 EOA**(배포자·에이전트 지갑이 아닌 주소 — K2(c) 원문 '제3자 EOA')로 `settleUnchallenged(0xa4f5…9740)` → 기대: status 1 · `ClaimLapsed(h)` · `ClaimSettled(1, h, 50, false, false)` · valReg (50, "unchallenged") · `agents[1].atRisk = 0` · `bonded` 1e18 불변 · 토큰 이동 0(K4-a). **제3자 EOA 는 아직 없다** — 오너가 지정하거나 새 EOA 에 가스만 넣어야 하며, 이 작업에서는 만들지 않았다.
+2. K2(c) 후반부: 실주장 2건째 → W−60 s 에 `openCase`(judgeFee 1e18 필요 · 판정자 풀 0) → voteTimeout 후 `resolveTimeout`(Committed 시한 → `_resetCommit`: 사건 삭제·수수료 반환·`disengage`) → 창 닫힘 후 소멸. 미착수.
+3. 1·2 의 tx 해시·이벤트로 §5 K2(c) 판정 → §16 추가 소절.
+
+### 16.5 정직한 한계
+
+1. 이 소절은 K2(c) 의 **전반부(주장 생성)만** — 소멸 tx 는 아직 없다. K2 는 여전히 **PARTIAL**(§12.5 그대로).
+2. 실주장의 에이전트 지갑 = 배포자 EOA(자기 등록·자기 스테이크). 실 에이전트가 아닌 배포자의 시연 주장이다. K2(c) 는 '소멸이 무허가·무손실로 성립하는가'를 재므로 주장자 신원은 판정과 무관하지만 명기한다.
+3. W 하한 규칙의 D_L1 은 Sepolia 전용 사고 값이라 메인넷 대표값이 아니고, 메인넷 검열은 확률적(c 의존)이라 '상한'이 없다 — 하한 규칙은 관측치 위의 보수적 근사이지 증명이 아니다. Sepolia 정상 포함(24 s)만 놓고 보면 W 는 3,600 배 과잉이다.
+4. W 는 immutable — Sepolia EOL(2026-09-30 예정) 이후 재배포 시 재실측·재확정 필요. L2 는 이 배포본 금지(16.1).
+5. Base 행은 입력 절단으로 수치(43,200 s)만 받았다(16.1 표).
+6. 판정자 풀 0 — 아직 아무 판정자도 v0.3 패널에 `registerJudge` 하지 않았다. 따라서 이 주장은 실제로 도전 확률 q ≈ 0 조건에서 소멸을 기다린다(§12.6 '억지력은 q 조건부' 한계의 실측 그 자체).
+7. Sourcify 만 검증(v0.2.1 과 동일). Etherscan 은 API 키 없이 미제출.
+8. 원격 미푸시(오너). `exp3/contracts/cache/solidity-files-cache.json` 은 도구 부산물이라 HEAD 복원.
+
+### 16.6 재현
+
+```bash
+RPC=https://ethereum-sepolia-rpc.publicnode.com
+BV3=0xd881d52F10220687297651DeC4d55C1644d3a2A7; PANEL=0xfDf23d7B16462795659Acd4b2d40d81E842Aa18E
+H=0xa4f55aa9d15b3847884b887662e1b9562f3c96abb2453abeef6a9fcec9579740
+cast call $BV3 "judge()(address)" --rpc-url $RPC                 # == $PANEL
+cast call $PANEL "bonded()(address)" --rpc-url $RPC              # == $BV3
+cast call $BV3 "challengeWindow()(uint256)" --rpc-url $RPC       # 86400
+cast call $BV3 "claimedAt(bytes32)(uint64)" $H --rpc-url $RPC    # 1788385464
+cast call $BV3 "windowOpen(bytes32)(bool)" $H --rpc-url $RPC     # true (timestamp < 1788471864) / false 이후
+curl -s https://sourcify.dev/server/v2/contract/11155111/$BV3 | python3 -c "import sys,json;print(json.load(sys.stdin)['match'])"   # exact_match
+# 소멸(1788471864 이후 · 제3자 EOA · 키는 명령줄에 남기지 말 것):
+# cast send $BV3 "settleUnchallenged(bytes32)" $H --rpc-url $RPC --private-key "$(security find-generic-password -a <third-party-item> -w)"
+```

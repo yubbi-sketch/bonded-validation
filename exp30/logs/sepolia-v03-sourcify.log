@@ -1,0 +1,24 @@
+# Sourcify verify 2026-09-02T21:41:47Z
+--- BondedValidatorV3 ---
+Start verifying contract `0xd881d52F10220687297651DeC4d55C1644d3a2A7` deployed on sepolia
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [BondedValidatorV3] "0xd881d52F10220687297651DeC4d55C1644d3a2A7".
+Submitted contract for verification:
+	Verification Job ID: `66ed348a-c8d1-4635-98dd-f7f297a7b0b5`
+	URL: https://sourcify.dev/server/v2/verify/66ed348a-c8d1-4635-98dd-f7f297a7b0b5
+--- BondedJudgePanelV3 ---
+Start verifying contract `0xfDf23d7B16462795659Acd4b2d40d81E842Aa18E` deployed on sepolia
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [BondedJudgePanelV3] "0xfDf23d7B16462795659Acd4b2d40d81E842Aa18E".
+Submitted contract for verification:
+	Verification Job ID: `39720230-41b1-406f-8441-ce95f4cd52f6`
+	URL: https://sourcify.dev/server/v2/verify/39720230-41b1-406f-8441-ce95f4cd52f6
+--- Sourcify API v2 status ---
+0xd881d52F10220687297651DeC4d55C1644d3a2A7: exact_match exact_match exact_match 2026-09-02T21:41:51Z
+0xfDf23d7B16462795659Acd4b2d40d81E842Aa18E: None None None None
+--- Sourcify re-poll 21:42:23Z ---
+job: True None {'match': 'exact_match', 'creationMatch': 'exact_match', 'runtimeMatch': 'exact_match', 'chainId': '11155111', 'address': '0xfDf23d7B16462795659Acd4b2d40d81E842Aa18E', 'verifiedAt': '2026-09-02T21:41:52Z', 'matchId': '47050974'}
+0xd881d52F10220687297651DeC4d55C1644d3a2A7: exact_match exact_match exact_match 2026-09-02T21:41:51Z
+0xfDf23d7B16462795659Acd4b2d40d81E842Aa18E: exact_match exact_match exact_match 2026-09-02T21:41:52Z

@@ -78,7 +78,13 @@ agents reach the theorem-predicted honest equilibrium on the deployed contract. 
 
 ## Live on Sepolia
 
-**v0.2.1 (current):** commit-reveal lottery closes request-hash grinding.
+**v0.3 (current):** optimistic lapse — a claim nobody opens inside the 24 h challenge
+window settles losslessly by anyone (`settleUnchallenged`: no reward, no token movement,
+tagged "unchallenged", not a validation). BondedValidatorV3
+`0xd881d52F10220687297651DeC4d55C1644d3a2A7` · BondedJudgePanelV3
+`0xfDf23d7B16462795659Acd4b2d40d81E842Aa18E`.
+
+**v0.2.1:** commit-reveal lottery closes request-hash grinding.
 BondedValidator v0.2.1 `0xE9bA0f2904955D57546911Ef57a75ffd5a03F0f0` ·
 BondedJudgePanelV2 `0x666F90ae34d7119756CF6E41f99F6A49b0FC5775`.
 

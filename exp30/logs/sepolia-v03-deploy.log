@@ -1,0 +1,29 @@
+# Sepolia v0.3 deploy 2026-09-02T21:40:23Z · HEAD 5f156d1 · forge forge Version: 1.7.1
+nonce before: 8
+panel predicted (nonce 9): 0xfDf23d7B16462795659Acd4b2d40d81E842Aa18E
+--- forge create BondedValidatorV3 (nonce 8) ---
+No files changed, compilation skipped
+Deployer: 0x47b3FB71726e9AA8b121C4bA5649f4Bff8dd9FD1
+Deployed to: 0xd881d52F10220687297651DeC4d55C1644d3a2A7
+Transaction hash: 0xd36c6db949ca47be78acfe1f6e34836e34fe32f0e667988a59876822715d5731
+BV3 0xd881d52F10220687297651DeC4d55C1644d3a2A7 code bytes:    12735
+nonce after BV3: 9
+--- forge create BondedJudgePanelV3 (nonce 9) ---
+No files changed, compilation skipped
+Deployer: 0x47b3FB71726e9AA8b121C4bA5649f4Bff8dd9FD1
+Deployed to: 0xfDf23d7B16462795659Acd4b2d40d81E842Aa18E
+Transaction hash: 0xd7829f6dc8e808acb81524be6f08689e3003ad16b7ec851b189112f400be8d72
+--- post-check ---
+BV3.judge()      = 0xfDf23d7B16462795659Acd4b2d40d81E842Aa18E
+Panel.bonded()   = 0xd881d52F10220687297651DeC4d55C1644d3a2A7
+BV3.challengeWindow = 86400 [8.64e4]
+BV3.minBondPerClaim = 1000000000000000000 [1e18]
+BV3.unbondDelay     = 3600
+Panel.perCaseBond   = 10000000000000000000 [1e19]
+Panel.judgeFee      = 1000000000000000000 [1e18]
+Panel.voteTimeout   = 3600
+Panel.disputeTimeout= 86400 [8.64e4]
+Panel.veteranThreshold = 3
+Panel.SEED_WINDOW   = 256
+Panel.token()       = 0x236781293F7387292F1cc0a674c607b2aCF35fec
+WIRING OK: judge==panel, panel.bonded==BV3
