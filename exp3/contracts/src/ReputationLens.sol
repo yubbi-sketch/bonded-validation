@@ -23,17 +23,25 @@ contract ReputationLens {
     }
 
     string public constant DISPUTED_TAG = "disputed";
+    string public constant UNCHALLENGED_TAG = "unchallenged"; // Exp30 R8 — 소멸(미검증 해제)
 
-    /// @notice 신용 점수 0~100 = 기권·분쟁환급 제외 평균 검증 점수. 이력 없으면 0.
-    /// @dev 분쟁 타임아웃 환급은 점수 50 고정 태그 "disputed"로 기록되므로
-    ///      (JudgePanelV2), 합계에서 50×건수를 걷어내면 중립화된다 — 분쟁은
-    ///      에이전트의 잘못이 증명된 게 아니므로 신용에 중립이어야 한다.
+    /// @notice 신용 점수 0~100 = 기권·분쟁환급·소멸 제외 평균 검증 점수. 이력 없으면 0.
+    /// @dev 분쟁 타임아웃 환급(JudgePanelV2 "disputed")과 소멸(BondedValidatorV3
+    ///      "unchallenged")은 점수 50 고정으로 기록되므로, 합계에서 50×건수를 걷어내면
+    ///      중립화된다 — 둘 다 에이전트의 잘못이 증명된 게 아니고, 소멸은 검증도
+    ///      아니므로(규격 v0.1 §1 'VERIFIED 없음') 신용에 중립이어야 한다.
+    ///      Exp30 R8 언더플로 가드: 레지스트리 평균은 내림이라 avg·count < 50·d 가
+    ///      가능하다(예: 오답 1건 + 소멸 3건 → 37·4 = 148 < 150). 그 경우 (0, answered).
     function creditScore(uint256 agentId) public view returns (uint256 score, uint64 answered) {
         (uint64 count, uint256 avg) = valReg.getSummaryExcluding(agentId, ABSTAIN_TAG);
-        uint64 d = valReg.getSummaryByTag(agentId, DISPUTED_TAG);
+        uint64 d = valReg.getSummaryByTag(agentId, DISPUTED_TAG)
+                 + valReg.getSummaryByTag(agentId, UNCHALLENGED_TAG);
         if (count <= d) return (0, 0);
         answered = count - d;
-        score = (avg * count - 50 * uint256(d)) / answered;
+        uint256 total = avg * count;
+        uint256 neutral = 50 * uint256(d);
+        if (total < neutral) return (0, answered);
+        score = (total - neutral) / answered;
     }
 
     /// @notice 기권률(bp, 0~10000) — 감점이 아니라 정보로 노출.
