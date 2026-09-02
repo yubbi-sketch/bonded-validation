@@ -18,7 +18,7 @@ import z3
 import cvc5
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SMT_EXPS = ["exp13", "exp24", "exp25", "exp26", "exp27", "exp28"]
+SMT_EXPS = ["exp13", "exp24", "exp25", "exp26", "exp27", "exp28", "exp30"]
 
 _pairs = []          # [(z3_verdict, cvc5_verdict, ok)] — exp 실행 중 채워짐
 _orig_check = z3.Solver.check

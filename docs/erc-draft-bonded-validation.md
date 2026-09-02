@@ -58,10 +58,52 @@ Events: `Staked`, `ClaimBonded`, `ClaimSettled(agentId, requestHash, score, slas
 
 1. **No bond, no speech** — `requestValidation` MUST NOT succeed without locked bond.
 2. **Abstention neutrality** — an abstained claim MUST NOT reduce bond.
-3. **No hit-and-run** — withdrawal MUST be impossible while any claim is unsettled,
-   and MUST respect a delay window after `requestUnbond`.
+3. **No hit-and-run, bounded lock** — withdrawal MUST be impossible while any
+   claim is unsettled, and MUST respect a delay window after `requestUnbond`;
+   **and** every claim MUST be settleable within a bounded time by permissionless
+   calls alone — either judged inside a challenge window, or, if no one engages it
+   within that window, released lossless as *unchallenged* (v0.3, Exp30). A
+   design in which an unengaged claim can stay locked forever violates this
+   invariant (the v0.2.1 reference did; see Optimistic lapse below).
 4. **Registry truth** — every settlement MUST be reflected in the ERC-8004
    Validation Registry so reputation systems can consume it.
+5. **Reserved tags are not verification** — consumers MUST exclude the tags
+   `"abstain"`, `"disputed"` and `"unchallenged"` from any count of *verified*
+   claims. `"unchallenged"` means *nobody paid to judge this inside the window*;
+   it is neither correct nor wrong, and an implementation MUST NOT let a judge
+   vote a reserved tag.
+
+### Optimistic lapse (v0.3 extension, Exp30)
+
+```solidity
+interface IBondedValidatorLapse is IBondedValidator {
+    function challengeWindow() external view returns (uint256);       // W, immutable, 0 < W ≤ 365 days
+    function claimedAt(bytes32 requestHash) external view returns (uint64);
+    function engaged(bytes32 requestHash) external view returns (bool);
+    /// Judge only. MUST revert unless block.timestamp < claimedAt + W. Marks the
+    /// claim as engaged: lapse is blocked, only submitVerdict can close it.
+    function engage(bytes32 requestHash) external;
+    /// Judge only. Clears the mark when a case was opened but no panel was
+    /// ever drawn (a commit that never became a challenge). Never settles.
+    function disengage(bytes32 requestHash) external;
+    /// Anyone. MUST revert while the window is open or the claim is engaged.
+    /// Otherwise settles with score == threshold(), tag "unchallenged":
+    /// bond and slashedTotal unchanged, atRisk released, zero token movement.
+    function settleUnchallenged(bytes32 requestHash) external;
+}
+```
+
+Normative: at every timestamp exactly one of `engage` / `settleUnchallenged` is
+enabled for an unengaged, unsettled claim (`<` vs `≥` on the same boundary — no
+race at the edge). `submitVerdict` MUST revert on an unengaged claim after the
+window closes. No reward, reimbursement or bounty of any kind may be attached to
+lapse or to opening a case (`R_c = 0`): a positive challenger payoff makes the
+opener+judge coalition's income outcome-dependent, which is the winner's-bounty
+bribery subsidy of Theorem 3 relocated to the opener (Exp30, z3 S6). Deterrence
+under this extension is conditional on the probability `q` that a false claim is
+engaged inside `W`; the expected penalty falls from `B_a` to `q·B_a` (z3 R1).
+Implementations MUST disclose `W` and SHOULD set
+`W ≥ k·(forced-inclusion delay of the target chain) + voteTimeout`, `k ≥ 2`.
 
 ## Rationale
 
@@ -90,3 +132,6 @@ Events: `Staked`, `ClaimBonded`, `ClaimSettled(agentId, requestHash, score, slas
 ## Reference Implementation
 
 `exp3/contracts/src/BondedValidator.sol` (MIT), 16/16 Foundry tests, live demo in `exp5/`.
+Optimistic-lapse extension: `exp3/contracts/src/BondedValidatorV3.sol` +
+`BondedJudgePanelV3.sol` (branch `exp30-liveness`, not yet deployed) — Halmos
+`BondedValidatorV3Proofs` (T1–T4 + L1–L5) and `BondedJudgePanelV3Proofs` (PA–P4 + PL1–PL3).

@@ -85,9 +85,16 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 # Python experiments (deterministic, fixed seeds)
 .venv/bin/python exp1/train.py     # +  exp2/run_exp2.py exp8/sim.py exp10/recon.py exp13/prove.py exp18/run_exp18.py
 # Machine proofs
-cd exp3/contracts && forge test
+cd exp3/contracts && forge test                               # 90 passed (69 v0.2.1 + 21 Exp30) on branch exp30-liveness
 ../../.venv/bin/halmos --contract BondedValidatorProofs       # ServiceVoucherProofs / ZkVerdictGateProofs
 ../../.venv/bin/halmos --contract BondedJudgePanelV2Proofs --loop 33   # heavy (~4 min)
+# Exp30 v0.3 (optimistic lapse) — NOTE: run `forge clean` first if `forge test`/`forge build`
+# ran before halmos in the same checkout: forge's cache does not invalidate on halmos's
+# `--ast` flag, and halmos then skips every artifact with "KeyError: 'ast'" (measured 2026-09-03).
+forge clean && ../../.venv-halmos/bin/halmos --contract BondedValidatorV3Proofs            # T1–T4 + L1–L5, 10 passed / ~1.8s
+../../.venv-halmos/bin/halmos --contract BondedJudgePanelV3Proofs --loop 33                 # PA/PB/PC/P4 + PL1–PL3 (heavy)
+cd ../.. && .venv-halmos/bin/python exp30/prove.py && .venv-xverify/bin/python xverify.py exp30   # z3 17 checks + cvc5 cross
+.venv-halmos/bin/python exp30/sim.py                          # K3 anvil re-simulation, q ∈ {1, 0.5, 0} (needs anvil/forge/cast)
 # On-chain (each starts its own anvil)
 .venv/bin/python exp3/run_exp3.py  # exp5 exp7 exp19
 # zkML (network for SRS)

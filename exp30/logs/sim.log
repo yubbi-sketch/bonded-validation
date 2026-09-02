@@ -1,0 +1,29 @@
+Exp30 K3 — anvil 재시뮬, N=100, stake=50, W=86400s, q ∈ [1.0, 0.5, 0.0]
+▶ q = 1.0
+  q=1.0: LabToken=0x5FbDB2315678afecb367f032d93F642f64180aa3 BV3=0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9 Panel3=0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
+    25/100 bonds: hallu=35 calib=50
+    50/100 bonds: hallu=24 calib=50
+    75/100 bonds: hallu=13 calib=50
+    100/100 bonds: hallu=2 calib=50
+▶ q = 0.5
+  q=0.5: LabToken=0x5FbDB2315678afecb367f032d93F642f64180aa3 BV3=0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9 Panel3=0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
+    25/100 bonds: hallu=44 calib=50
+    50/100 bonds: hallu=40 calib=50
+    75/100 bonds: hallu=34 calib=50
+    100/100 bonds: hallu=31 calib=50
+▶ q = 0.0
+  q=0.0: LabToken=0x5FbDB2315678afecb367f032d93F642f64180aa3 BV3=0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9 Panel3=0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
+    25/100 bonds: hallu=50 calib=50
+    50/100 bonds: hallu=50 calib=50
+    75/100 bonds: hallu=50 calib=50
+    100/100 bonds: hallu=50 calib=50
+
+| q | 환각 담보 (50→) | 캘리브 담보 (50→) | 개설 | 소멸 | 환각 오답 | 캘리브 답/기권/오답 |
+|---|---|---|---|---|---|---|
+| 1.0 | 2 | 50 | 200 | 0 | 48 | 16/84/0 |
+| 0.5 | 31 | 50 | 104 | 96 | 48 | 16/84/0 |
+| 0.0 | 50 | 50 | 0 | 200 | 48 | 16/84/0 |
+
+K3 (q=1): 환각 2 ≤ 10 ∧ 캘리브 50 ≥ 49 → PASS
+→ exp30/out/sim.json 기록
+EXIT=0

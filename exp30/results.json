@@ -1,0 +1,687 @@
+{
+  "exp": "exp30",
+  "title": "미개설 주장의 소멸(Optimistic Lapse) — v0.3 구현·검증 (브랜치 exp30-liveness)",
+  "date": "2026-09-03",
+  "status": "구현·기계검증 완료 / 정본 main 미이식 / 미배포 (오너 결재 §8-①② 대기)",
+  "tools": {
+    "forge": "1.7.1",
+    "halmos": "0.3.3",
+    "z3": "4.12.6 (.venv-halmos)",
+    "cvc5": "xverify .venv-xverify"
+  },
+  "forge": {
+    "log": "logs/forge-test.log",
+    "suites": 10,
+    "passed": 90,
+    "failed": 0,
+    "total": 90,
+    "failing_tests": [],
+    "per_suite": [
+      {
+        "suite": "test/JudgePanel.t.sol:JudgePanelTest",
+        "result": "ok",
+        "passed": 7,
+        "failed": 0
+      },
+      {
+        "suite": "test/ServiceVoucher.t.sol:ServiceVoucherTest",
+        "result": "ok",
+        "passed": 4,
+        "failed": 0
+      },
+      {
+        "suite": "test/ZkVerdictGate.t.sol:ZkVerdictGateTest",
+        "result": "ok",
+        "passed": 6,
+        "failed": 0
+      },
+      {
+        "suite": "test/BondedValidator.t.sol:BondedValidatorTest",
+        "result": "ok",
+        "passed": 8,
+        "failed": 0
+      },
+      {
+        "suite": "test/JudgePanelV2.t.sol:JudgePanelV2Test",
+        "result": "ok",
+        "passed": 7,
+        "failed": 0
+      },
+      {
+        "suite": "test/BondedJudgePanelV2.t.sol:BondedJudgePanelV2Test",
+        "result": "ok",
+        "passed": 9,
+        "failed": 0
+      },
+      {
+        "suite": "test/BondedJudgePanel.t.sol:BondedJudgePanelTest",
+        "result": "ok",
+        "passed": 15,
+        "failed": 0
+      },
+      {
+        "suite": "test/ReputationLens.t.sol:ReputationLensTest",
+        "result": "ok",
+        "passed": 5,
+        "failed": 0
+      },
+      {
+        "suite": "test/BondManager.t.sol:BondManagerTest",
+        "result": "ok",
+        "passed": 8,
+        "failed": 0
+      },
+      {
+        "suite": "test/Exp30Lapse.t.sol:Exp30LapseTest",
+        "result": "ok",
+        "passed": 21,
+        "failed": 0
+      }
+    ],
+    "exp30_tests": [
+      {
+        "name": "test_A_thin_pool_self_open_no_longer_bypasses_window",
+        "gas": 1788600
+      },
+      {
+        "name": "test_K2a_expanded_commit_timeout_within_Tmax",
+        "gas": 3016179
+      },
+      {
+        "name": "test_K2a_expanded_split_221_refunds_within_Tmax",
+        "gas": 3990836
+      },
+      {
+        "name": "test_K2a_last_second_open_pool0_resets_then_lapses",
+        "gas": 452044
+      },
+      {
+        "name": "test_K2a_pool2_resets_then_lapses",
+        "gas": 948810
+      },
+      {
+        "name": "test_K2a_reset_reopen_reset_lapse_bounded",
+        "gas": 958805
+      },
+      {
+        "name": "test_K2a_two_matching_votes_timeout_settles_within_Tmax",
+        "gas": 3016583
+      },
+      {
+        "name": "test_K2a_unopened_lapses_at_W_zero_liquidity_agent_withdraws",
+        "gas": 2502989
+      },
+      {
+        "name": "test_K2a_worst_path_expanded_timeout_hits_Tmax_bound",
+        "gas": 3416112
+      },
+      {
+        "name": "test_K2b_wedge_closed_score_range_tag_length_reserved",
+        "gas": 10108249
+      },
+      {
+        "name": "test_K4a_lapse_moves_zero_tokens",
+        "gas": 1127483
+      },
+      {
+        "name": "test_K4b_captured_pool_griefing_correct_claim_net_income_zero",
+        "gas": 1773362
+      },
+      {
+        "name": "test_K4b_two_seats_silent_third_timeout_verdict_net_income_zero",
+        "gas": 1648832
+      },
+      {
+        "name": "test_K4c_unchallenged_lock_is_exactly_W_with_prearmed_unbond",
+        "gas": 366852
+      },
+      {
+        "name": "test_K4d_100_lapses_lens_stable",
+        "gas": 28590406
+      },
+      {
+        "name": "test_L5_single_settlement_concrete",
+        "gas": 619901
+      },
+      {
+        "name": "test_R2R3_engage_disengage_only_judge",
+        "gas": 306286
+      },
+      {
+        "name": "test_R5_direct_verdict_inside_window_only_unless_engaged",
+        "gas": 865673
+      },
+      {
+        "name": "test_R8_lens_neutralizes_unchallenged_and_guards_underflow",
+        "gas": 4877125
+      },
+      {
+        "name": "test_R9_constructor_rejects_bad_window",
+        "gas": 1386489
+      },
+      {
+        "name": "test_reopen_after_reset_draws_and_settles_cleanly",
+        "gas": 3136747
+      }
+    ]
+  },
+  "halmos": {
+    "BondedValidatorV3Proofs": {
+      "log": "logs/halmos-bv3.log",
+      "passed": 10,
+      "failed": 0,
+      "time_s": 1.77,
+      "counterexamples": 0,
+      "checks": [
+        {
+          "name": "check_L1_lapse_lossless_complete",
+          "args": "uint64,address",
+          "status": "PASS",
+          "paths": 3,
+          "time_s": 0.06
+        },
+        {
+          "name": "check_L2_no_early_lapse",
+          "args": "uint64,address",
+          "status": "PASS",
+          "paths": 3,
+          "time_s": 0.03
+        },
+        {
+          "name": "check_L3_engage_xor_lapse",
+          "args": "uint64,uint8,string",
+          "status": "PASS",
+          "paths": 8,
+          "time_s": 0.15
+        },
+        {
+          "name": "check_L4_engaged_blocks_lapse_disengage_restores",
+          "args": "uint64,uint64",
+          "status": "PASS",
+          "paths": 5,
+          "time_s": 0.07
+        },
+        {
+          "name": "check_L5a_lapse_then_nothing",
+          "args": "uint64,uint8,string",
+          "status": "PASS",
+          "paths": 5,
+          "time_s": 0.11
+        },
+        {
+          "name": "check_L5b_verdict_then_nothing",
+          "args": "uint8,string,uint64",
+          "status": "PASS",
+          "paths": 17,
+          "time_s": 0.38
+        },
+        {
+          "name": "check_T1_abstain_never_slashes",
+          "args": "uint8",
+          "status": "PASS",
+          "paths": 3,
+          "time_s": 0.03
+        },
+        {
+          "name": "check_T2_slash_exactness",
+          "args": "uint8,string",
+          "status": "PASS",
+          "paths": 14,
+          "time_s": 0.32
+        },
+        {
+          "name": "check_T3_no_double_settle",
+          "args": "uint8,uint8,string",
+          "status": "PASS",
+          "paths": 15,
+          "time_s": 0.25
+        },
+        {
+          "name": "check_T4_settlement_conservation",
+          "args": "uint8,string",
+          "status": "PASS",
+          "paths": 14,
+          "time_s": 0.27
+        }
+      ]
+    },
+    "BondedJudgePanelV3Proofs": {
+      "log": "logs/halmos-panel3.log",
+      "passed": 9,
+      "failed": 0,
+      "time_s": 239.07,
+      "counterexamples": 0,
+      "checks": [
+        {
+          "name": "check_P4_timeout_judges_lossless",
+          "args": "bool,bool,uint8,uint8",
+          "status": "PASS",
+          "paths": 21,
+          "time_s": 2.55
+        },
+        {
+          "name": "check_PA_unanimous",
+          "args": "uint8",
+          "status": "PASS",
+          "paths": 7,
+          "time_s": 0.48
+        },
+        {
+          "name": "check_PB_majority",
+          "args": "uint8,uint8,uint8,uint8,uint8,uint8",
+          "status": "PASS",
+          "paths": 1052,
+          "time_s": 228.22
+        },
+        {
+          "name": "check_PC_split",
+          "args": "uint8,uint8,uint8",
+          "status": "PASS",
+          "paths": 16,
+          "time_s": 5.19
+        },
+        {
+          "name": "check_PL1a_vote_lands_iff_score_le_100",
+          "args": "uint8",
+          "status": "PASS",
+          "paths": 4,
+          "time_s": 0.1
+        },
+        {
+          "name": "check_PL1b_timeout_after_two_votes_never_reverts",
+          "args": "uint8,uint8",
+          "status": "PASS",
+          "paths": 9,
+          "time_s": 0.42
+        },
+        {
+          "name": "check_PL2_commit_timeout_resets",
+          "args": "uint64",
+          "status": "PASS",
+          "paths": 4,
+          "time_s": 0.53
+        },
+        {
+          "name": "check_PL3a_reserved_tags_revert",
+          "args": "uint8",
+          "status": "PASS",
+          "paths": 3,
+          "time_s": 0.08
+        },
+        {
+          "name": "check_PL3b_lapse_preserves_judges",
+          "args": "uint64,address",
+          "status": "PASS",
+          "paths": 5,
+          "time_s": 0.75
+        }
+      ]
+    },
+    "BondedValidatorProofs_v021_regression": {
+      "log": "logs/halmos-bv021-regression.log",
+      "passed": 4,
+      "failed": 0,
+      "time_s": 0.97,
+      "counterexamples": 0,
+      "checks": [
+        {
+          "name": "check_T1_abstain_never_slashes",
+          "args": "uint8",
+          "status": "PASS",
+          "paths": 3,
+          "time_s": 0.04
+        },
+        {
+          "name": "check_T2_slash_exactness",
+          "args": "uint8,string",
+          "status": "PASS",
+          "paths": 14,
+          "time_s": 0.33
+        },
+        {
+          "name": "check_T3_no_double_settle",
+          "args": "uint8,uint8,string",
+          "status": "PASS",
+          "paths": 15,
+          "time_s": 0.26
+        },
+        {
+          "name": "check_T4_settlement_conservation",
+          "args": "uint8,string",
+          "status": "PASS",
+          "paths": 14,
+          "time_s": 0.28
+        }
+      ]
+    }
+  },
+  "z3": {
+    "n_checks": 17,
+    "n_ok": 17,
+    "t_max_s": 180000,
+    "checks": [
+      {
+        "label": "THM",
+        "name": "Q1  q·ρ·B_a ≥ G ⟹ Π_lie ≤ 0",
+        "got": "unsat",
+        "ok": true
+      },
+      {
+        "label": "THM",
+        "name": "Q1-v021 q = 1, ρ = 1, G ≤ B_a ⟹ Π_lie ≤ 0 (현행 항상판정과 동치)",
+        "got": "unsat",
+        "ok": true
+      },
+      {
+        "label": "WIT",
+        "name": "Q1′ q < q* = G/(ρ·B_a) 이면 수익 가능한 거짓말 존재 (억지력은 q 에 조건부)",
+        "got": "sat",
+        "ok": true
+      },
+      {
+        "label": "WIT",
+        "name": "Q1″ 분산피해형 거짓말(G 가 커도 q = 0)은 Π_lie = G > 0 (Exp30 §7-1 R3)",
+        "got": "sat",
+        "ok": true
+      },
+      {
+        "label": "THM",
+        "name": "S1  R_c ≤ F ⟹ 도전자 EV = w·R_c − F − gas < 0 (w = 1 이어도)",
+        "got": "unsat",
+        "ok": true
+      },
+      {
+        "label": "THM",
+        "name": "S6  [Δ = 0] ∧ [도전자 EV = w·R_c − F ≥ 0] ∧ F > 0 은 동시 불가",
+        "got": "unsat",
+        "ok": true
+      },
+      {
+        "label": "WIT",
+        "name": "S6′ F = 0 이면 동시 가능 — 그러나 그리핑 비용 0(개설 무료)",
+        "got": "sat",
+        "ok": true
+      },
+      {
+        "label": "WIT",
+        "name": "S6″ 도전자 EV ≥ 0 을 사려면 Δ = R_c > 0 이 강제된다 (정리 3 보조금의 개설자 이식)",
+        "got": "sat",
+        "ok": true
+      },
+      {
+        "label": "THM",
+        "name": "B5  R_c = 0 ⟹ 장악해도 사건당 수익 ≤ 0 (v0.2.1 = v0.3)",
+        "got": "unsat",
+        "ok": true
+      },
+      {
+        "label": "WIT",
+        "name": "B5′ R_c > 0, ρ = 1 ⟹ 사건당 +R_c (장악 자기조달)",
+        "got": "sat",
+        "ok": true
+      },
+      {
+        "label": "THM",
+        "name": "B5″ R_c = 0 ⟹ 어떤 N 으로도 장악비용 C > 0 회수 불가 (S7′)",
+        "got": "unsat",
+        "ok": true
+      },
+      {
+        "label": "THM",
+        "name": "R1  ∀ q < 1, ρ = 1: 감소분 = (1−q)·B_a 정확 (다른 값 불가)",
+        "got": "unsat",
+        "ok": true
+      },
+      {
+        "label": "THM",
+        "name": "R1′ ∀ q < 1, ρ > 0: v0.3 기대벌칙 < v0.2.1 기대벌칙 (엄격)",
+        "got": "unsat",
+        "ok": true
+      },
+      {
+        "label": "THM",
+        "name": "R1″ q = 1 이면 감소분 0 (창 안 도전이 확실하면 현행과 동치)",
+        "got": "unsat",
+        "ok": true
+      },
+      {
+        "label": "THM",
+        "name": "W1  R_c = 0 ⟹ wash 공동이득 ≤ 0 (∀ ρ ≤ 1)",
+        "got": "unsat",
+        "ok": true
+      },
+      {
+        "label": "THM",
+        "name": "W1′ R_c ≤ B_a (Exp26 (W)) 이어도 ≤ 0",
+        "got": "unsat",
+        "ok": true
+      },
+      {
+        "label": "WIT",
+        "name": "W1″ R_c > B_a 면 wash 가능 (조건 필요성)",
+        "got": "sat",
+        "ok": true
+      }
+    ],
+    "log": "logs/prove.log",
+    "cvc5_cross": "17/17 일치"
+  },
+  "sim": {
+    "n_problems": 100,
+    "stake_initial": 50.0,
+    "W": 86400,
+    "tau": 0.85,
+    "calib_err": 0.01,
+    "k3": {
+      "hallu_q1": 2.0,
+      "calib_q1": 50.0,
+      "pass": true,
+      "kill": false
+    },
+    "rows": [
+      {
+        "q": 1.0,
+        "final_bonds": {
+          "hallucinator": 2.0,
+          "calibrated": 50.0
+        },
+        "slashes": {
+          "hallucinator": 48,
+          "calibrated": 0
+        },
+        "counts": {
+          "opened": 200,
+          "lapsed": 0,
+          "slashed_hallu": 48,
+          "slashed_calib": 0,
+          "abstained": 84,
+          "hallu_wrong": 48,
+          "calib_answered": 16,
+          "calib_wrong": 0
+        }
+      },
+      {
+        "q": 0.5,
+        "final_bonds": {
+          "hallucinator": 31.0,
+          "calibrated": 50.0
+        },
+        "slashes": {
+          "hallucinator": 19,
+          "calibrated": 0
+        },
+        "counts": {
+          "opened": 104,
+          "lapsed": 96,
+          "slashed_hallu": 19,
+          "slashed_calib": 0,
+          "abstained": 84,
+          "hallu_wrong": 48,
+          "calib_answered": 16,
+          "calib_wrong": 0
+        }
+      },
+      {
+        "q": 0.0,
+        "final_bonds": {
+          "hallucinator": 50.0,
+          "calibrated": 50.0
+        },
+        "slashes": {
+          "hallucinator": 0,
+          "calibrated": 0
+        },
+        "counts": {
+          "opened": 0,
+          "lapsed": 200,
+          "slashed_hallu": 0,
+          "slashed_calib": 0,
+          "abstained": 84,
+          "hallu_wrong": 48,
+          "calib_answered": 16,
+          "calib_wrong": 0
+        }
+      }
+    ]
+  },
+  "kill_criteria": {
+    "K1": {
+      "criterion": "halmos BondedValidatorV3Proofs 전부 PASS ∧ BondedJudgePanelV3Proofs --loop 33 PASS ∧ forge 기존 69 + 신규 ≥ 12, 0 fail",
+      "bv3": "10 passed / 0 failed (T1~T4 + L1~L5)",
+      "panel3": "9 passed / 0 failed (PA/PB/PC/P4 + PL1a/PL1b/PL2/PL3a/PL3b), 239.07s",
+      "forge": "90 passed / 0 failed of 90 (신규 Exp30Lapse 21)",
+      "status": "PASS"
+    },
+    "K2": {
+      "criterion": "(a) 도달 가능 상태 전부 t_claim+180,000s 안 claimSettled, 유동 0 에이전트 +unbondDelay 인출 (b) 웨지 ∀(s1,s2)∈[0,100]² 무되돌림·∀s>100 되돌림·32KB 태그 되돌림 (c) Sepolia v0.3 실측",
+      "a_forge_tests": [
+        "test_K2a_expanded_commit_timeout_within_Tmax",
+        "test_K2a_expanded_split_221_refunds_within_Tmax",
+        "test_K2a_last_second_open_pool0_resets_then_lapses",
+        "test_K2a_pool2_resets_then_lapses",
+        "test_K2a_reset_reopen_reset_lapse_bounded",
+        "test_K2a_two_matching_votes_timeout_settles_within_Tmax",
+        "test_K2a_unopened_lapses_at_W_zero_liquidity_agent_withdraws",
+        "test_K2a_worst_path_expanded_timeout_hits_Tmax_bound"
+      ],
+      "a_status": "PASS",
+      "b_halmos": [
+        "check_PL1a_vote_lands_iff_score_le_100: PASS",
+        "check_PL1b_timeout_after_two_votes_never_reverts: PASS"
+      ],
+      "b_forge_tests": [
+        "test_K2b_wedge_closed_score_range_tag_length_reserved"
+      ],
+      "b_status": "PASS",
+      "c_status": "NOT RUN — 오너 결재 §8-① ② 전, 미배포(배포 금지 규칙)",
+      "status": "PARTIAL (a·b PASS, c 미실행)"
+    },
+    "K3": {
+      "criterion": "q=1: 환각 담보 50→≤10 ∧ 캘리브 ≥49; 환각 >25 → KILL; q=0.5·q=0 행 박제",
+      "rows": [
+        {
+          "q": 1.0,
+          "final_bonds": {
+            "hallucinator": 2.0,
+            "calibrated": 50.0
+          },
+          "slashes": {
+            "hallucinator": 48,
+            "calibrated": 0
+          },
+          "counts": {
+            "opened": 200,
+            "lapsed": 0,
+            "slashed_hallu": 48,
+            "slashed_calib": 0,
+            "abstained": 84,
+            "hallu_wrong": 48,
+            "calib_answered": 16,
+            "calib_wrong": 0
+          }
+        },
+        {
+          "q": 0.5,
+          "final_bonds": {
+            "hallucinator": 31.0,
+            "calibrated": 50.0
+          },
+          "slashes": {
+            "hallucinator": 19,
+            "calibrated": 0
+          },
+          "counts": {
+            "opened": 104,
+            "lapsed": 96,
+            "slashed_hallu": 19,
+            "slashed_calib": 0,
+            "abstained": 84,
+            "hallu_wrong": 48,
+            "calib_answered": 16,
+            "calib_wrong": 0
+          }
+        },
+        {
+          "q": 0.0,
+          "final_bonds": {
+            "hallucinator": 50.0,
+            "calibrated": 50.0
+          },
+          "slashes": {
+            "hallucinator": 0,
+            "calibrated": 0
+          },
+          "counts": {
+            "opened": 0,
+            "lapsed": 200,
+            "slashed_hallu": 0,
+            "slashed_calib": 0,
+            "abstained": 84,
+            "hallu_wrong": 48,
+            "calib_answered": 16,
+            "calib_wrong": 0
+          }
+        }
+      ],
+      "k3": {
+        "hallu_q1": 2.0,
+        "calib_q1": 50.0,
+        "pass": true,
+        "kill": false
+      },
+      "status": "PASS",
+      "log": "logs/sim.log",
+      "note": "캘리브 에이전트는 합성 대리(Exp1 재학습 없음), q 외생 — sim.py 도크스트링"
+    },
+    "K4": {
+      "criterion": "(a) 소멸 토큰 이동 ≠0 → KILL (b) 개설자+판정자 연합 순수입 >0 → KILL (c) 정직 추가 잠금 도전 없으면 정확히 W, 그리핑 ≤T_max (d) 소멸 100건 뒤 requiredBondBp≠15000 또는 creditScore revert → KILL",
+      "a": {
+        "halmos": [
+          "check_L1_lapse_lossless_complete: PASS"
+        ],
+        "forge": [
+          "test_K4a_lapse_moves_zero_tokens"
+        ]
+      },
+      "b": {
+        "forge": [
+          "test_K4b_captured_pool_griefing_correct_claim_net_income_zero",
+          "test_K4b_two_seats_silent_third_timeout_verdict_net_income_zero"
+        ],
+        "measured": "연합 순수입 = −(F mod 3) = −1 wei (풀 장악 만장일치) / 0 (2석+침묵 시한 평결) — 둘 다 ≤ 0"
+      },
+      "c": {
+        "forge": [
+          "test_K4c_unchallenged_lock_is_exactly_W_with_prearmed_unbond",
+          "test_K2a_worst_path_expanded_timeout_hits_Tmax_bound"
+        ]
+      },
+      "d": {
+        "forge": [
+          "test_K4d_100_lapses_lens_stable"
+        ]
+      },
+      "status": "PASS"
+    }
+  }
+}
