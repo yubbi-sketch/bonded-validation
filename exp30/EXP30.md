@@ -498,3 +498,75 @@ forge clean && ../../.venv-halmos/bin/halmos --contract BondedValidatorV3Proofs 
 ../../.venv-halmos/bin/halmos --contract BondedJudgePanelV3Proofs --loop 33          # 9 passed (~4 min)
 ../../.venv-halmos/bin/halmos --contract BondedValidatorProofs                       # 4 passed
 ```
+
+---
+
+## 14. 결재 전 정정 묶음 (b)(c) — 문서 정정·한계 보강·발견 대장 등재 (2026-09-03 · 브랜치 `exp30-liveness` · §12.8 (b)(c) 실행 · 결재 ①② 전)
+
+> 지위: 되돌릴 수 있는 정정 — **문서·로그·대장만, 코드 무수정.** §5 킬기준 원문은 바이트 단위로 무수정(sha256 대조 14.5), §12 이전 절도 전부 무수정 — 정정은 원문 자리에 덮어쓰지 않고 **이 절의 정정표로만** 한다(사전등록·심의 이력 보존; 독자는 §11·§12 를 이 표와 함께 읽어야 한다). §13 은 (a) 렌즈 수리 기록이며 이 절은 그 뒤에 붙는다. main 무수정·미배포·미푸시.
+
+### 14.1 정정표 (§12.6-B·C 의 서술 정정 — 원문은 그대로, 여기서 정정)
+
+| # | 대상(원문 위치) | 원문 | 정정 | 근거 |
+|---|---|---|---|---|
+| 1 | §11.2 K2(a)·K4(c) · `docs/whitepaper-draft.md:287` | 최악 경로 = "정확히 T_max−2(179,998s)"(커밋시한 1초 전 추첨) | **≤ T_max−1(179,999s).** `drawPanel`/`drawExpanded` 는 `phase` 검사만 있고 시한 상한이 없어(`BondedJudgePanelV3.sol:180-203`) 커밋 시한 **정각**에 `resolveTimeout`(Committed 분기, `≥`) 대신 추첨을 선점할 수 있다. 상한 180,000s 안이라 **판정 불변.** 백서 §5.1 은 이번 커밋에서 정정(영문, "strictly inside `T_max`" + 이전 초안 문구 병기) | 검증팀 실측·서기 재현(§12.5) · 소스 확인(이 절) · 본 브랜치에 이 경로의 Forge 테스트는 없음(검증팀 스크래치) |
+| 2 | §11.3-1 · `REPRODUCTION.md:91-93` | "`forge test` 뒤 halmos → `KeyError: 'ast'` 캐시 함정(실측)" | **조건부 함정으로 정밀화.** 검증팀 재실행(같은 forge 1.7.1·halmos 0.3.3)에선 재현되지 않았고(halmos 가 재컴파일해 10/10), **이번 정정 실행에선 재현됐다** — `forge test` 직후 `forge clean` 없이 `halmos --contract BondedValidatorV3Proofs` → "No files changed, compilation skipped" → 아티팩트 **46건** `KeyError: 'ast'` 건너뜀 → "No tests with --match-contract" exit 1(`logs/halmos-bv3-nocleanprobe-docfix.log`). 관측된 재현 조건은 forge 가 "No files changed" 로 컴파일을 건너뛰는 상태이며, 검증팀 환경에서 왜 재컴파일이 일어났는지는 **미확인.** `forge clean` 선행은 권고가 아니라 **필수**로 유지, 표기는 '2회 재현·1회 미재현' | `REPRODUCTION.md` 이번 커밋에서 정정 |
+| 3 | §11.2 K1 · §12.4 · `results.json` | Halmos PB 경로 수 1,052(고정값처럼 박제) | 경로 수는 **실행 간 변동**: PB 1,052(§11) · 1,066/1,049(검증팀) · 1,074((a) 수리 후) · **1,101(이번)**, PC 16/17. 판정(9/9·반례 0)은 불변. `results.json` 의 `paths` 는 그 실행의 값일 뿐 규격이 아니다 — 파일은 §12 시점 기록으로 두고 여기서 주석 | `logs/halmos-panel3*.log` 4종 |
+| 4 | §7-7 · §11.3-7 (미기재 설계 결과) | ZkVerdictGate 구성은 "Forge 실측만" / "미재검증" | **W = 증명 마감.** R5(`BondedValidatorV3.sol:137` `engaged ∨ windowOpen`) 때문에 judge = ZkVerdictGate(Exp20) 구성에는 `engage` 경로가 없어 `attest`(`ZkVerdictGate.sol:71` → `bonded.submitVerdict`)는 창 W 안에서만 착지하고, W 경과 후 주장은 50/"unchallenged" 로 소멸·늦은 증명은 'window closed' 로 거부된다. 검증 누락이 아니라 **설계 결과**이며 **결재 ② W 확정의 판단 재료.** 게이트는 `BondedValidator` 타입 import(주소 캐스팅 동작 가능, 실결합 미테스트). 같은 구성에서 `BondedValidatorV3.submitVerdict` 는 예약 태그를 거부하지 않는다(§12.6-A⑤ — 봉쇄는 패널 층 `_reservedTag` 뿐, 호출자는 judge 뿐이라 무권한 경로 없음; ERC 초안 불변식 5 는 패널 층에서만 참) | §12.6-B · 소스 확인 |
+| 5 | §7-14 | "R_c = 0 이라 무수익이지만 **무비용도 아니다**(F 환류 후 0)" | 실측(§11.2 K4(b))과 모순 — 장악 그리핑 순수입 **−1 wei**(F mod 3 패널 잔류), 2석+침묵 시한 평결 **0**. 정정 문구: "무수익이며 **토큰 순비용도 0**(F 환류 후 0; 장악 시 −1 wei = F mod 3 패널 잔류). 남는 비용은 가스와 perCaseBond 잠금의 기회비용뿐 — 억지력이 아니라 마찰이다." | `logs/forge-test*.log` K4(b) |
+| 6 | §7-5 | `_finalize` 의 `token.transfer` 만 되돌림-토큰 웨지로 지목 | **`_resetCommit` 추가.** `BondedJudgePanelV3._resetCommit` 은 `require(token.transfer(opener, judgeFee), "fee return")` 를 `bonded.disengage` **앞**에서 실행한다 — 수수료 반환이 되돌리는 토큰(훅·블랙리스트·수수료 토큰)이면 사건 Committed·주장 engaged 로 영구 고착 = Exp30 이 닫은 활성 공백의 재개. LabToken 은 되돌릴 수 없어 현 배포 범위에선 발생 불가; 실토큰 미검증(§7-5 와 같은 급) | §12.6-A③ · 소스 확인 |
+| 7 | §7-13 (보강) | "판정자 풀 < 3 이 W 내내면 소멸 = 거짓말 무손실"(수동형) | **능동형 추가**(§12.6-A②): `requiredFreeBond = perCaseBond` 라 입장 15e18 판정자는 동시 1건 — 공격자가 참 주장 3건을 결의(decoy)로 열어 9인 전원 atRisk → 거짓 주장 개설 'pool too small' → 리셋 반복(24라운드) → 창 종료 → 무손실 소멸, 공격자 토큰 순비용 0. 실제 매개변수는 풀 크기가 아니라 **판정자 지연·불참 비용 0**(추첨 판정자 전원 voteTimeout 내내 침묵 전제; 1인이라도 즉시 투표하면 무산 — 실측 슬래시 1e18). 완화(불참 페널티·용량 하한)는 슬래싱 규칙 변경 = 별도 심의, 발생확률 미측정 | §12.6-A② |
+| 8 | §11.2 K3 · §12.5 K3 (한계 명기) | "PASS (q=1)" | **PASS 는 q=1 조건부이며 q 민감도가 크다는 것을 한계로 명기한다:** q=0.5 에서 환각 담보 50→**31 > 사전등록 킬선 25**, q=0 에서 50(손실 0). §5 가 q=1 에만 킬을 걸었으므로 판정은 PASS 가 맞으나, 이 PASS 를 v0.3 억지력의 증거로 읽으면 과대해석 — q=1 행은 소멸 0건이라 v0.3 새 메커니즘엔 무정보(v0.2.1 동치 재현), 캘리브 대리는 16/100 만 답해 '≥49' 가 거의 자동, q 는 외생이며 판정 수요 붕괴 → q → 0 자기강화는 모델 밖 | `logs/sim.log` · §12.6-A④ |
+| 9 | §11.2 K1 · §12.5 K1 | "PASS" | 사전등록 원문 조건 '**정본 이식 후**'가 문자상 미충족 — 브랜치 `exp30-liveness` 위 실행(코드 동일·main 무수정이라 실질 문제 아님). **main 이식 후 재실행 필수**(halmos BV3 · Panel3 `--loop 33` · forge). 라벨: "PASS(브랜치 · 정본 이식 후 재실행 대기)" | §12.5 |
+| 10 | §11.2 K1 · §11.4 · §12.4 · `REPRODUCTION.md:88` | Forge "90/90" | (a) 수리 후 **92 tests: 91 passed · 1 failed** — 실패 1건은 기존 `test_R8_lens_neutralizes_unchallenged_and_guards_underflow` 의 내림 편향값 91 단언(정확값 92, §13.3). §11.3-3('v0.2.1 렌즈 성질, 범위 밖')·§11.3-8·§12.6-A① 의 '수리 전' 서술은 §13 으로 대체됨. `REPRODUCTION.md:88` 이번 커밋에서 정정; §11·§12 원문은 시점 기록으로 유지 | `logs/forge-test-docfix.log` |
+| 11 | 헤더 5행 · §7-15 | "정본 무수정·미커밋·미배포 / K3 미실행·합성본 Forge/Halmos 없음" | 브랜치 커밋 존재(d76872d·b7bfc43·23b0e95·f3867bd + 이번), K3 실행됨(§11.2), 합성본 Forge/Halmos 존재 — §12 머리에서 이미 바로잡음. 헤더·§7-15 는 심의 시점 기록으로 유지 | §12.6-B |
+
+### 14.2 (a) 렌즈 수리 요약 (상세 §13 · 커밋 f3867bd)
+
+`ReputationLens.creditScore`·`abstainRateBp` 가 레지스트리 내림 평균(`getSummaryExcluding` 의 ⌊S/count⌋)에서 합계를 복원하던 것을, 레지스트리 순회 정확 합계(`_tally`: `getAgentValidations` → 건별 `getValidationStatus`, responded 만 집계, "abstain" → abstains, "disputed"/"unchallenged" → 점수 무관 통째 제외)로 바꿨다 — 정본 레지스트리(Sepolia 배포본)는 무수정, 기존 view 인터페이스만 사용. R8 '소멸은 평판 중립' 은 '50점 걷어내기'(점수 의존)에서 **'답한 이력에 없음'**(태그 의존)으로 실현돼 신참 할증(answered < 10 → 15000bp) 우회 불가(K4(d) 유지)·judge = EOA 가 예약 태그에 50 이외 점수를 기록해도(§12.6-A⑤) 흔들리지 않는다. 회귀 2건 통과: 100점 10 + 소멸 990 → **(100, 10)·5000bp**(수리 전 (50, 10)·10000bp), 49점 10 + 소멸 100 → **49·10100bp**(수리 전 39·11100bp). 전량 재실행: Forge 92 중 91 통과·1 실패(기존 테스트의 편향값 91 단언, 정확값 92 — **미수정, 91→92·5800bp 수정 여부는 상위 결정**), Halmos BV3 10/10·Panel3 9/9·v0.2.1 회귀 4/4, 반례 0. 가스: 콜드 `creditScore` +31~40%(n=1,000: 11.98M → 15.96M), 웜 ≈ 동일, `abstainRateBp` 웜 −23% — **두 구현 모두 이력 길이에 O(n)** 이라 온체인 강제(Exp31 `requiredBond`)엔 어느 쪽도 부적합, 대안은 정산 시점 O(1) 누적 캐시(정본 수정 = Exp31 심의). 렌즈 의미 변화(예약 태그 건은 점수 무관 제외 — 이전엔 정확히 50점일 때만 중립)는 소비자 문서(ERC 초안 R12)에 **미반영** — 결재 후 정본 이식 시 함께.
+
+### 14.3 (c) 발견 대장 등재 (`~/jarvis-ui/automations/findings.py` · RT 번호대 · 2026-09-03)
+
+| ID | 제목(요약) | 상태 | 수리 참조 |
+|---|---|---|---|
+| **RT-0029** | `BondedJudgePanelV2.voteVerdict` 가 score>100 을 받아 초심 2인이 101 로 일치하면 정산이 레지스트리 'range' 되돌림으로 **영구 정지** — 에이전트 담보·판정자 perCaseBond 영구 잠금(v0.2.1 Sepolia 라이브). 증명됨(proven) — 정본 재현 `test_PREEXISTING_v021_same_wedge` 5/5, Halmos 반례 s1=s2=0x80 | triaged | d76872d `require(score <= 100, "score range")` + PL1a/PL1b |
+| **RT-0030** | `voteVerdict` 태그 길이 무제한 — 정산(`_finalize`) 가스가 같은 태그의 투표 가스보다 항상 커 '투표는 착지하나 정산은 블록 한도 초과' 하는 태그 길이 구간 존재(32KB 실측 23.31M vs 23.55M). 측정이지 증명 아님(블록 한도 정확값·32KB 초과 미측정) | triaged | d76872d `MAX_TAG_BYTES = 1024` |
+
+각 항목은 '어디서·왜 거기 있나·재현·수리·교훈' 으로 등재했고 심각도는 **med**(Sepolia 테스트넷·LabToken 이라 실자금 노출 0, 프로토콜 안에서는 활성 붕괴). 두 건 모두 정본 v0.2.1 라이브는 judge immutable 이라 패치 불가 → v0.3 재배포(결재 ②) 전까지 잔존하므로 'fixed' 가 아니라 **'triaged'** 로 두었다('fixed' 는 결재 ①② + main 이식 + 배포 뒤, 'verified' 는 K2(c) 실측 뒤). §1.2·§11.3-9·§12.6-C 의 '미등재' 는 이로써 해소.
+
+### 14.4 이번 실행 (문서 정정 커밋 시점 재실행 · 코드 무수정이라 §13.3 과 동일이 기대값 · forge 1.7.1 · halmos 0.3.3)
+
+| 순서 | 도구 | 결과 | 로그 |
+|---|---|---|---|
+| 1 | `forge test` | **92 tests: 91 passed · 1 failed**(§13.3 과 동일한 기존 R8 단언) | `logs/forge-test-docfix.log` |
+| 2 | `halmos --contract BondedValidatorV3Proofs` **`forge clean` 없이**(캐시 함정 프로브) | **재현** — "No files changed, compilation skipped" → 46 아티팩트 `KeyError: 'ast'` → "No tests with --match-contract", exit 1 | `logs/halmos-bv3-nocleanprobe-docfix.log` |
+| 3 | `forge clean` → `halmos --contract BondedValidatorV3Proofs` | **10/10** · 1.78s | `logs/halmos-bv3-docfix.log` |
+| 4 | `halmos --contract BondedValidatorProofs`(v0.2.1 회귀) | **4/4** · 0.94s | `logs/halmos-bv021-regression-docfix.log` |
+| 5 | `halmos --contract BondedJudgePanelV3Proofs --loop 33` | **9/9 · 0 failed** · 251.81s (PB 경로 1,101 · PC 17 — 실행 간 변동, 판정 불변) | `logs/halmos-panel3-docfix.log` |
+
+### 14.5 §5 무수정 증빙
+
+`sed -n '132,153p' exp30/EXP30.md | shasum -a 256` = `37a02f2b1af0d121a7213f7b4296e1f845886e87c473bed052f5253d69c2472b` — 이 절 추가 전(f3867bd)·§12 추가 시점(23b0e95)·이 절 추가 후 모두 동일(커밋 전 재대조). §12 이전 절은 `git diff f3867bd -- exp30/EXP30.md` 에 삽입 hunk 1개(이 절)뿐, 삭제 0행.
+
+### 14.6 정직한 한계
+
+1. **원문 자리 정정이 아니다.** §11.2·§11.3·§12.4·§12.5 의 stale 문구(T_max−2·90/90·'실측' 캐시 함정·PB 1,052)는 그대로 남아 있고, 이 정정표가 그것을 덮는다 — 사전등록·심의 이력 보존을 택한 대가.
+2. **전량 녹색이 아니다.** 기존 실패 1건(§13.3)은 이번에도 미수정 — 91→92 결정은 상위.
+3. **캐시 함정의 정확한 원인은 미확인.** '2회 재현·1회 미재현' 이라는 관측과 "No files changed" 조건만 있다. 검증팀 환경이 왜 재컴파일했는지 모른다.
+4. **T_max−1 경로의 Forge 테스트는 이 브랜치에 없다**(검증팀 스크래치·서기 재현). 코드·테스트 무수정 원칙으로 추가하지 않았다 — 결재 후 정본 이식 시 K2(a) 테스트에 넣을 것.
+5. **발견 대장은 다른 저장소(`~/jarvis-ui`, 브랜치 `feat/voice-jarvis` 작업 트리)** 에 있다 — 등재 커밋은 그 저장소에서 별도.
+6. ERC 초안(`threshold()` vs `THRESHOLD()` 이름 불일치, R12 렌즈 의미 변화)·`results.json`(Forge 90/90·paths 고정값)·§11·§12 원문은 이번에도 손대지 않았다. ERC·백서·REPRODUCTION 은 브랜치 초안이며 EF 제출본 갱신 아님.
+7. Halmos PB 경로 수는 이번에도 달랐다(14.1-3) — 판정 불변.
+8. main 무수정·Sepolia 미배포·미푸시. 결재 ①② 는 여전히 열려 있다(§12.7).
+
+### 14.7 재현
+
+```bash
+cd ~/iis-lab && git checkout exp30-liveness && cd exp3/contracts
+forge test                                                        # 92: 91 passed, 1 failed (기존 R8 단언 91 vs 정확값 92)
+../../.venv-halmos/bin/halmos --contract BondedValidatorV3Proofs # (forge clean 없이) → 캐시 함정 재현 여부 확인용: 재현되면 KeyError: 'ast'·0 tests
+forge clean && ../../.venv-halmos/bin/halmos --contract BondedValidatorV3Proofs      # 10 passed
+../../.venv-halmos/bin/halmos --contract BondedValidatorProofs                       # 4 passed
+../../.venv-halmos/bin/halmos --contract BondedJudgePanelV3Proofs --loop 33          # 9 passed (~4 min)
+cd ~/jarvis-ui && python3 automations/findings.py list --team redteam --open | grep -E 'RT-0029|RT-0030'
+```

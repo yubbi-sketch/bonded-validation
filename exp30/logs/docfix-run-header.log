@@ -1,0 +1,9 @@
+# docfix run 2026-09-02T18:41:47Z branch=exp30-liveness head=f3867bd
+forge Version: 1.7.1
+halmos 0.3.3
+[1/5] forge test 04:41:47
+[2/5] halmos BV3 WITHOUT forge clean (cache-trap probe) 04:41:50
+[3/5] forge clean + halmos BV3 04:41:51
+[4/5] halmos BondedValidatorProofs (v0.2.1 regression) 04:41:56
+[5/5] halmos Panel3 --loop 33 04:41:57
+done 04:46:14

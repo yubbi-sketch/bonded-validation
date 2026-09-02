@@ -85,12 +85,17 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 # Python experiments (deterministic, fixed seeds)
 .venv/bin/python exp1/train.py     # +  exp2/run_exp2.py exp8/sim.py exp10/recon.py exp13/prove.py exp18/run_exp18.py
 # Machine proofs
-cd exp3/contracts && forge test                               # 90 passed (69 v0.2.1 + 21 Exp30) on branch exp30-liveness
+cd exp3/contracts && forge test                               # 92 tests: 91 passed, 1 failed on branch exp30-liveness (69 v0.2.1 + 23 Exp30; the 1 failure is the pre-existing R8 test asserting the rounding-biased 91 — exact value is 92 after the lens fix, EXP30.md §13.3)
 ../../.venv/bin/halmos --contract BondedValidatorProofs       # ServiceVoucherProofs / ZkVerdictGateProofs
 ../../.venv/bin/halmos --contract BondedJudgePanelV2Proofs --loop 33   # heavy (~4 min)
-# Exp30 v0.3 (optimistic lapse) — NOTE: run `forge clean` first if `forge test`/`forge build`
-# ran before halmos in the same checkout: forge's cache does not invalidate on halmos's
-# `--ast` flag, and halmos then skips every artifact with "KeyError: 'ast'" (measured 2026-09-03).
+# Exp30 v0.3 (optimistic lapse) — ALWAYS run `forge clean` before halmos in a checkout where
+# `forge test`/`forge build` has run. forge's cache does not invalidate on halmos's `--ast` flag:
+# when forge reports "No files changed, compilation skipped", halmos skips every artifact with
+# "KeyError: 'ast'" and ends with "No tests with --match-contract" (exit 1). Conditional, not
+# guaranteed: reproduced 2026-09-03 twice (implementation run; and again right after `forge test`,
+# exp30/logs/halmos-bv3-nocleanprobe-docfix.log — 46 artifacts skipped, 0 tests) but NOT reproduced
+# by the independent re-verification on the same forge 1.7.1 · halmos 0.3.3 (halmos recompiled and
+# passed 10/10). What made that run recompile is unknown; treat `forge clean` as mandatory.
 forge clean && ../../.venv-halmos/bin/halmos --contract BondedValidatorV3Proofs            # T1–T4 + L1–L5, 10 passed / ~1.8s
 ../../.venv-halmos/bin/halmos --contract BondedJudgePanelV3Proofs --loop 33                 # PA/PB/PC/P4 + PL1–PL3 (heavy)
 cd ../.. && .venv-halmos/bin/python exp30/prove.py && .venv-xverify/bin/python xverify.py exp30   # z3 17 checks + cvc5 cross

@@ -1,0 +1,561 @@
+No files changed, compilation skipped
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedValidatorV3.sol:107:16
+    │
+107 │         return block.timestamp < uint256(claimedAt[requestHash]) + challengeWindow;
+    │                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedValidator.sol:115:36
+    │
+115 │         require(a.unlockAt != 0 && block.timestamp >= a.unlockAt, "locked");
+    │                                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ test/BondedJudgePanel.t.sol:70:58
+   │
+70 │             bytes1(0xd6), bytes1(0x94), deployer, bytes1(uint8(nonce)))))));
+   │                                                          ━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │       
+   │       // casting to 'uint8' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │       
+   │       
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanel.sol:145:36
+    │
+145 │         require(j.unlockAt != 0 && block.timestamp >= j.unlockAt, "locked");
+    │                                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ test/JudgePanel.t.sol:55:58
+   │
+55 │             bytes1(0xd6), bytes1(0x94), deployer, bytes1(uint8(nonce)))))));
+   │                                                          ━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │       
+   │       // casting to 'uint8' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │       
+   │       
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/JudgePanelV2.sol:100:21
+    │
+100 │             require(block.timestamp >= t.disputedAt + disputeTimeout, "dispute window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondManager.sol:101:36
+    │
+101 │         require(a.unlockAt != 0 && block.timestamp >= a.unlockAt, "locked");
+    │                                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[unchecked-call]: Low-level calls should check the success return value
+   ╭▸ test/ServiceVoucherProofs.t.sol:62:9
+   │
+62 │         address(h).call(abi.encodeWithSelector(h.use.selector, amt));
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unchecked-call
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ test/BondedJudgePanelV3Proofs.t.sol:88:33
+   │
+88 │             address j = address(uint160(0x3000 + i));
+   │                                 ━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │       
+   │       // casting to 'uint160' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │       
+   │       
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedValidatorV3.sol:181:36
+    │
+181 │         require(a.unlockAt != 0 && block.timestamp >= a.unlockAt, "locked");
+    │                                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanelV3.sol:149:36
+    │
+149 │         require(j.unlockAt != 0 && block.timestamp >= j.unlockAt, "locked");
+    │                                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/JudgePanelV2.sol:104:21
+    │
+104 │             require(block.timestamp >= t.firstVoteAt + voteTimeout, "vote window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ test/BondedJudgePanelV2.t.sol:72:58
+   │
+72 │             bytes1(0xd6), bytes1(0x94), deployer, bytes1(uint8(nonce)))))));
+   │                                                          ━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │       
+   │       // casting to 'uint8' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │       
+   │       
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanelV2.sol:148:36
+    │
+148 │         require(j.unlockAt != 0 && block.timestamp >= j.unlockAt, "locked");
+    │                                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanel.sol:332:21
+    │
+332 │             require(block.timestamp >= c.openedAt + voteTimeout, "vote window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanel.sol:342:21
+    │
+342 │             require(block.timestamp >= c.disputedAt + disputeTimeout, "dispute window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanelV3.sol:381:21
+    │
+381 │             require(block.timestamp >= c.committedAt + voteTimeout, "commit window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanelV3.sol:384:21
+    │
+384 │             require(block.timestamp >= c.openedAt + voteTimeout, "vote window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanelV3.sol:394:21
+    │
+394 │             require(block.timestamp >= c.disputedAt + disputeTimeout, "dispute window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanelV3.sol:397:21
+    │
+397 │             require(block.timestamp >= c.disputedAt + disputeTimeout, "dispute window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanelV2.sol:368:21
+    │
+368 │             require(block.timestamp >= c.committedAt + voteTimeout, "commit window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanelV2.sol:371:21
+    │
+371 │             require(block.timestamp >= c.openedAt + voteTimeout, "vote window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanelV2.sol:381:21
+    │
+381 │             require(block.timestamp >= c.disputedAt + disputeTimeout, "dispute window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/BondedJudgePanelV2.sol:384:21
+    │
+384 │             require(block.timestamp >= c.disputedAt + disputeTimeout, "dispute window open");
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/Exp30Lapse.t.sol:168:17
+    │
+168 │         require(block.timestamp - t0 <= deadline, "withdraw past bound");
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ test/JudgePanelV2.t.sol:56:58
+   │
+56 │             bytes1(0xd6), bytes1(0x94), deployer, bytes1(uint8(nonce)))))));
+   │                                                          ━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │       
+   │       // casting to 'uint8' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │       
+   │       
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ test/ZkVerdictGate.t.sol:31:51
+   │
+31 │             bytes1(0xd6), bytes1(0x94), d, bytes1(uint8(n)))))));
+   │                                                   ━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │       
+   │       // casting to 'uint8' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │       
+   │       
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ test/BondedJudgePanelV2Proofs.t.sol:93:33
+   │
+93 │             address j = address(uint160(0x3000 + i));
+   │                                 ━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │       
+   │       // casting to 'uint160' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │       
+   │       
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/Exp30Lapse.t.sol:238:17
+    │
+238 │         require(block.timestamp - t0 == W - 1 + VOTE_T, "timing");
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/Exp30Lapse.t.sol:239:17
+    │
+239 │         require(block.timestamp - t0 <= T_MAX, "exceeds T_max");
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ test/BondedJudgePanelV2Proofs.t.sol:110:58
+    │
+110 │             bytes1(0xd6), bytes1(0x94), deployer, bytes1(uint8(nonce)))))));
+    │                                                          ━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint8' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/Exp30Lapse.t.sol:257:17
+    │
+257 │         require(block.timestamp - t0 <= T_MAX, "exceeds T_max");
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/Exp30Lapse.t.sol:285:17
+    │
+285 │         require(block.timestamp - t0 <= T_MAX, "exceeds T_max");
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/Exp30Lapse.t.sol:324:17
+    │
+324 │         require(block.timestamp - t0 <= T_MAX, "exceeds T_max");
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/Exp30Lapse.t.sol:353:17
+    │
+353 │         require(block.timestamp - t0 <= T_MAX, "exceeds T_max");
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/Exp30Lapse.t.sol:375:17
+    │
+375 │         require(block.timestamp - t0 <= T_MAX, "exceeds T_max");
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/Exp30Lapse.t.sol:405:17
+    │
+405 │         require(block.timestamp - t0 == T_MAX - 2, "worst path timing");
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/Exp30Lapse.t.sol:406:17
+    │
+406 │         require(block.timestamp - t0 <= T_MAX, "exceeds T_max");
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/Exp30Lapse.t.sol:553:17
+    │
+553 │         require(block.timestamp - t0 == W, "lock != W");
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ test/Exp30Lapse.t.sol:94:58
+   │
+94 │             bytes1(0xd6), bytes1(0x94), deployer, bytes1(uint8(nonce)))))));
+   │                                                          ━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │       
+   │       // casting to 'uint8' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │       
+   │       
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+    ╭▸ test/Exp30Lapse.t.sol:181:9
+    │
+181 │         token.transfer(stranger, liquid); // 유동 토큰 0
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#erc20-unchecked-transfer
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ test/Exp30Lapse.t.sol:504:17
+    │
+504 │         require(int256(liquid1) - int256(liquid0) <= 0, "K4(b) violated");
+    │                 ━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'int256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ test/Exp30Lapse.t.sol:504:35
+    │
+504 │         require(int256(liquid1) - int256(liquid0) <= 0, "K4(b) violated");
+    │                                   ━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'int256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ test/Exp30Lapse.t.sol:535:17
+    │
+535 │         require(int256(liquid1) - int256(liquid0) <= 0, "K4(b) violated");
+    │                 ━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'int256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ test/Exp30Lapse.t.sol:535:35
+    │
+535 │         require(int256(liquid1) - int256(liquid0) <= 0, "K4(b) violated");
+    │                                   ━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'int256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+WARNING  Skipped IZkVerifier.json due to parsing failure: KeyError: 'ast'       
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped ZkVerdictGate.json due to parsing failure: KeyError: 'ast'     
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedValidator.json due to parsing failure: KeyError: 'ast'   
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped IERC20.json due to parsing failure: KeyError: 'ast'            
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedJudgePanelV2Test.json due to parsing failure: KeyError:  
+         'ast'                                                                  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped ServiceVoucher.json due to parsing failure: KeyError: 'ast'    
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped IERC20.json due to parsing failure: KeyError: 'ast'            
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedJudgePanelTest.json due to parsing failure: KeyError:    
+         'ast'                                                                  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedValidatorProofs.json due to parsing failure: KeyError:   
+         'ast'                                                                  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped JudgePanelTest.json due to parsing failure: KeyError: 'ast'    
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedValidatorV3Proofs.json due to parsing failure: KeyError: 
+         'ast'                                                                  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped ReputationLensTest.json due to parsing failure: KeyError: 'ast'
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondManagerTest.json due to parsing failure: KeyError: 'ast'   
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedValidatorV3.json due to parsing failure: KeyError: 'ast' 
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped ServiceVoucherProofs.json due to parsing failure: KeyError:    
+         'ast'                                                                  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped VoucherHarness.json due to parsing failure: KeyError: 'ast'    
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped JudgePanel.json due to parsing failure: KeyError: 'ast'        
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped PanelHarnessV3.json due to parsing failure: KeyError: 'ast'    
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedJudgePanelV3Proofs.json due to parsing failure: KeyError:
+         'ast'                                                                  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped ServiceVoucherTest.json due to parsing failure: KeyError: 'ast'
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped IdentityRegistry.json due to parsing failure: KeyError: 'ast'  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped ValidationRegistry.json due to parsing failure: KeyError: 'ast'
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped MockVerifierT.json due to parsing failure: KeyError: 'ast'     
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped ZkVerdictGateTest.json due to parsing failure: KeyError: 'ast' 
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedValidatorTest.json due to parsing failure: KeyError:     
+         'ast'                                                                  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped JudgePanelV2.json due to parsing failure: KeyError: 'ast'      
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped JudgePanelV2Test.json due to parsing failure: KeyError: 'ast'  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped MockVerifier.json due to parsing failure: KeyError: 'ast'      
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped ZkVerdictGateProofs.json due to parsing failure: KeyError:     
+         'ast'                                                                  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped LabToken.json due to parsing failure: KeyError: 'ast'          
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedJudgePanel.json due to parsing failure: KeyError: 'ast'  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Exp30LapseTest.json due to parsing failure: KeyError: 'ast'    
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped ReputationLens.json due to parsing failure: KeyError: 'ast'    
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondManager.json due to parsing failure: KeyError: 'ast'       
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped IERC20.json due to parsing failure: KeyError: 'ast'            
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedJudgePanelV2Proofs.json due to parsing failure: KeyError:
+         'ast'                                                                  
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped Vm.json due to parsing failure: KeyError: 'ast'                
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped PanelHarness.json due to parsing failure: KeyError: 'ast'      
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedJudgePanelV2.json due to parsing failure: KeyError: 'ast'
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+WARNING  Skipped BondedJudgePanelV3.json due to parsing failure: KeyError: 'ast'
+         (see https://github.com/a16z/halmos/wiki/warnings#parsing-error)       
+ERROR    No tests with --match-contract '^BondedValidatorV3Proofs$' --match-test
+         '^(check|invariant)_.*'                                                
+exit=1

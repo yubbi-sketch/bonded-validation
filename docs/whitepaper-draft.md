@@ -283,8 +283,13 @@ reset (phase None, fee back to the opener, mark cleared, claim unsettled); **PL3
 reserved tags are refused and lapse leaves every judge's (bond, atRisk,
 settledCount, slashedTotal, balance) unchanged. Forge (measurement, not proof):
 settlement within `T_max` on every reachable state, including the worst path
-(open at the last second, draw one second before the commit timeout, disputed
-initial timeout, expanded timeout) at exactly `T_max − 2 s`.
+(open at the last second, draw at the exact commit-timeout second — `drawPanel`
+and `drawExpanded` carry no upper deadline, so an adversary can pre-empt the
+reset at the boundary — disputed initial timeout, expanded timeout) at
+`T_max − 1 s`, strictly inside `T_max`. An earlier draft of this paragraph said
+"exactly `T_max − 2 s`" from a draw one second *before* the timeout; independent
+re-verification (2026-09-03) found the tighter boundary path. The bound is
+unchanged; the stated worst path was.
 
 ### 5.2 Economic theorems (SMT, z3 — proofs by unsatisfiability)
 
