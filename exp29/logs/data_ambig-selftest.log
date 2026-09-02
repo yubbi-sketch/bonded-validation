@@ -1,32 +1,63 @@
-vocab=69 n=300
-cat: Counter({'omit_rule': 100, 'ambig_ref': 100, 'omit_target': 100})
-decisive: Counter({('omit_rule', True): 50, ('ambig_ref', True): 50, ('omit_target', False): 50, ('ambig_ref', False): 50, ('omit_rule', False): 50, ('omit_target', True): 50})
-|I|: Counter({3: 164, 2: 136})
-
-[ambig_ref] decisive=True labels=[0, 1, 0] theta=1
-    오염 는 사고 를 부른다 .
-    만약 사고 라면 누수 가 따른다 .
-    누수 가 발생하면 정전 로 이어진다 .
-    그것 은 정전 또는 사고 또는 누수 이다 .
-    그것 이 발생하면 사고 로 이어지는가 ?
-  -> pinned r' (last 2): ['누수 가 발생하면 정전 로 이어진다 .', '사고 가 발생하면 사고 로 이어지는가 ?'] label 1
-
-[omit_target] decisive=False labels=[0, 0] theta=0
-    만약 홍수 라면 결빙 가 따른다 .
-    만약 곰팡이 라면 정체 가 따른다 .
-    붕괴 는 무언가 를 부른다 .
-    만약 정체 라면 질병 가 따른다 .
-    무언가 은 곰팡이 또는 결빙 이다 .
-    홍수 가 발생하면 정체 로 이어지는가 ?
-  -> pinned r' (last 2): ['만약 정체 라면 질병 가 따른다 .', '홍수 가 발생하면 정체 로 이어지는가 ?'] label 0
-
-[omit_rule] decisive=True labels=[1, 0, 0] theta=0
-    곰팡이 가 생기면 고장 가 사라진다 .
-    고장 가 생기면 지각 가 생긴다 .
-    지각 가 생기면 폭염 가 생긴다 .
-    규칙 하나 는 나중에 알려준다 .
-    누락 규칙 은 피로 가 고장 를 부른다 또는 고장 가 폭염 를 부른다 또는 고장 가 지각 를 부른다 이다 .
-    피로 가 생기면 폭염 가 생기는가 ?
-  -> pinned r' (last 2): ['피로 가 생기면 고장 가 생긴다 .', '피로 가 생기면 폭염 가 생기는가 ?'] label 1
-
-missing tokens: none
+vocab: exp1=58 ext=77 (+19)
+[train] n=1399 true=0.40 noise={'omit': 159, 'ref': 169, 'clean': 685, 'polar': 191, 'dialect': 195} heldout=0 max_sent_tokens=10
+[train] answer-relevant ambiguity rate by noise: clean=0.00, ref=0.34, omit=0.40, polar=0.23, dialect=0.00
+  [clean] label=1 qtype=chain ambig=[] oracle={}
+      부상 가 발생하면 화재 로 이어진다 .
+      만약 화재 라면 부상 가 따른다 .
+      만약 부상 라면 손실 가 따른다 .
+      화재 가 발생하면 손실 로 이어지는가 ?
+  [ref] label=0 qtype=chain ambig=[(2, 'from')] oracle={(2, 'from'): 12}
+      폭염 가 발생하면 소음 로 이어진다 .
+      균열 는 소음 를 부른다 .
+      그것 는 균열 를 부른다 .
+      지진 가 생기면 소음 가 생기는가 ?
+  [omit] label=0 qtype=invert ambig=[(2, 'to')] oracle={(2, 'to'): 20}
+      폭풍 는 손실 를 부른다 .
+      만약 피로 라면 혼잡 가 따른다 .
+      손실 는 상황 를 부른다 .
+      혼잡 는 홍수 를 부른다 .
+      누수 로 이어지는가 손실 가 발생하면 ?
+  [polar] label=1 qtype=direct ambig=[(0, 'neg')] oracle={(0, 'neg'): 0}
+      오염 가 생기면 손실 가 달라진다 .
+      손실 가 생기면 피로 가 생긴다 .
+      피로 가 생기면 오염 가 생긴다 .
+      피로 가 생기면 손실 가 생기는가 ?
+  [dialect] label=0 qtype=neg ambig=[] oracle={}
+      가뭄 가 발생하면 결빙 로 이어진다 .
+      정전 가 발생하면 가뭄 로 이어진다 .
+      결빙 생기마 손실 생긴다카이 .
+      손실 가 발생하면 누수 는 없는가 ?
+  pin_slot ok: '손실 는 상황 를 부른다 .' -> '손실 는 피로 를 부른다 .'
+[test] n=1400 true=0.40 noise={'clean': 683, 'ref': 189, 'omit': 194, 'polar': 166, 'dialect': 168} heldout=74 max_sent_tokens=10
+[test] answer-relevant ambiguity rate by noise: clean=0.00, ref=0.30, omit=0.41, polar=0.27, dialect=0.00
+  [clean] label=1 qtype=direct ambig=[] oracle={}
+      질병 가 생기면 가뭄 가 사라진다 .
+      가뭄 는 정전 를 부른다 .
+      붕괴 가 생기면 가뭄 가 생긴다 .
+      가뭄 가 발생하면 정전 로 이어지는가 ?
+  [ref] label=0 qtype=direct ambig=[(3, 'from')] oracle={(3, 'from'): 14}
+      연기 가 생기면 피로 가 생긴다 .
+      피로 가 발생하면 가뭄 는 없다 .
+      피로 가 발생하면 가뭄 로 이어진다 .
+      이것 가 발생하면 가뭄 로 이어지는가 ?
+  [omit] label=0 qtype=neg ambig=[(5, 'to')] oracle={(5, 'to'): 17}
+      만약 침수 라면 붕괴 가 따른다 .
+      침수 가 발생하면 한파 로 이어진다 .
+      만약 곰팡이 라면 한파 가 따른다 .
+      만약 붕괴 라면 피로 가 따른다 .
+      붕괴 가 생기면 곰팡이 가 사라진다 .
+      피로 는 문제 를 부른다 .
+      붕괴 가 생기면 침수 가 사라지는가 ?
+  [polar] label=0 qtype=invert ambig=[(0, 'neg')] oracle={(0, 'neg'): 0}
+      한파 가 생기면 화재 가 달라진다 .
+      한파 가 생기면 피로 가 사라진다 .
+      홍수 는 피로 를 부른다 .
+      홍수 가 생기는 것은 한파 가 생겼을 때 따라오는가 ?
+  [dialect] label=0 qtype=invert ambig=[] oracle={}
+      곰팡이 나면 한파 난다 .
+      질병 가 발생하면 곰팡이 는 없다 .
+      곰팡이 가 발생하면 한파 로 이어진다 .
+      한파 는 질병 를 부른다 .
+      곰팡이 가 생기는 것은 한파 가 생겼을 때 따라오는가 ?
+  pin_slot ok: '이것 가 발생하면 가뭄 로 이어지는가 ?' -> '고장 가 발생하면 가뭄 로 이어지는가 ?'
+self-check OK (생성기 자가검사 — 실험 아님)
