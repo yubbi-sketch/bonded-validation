@@ -570,3 +570,67 @@ forge clean && ../../.venv-halmos/bin/halmos --contract BondedValidatorV3Proofs 
 ../../.venv-halmos/bin/halmos --contract BondedJudgePanelV3Proofs --loop 33          # 9 passed (~4 min)
 cd ~/jarvis-ui && python3 automations/findings.py list --team redteam --open | grep -E 'RT-0029|RT-0030'
 ```
+
+### 14.8 마감 — 남은 열림 4건 정리 (2026-09-03 · 브랜치 `exp30-liveness` · 결재 ①② 전)
+
+> 지위: 되돌릴 수 있는 정정. 코드는 2파일(`ReputationLens._tally` validator 필터 1줄 보강 · `Exp30Lapse.t.sol` 기대값 정정 + 회귀 1건), 나머지는 문서·로그. §5 킬기준 원문은 바이트 단위로 무수정(sha256 14.8.5) · §12 이전 절과 §13·§14.1~14.7 원문도 무수정 — 정정은 이 소절의 정정표 추가 행으로만 한다. main 무수정·미배포·미푸시.
+
+#### 14.8.1 정정표 추가 행 — R8 관련 (§14.1 의 12~14 행)
+
+| # | 대상(원문 위치) | 원문 | 정정 | 근거 |
+|---|---|---|---|---|
+| 12 | §4 R8 (사전등록 규칙 원문) | "d = byTag(disputed) + byTag(unchallenged) 로 중립화 … `avg·count < 50·d` 이면 (0, answered) 반환(언더플로 가드)" | 구현은 §13 수리로 바뀌었다 — 레지스트리 순회 정확 합계 `_tally`, 예약 태그("disputed"/"unchallenged")는 점수 무관 통째 제외, **언더플로 가드 없음**(정확 합계라 발생 불가). 이번 마감으로 `_tally(agentId, validator)` 가 **`validator == address(bonded)` 인 응답만** 집계(14.8.2). R8 의 뜻('소멸은 평판 중립 · 신참 할증 우회 불가')은 그대로이고 실현 방식만 바뀜. §4 원문은 사전등록 기록으로 유지 | §13.1 · `ReputationLens.sol:45-62` |
+| 13 | §12.3 R7/R8 행 | 구현 위치 `ReputationLens.sol:35-45` · "중립 처리 + 언더플로 가드" | 현재 `_tally` 는 **`ReputationLens.sol:45-62`**(이 커밋 기준; 필터 줄 `:55`), 가드 없음, validator 필터 있음. R7(소멸이 판정자 상태를 안 건드림)은 무관·불변 | 소스 |
+| 14 | §11.1 표 R8 행 · §11.3-3 · §13.3 · §13.5-1 · §13.6 · §14.1-10 · §14.4 · §14.6-2 · §14.7 · `REPRODUCTION.md:88` | "92 tests: 91 passed · 1 failed(기존 R8 단언 91)" / "91→92 는 상위 결정" | **93 tests: 93 passed · 0 failed.** 기존 `test_R8_lens_neutralizes_unchallenged_and_guards_underflow` 2단계 기대값을 **91 → 92, bp 5800**(= 5000 + (100−92)·100)으로 정정 — 91 은 옛 렌즈의 내림 편향값(레지스트리 avg ⌊1400/17⌋ = 82 복원 → 91)을 박제한 것이지 규격이 아니었고, 같은 테스트 주석이 이미 '정확값 92.3' 을 적어 두었다(§13.3). 테스트 이름의 `guards_underflow` 는 §4 R8 원문 시점 이름 — 시나리오(오답 1 + 소멸 3 → (0, 1)·15000bp)는 회귀로 유지, 이름은 참조 보존을 위해 그대로. 회귀 1건 추가(14.8.2). `REPRODUCTION.md:88` 이번 커밋에서 정정; §13.6·§14.7 코드블록 주석은 시점 기록으로 유지 | `logs/forge-test-closeout.log` |
+
+#### 14.8.2 (2) 렌즈 validator 필터 — 기존 구멍 수리 (코드 1줄 + 회귀 1건)
+
+- **구멍(기존, Exp6 렌즈부터):** 정본 `ValidationRegistry.validationRequest(validatorAddress, agentId, …)` 는 **무허가**다 — 누구든 아무 agentId 에 자기 자신을 validator 로 등록하고 `validationResponse` 로 스스로 점수를 기록할 수 있다(레지스트리는 `msg.sender == v.validator` 만 검사). 렌즈 `_tally` 는 validator 를 보지 않았으므로 제3자가 100점 10건을 꽂으면 `creditScore = (100, 10)`, `requiredBondBp = 5000`(신참 할증 우회) 이 되고, "abstain" 을 꽂으면 기권률이 왜곡됐다. **담보 없는 응답이 담보 이력으로 둔갑** — 렌즈의 전제('담보 이력 = 신용')를 깨는 구멍이며 §13 수리 전에도 있었다. 가해자 비용은 gas 뿐(자기 agentId 든 남의 agentId 든 가능 — 남의 점수를 낮추는 방향도 됨: 0점 다수 꽂기).
+- **수리:** `_tally(uint256 agentId, address validator)` — `getValidationStatus` 가 이미 돌려주는 validator 를 받아 `if (!responded || v != validator) continue;`(`ReputationLens.sol:55`). 호출자(`creditScore`·`abstainRateBp`)는 `address(bonded)` 를 넘긴다 — `BondedValidator.requestValidation` 이 `validationRequest(address(this), …)` 로 등록하므로 담보가 걸린 요청은 정확히 validator == bonded 인 것뿐. 외부호출 수 불변(추가 읽기 없음). 정본 레지스트리 무수정.
+- **회귀(Forge, `Exp30Lapse.t.sol` `test_R8_lens_ignores_other_validator_responses`):** 제3자가 aidD 에 자기 자신을 validator 로 15건 등록·응답(100점 10 + "abstain" 5) → 레지스트리 순진 `getSummary` 는 (15, 66) 으로 **세지만** 렌즈는 (0, 0)·15000bp·기권률 0; 이어서 담보 주장 100점 1 + 담보 기권 1 → 렌즈 (100, 1)·15000bp·기권률 5000bp(1/2) — 제3자 15건 무시, 담보 회계 무손실. 필터 전 렌즈로는 1단계에서 `answered` 가 10 이 되어 실패한다 — 필터 줄만 지운 프로브 실행으로 확인(`[FAIL: foreign validator counted]`, 14.8.4-6).
+- **그대로 통과해야 하는 것(전부 확인):** `ReputationLensTest` **5/5** · `JudgePanelV2Test` **7/7**(disputed 중립 2건 포함) · `exp6/run_exp6.py` 재실행 **K1·K2 PASS**, 렌즈 수치(honest 100/100건/5000bp · extractor 100/84건/기권 1600bp/5000bp · hallucinator 50/100건/10000bp)·담보 궤적·순진 평판 **수리 전(같은 날 HEAD bd9bc19 재실행)과 바이트 동일** — Exp6 는 validator 가 BV 하나뿐이라 필터가 결과를 바꿀 이유가 없고 실측도 그렇다(`logs/exp6-rerun-closeout.log`; `exp6/out/results.json` 은 gitignore).
+
+#### 14.8.3 (3)(4) 문서 정정·한계
+
+- **(3)** §4 R8·§12.3 라인 참조 stale → 14.8.1 행 12·13. 정정표에 R8 행이 없던 것 → 행 12~14 로 보충.
+- **(4) 그리핑 단가 '5배' 추정은 미측정.** 논의 과정에서 나온 '그리핑 라운드당 비용이 정직 이용 대비 약 5배' 류의 단가 추정은 **어떤 실험도 재지 않았고, 이 브랜치 어디에도 실측·산식 근거가 없다**(§11.2 K4(b) 가 잰 것은 장악·시한 평결 그리핑의 **토큰 순수입**(−1 wei / 0)이지 그리핑 **단가**(가스 + perCaseBond·수수료 잠금 기회비용 + 결의(decoy) 수수료, §12.6-A② 24라운드 경로)가 아니다). 대외 자료·백서·ERC 초안에 그 배수를 인용하지 말 것. 재려면 Forge 에서 §12.6-A② 경로(결의 3건 + 거짓 주장 개설·리셋 × 24)의 가스·수수료·잠금 시간을 라운드별로 적산하는 프로브가 필요 — 별도 작업.
+
+#### 14.8.4 이번 실행 (코드 변경 후 전량 재실행 · forge 1.7.1 · halmos 0.3.3 · `forge clean` 후 halmos)
+
+| 순서 | 도구 | 결과 | 로그 |
+|---|---|---|---|
+| 1 | `forge test` (10 suites) | **93 tests: 93 passed · 0 failed**(기존 92 − 실패 1 정정 + 회귀 1 신규) — `Exp30LapseTest` 24/24 · `ReputationLensTest` 5/5 · `JudgePanelV2Test` 7/7 · 그 외 v0.2.1 57 | `logs/forge-test-closeout.log` |
+| 2 | `python3 exp6/run_exp6.py` (anvil 8549 · forge create) 수리 전·후 각 1회 | **K1 PASS · K2 PASS**, 렌즈·담보·평판 수치 전후 동일 | `logs/exp6-rerun-closeout.log` |
+| 3 | `forge clean` → `halmos --contract BondedValidatorV3Proofs` | **10 passed · 0 failed** · 1.82s | `logs/halmos-bv3-closeout.log` |
+| 4 | `halmos --contract BondedJudgePanelV3Proofs --loop 33` | **9 passed · 0 failed** · 248.85s (PB 경로 1,077 · PC 17 — 실행 간 변동, 판정 불변) | `logs/halmos-panel3-closeout.log` |
+| 5 | `halmos --contract BondedValidatorProofs`(v0.2.1 회귀) | **4 passed · 0 failed** · 1.01s | `logs/halmos-bv021-regression-closeout.log` |
+| 6 | 프로브: `_tally` 의 `|| v != validator` 를 잠시 제거 → `forge test --mt test_R8_lens_ignores_other_validator_responses` → 소스 원복 | **[FAIL: foreign validator counted]** — 필터 없는 렌즈로는 회귀가 실제로 실패함을 실행으로 확인(소스는 원복, diff 동일) | `logs/lens-nofilter-probe-closeout.log` |
+
+Halmos 대상 3종은 렌즈를 import 하지 않으므로 '§14.4 와 동일' 이 기대값이다(경로 수는 실행 간 변동 — §14.1-3). `cache/solidity-files-cache.json` 은 HEAD 로 복원(도구 부산물, 커밋 제외).
+
+#### 14.8.5 §5 무수정 증빙
+
+`sed -n '132,153p' exp30/EXP30.md | shasum -a 256` = `37a02f2b1af0d121a7213f7b4296e1f845886e87c473bed052f5253d69c2472b` — §14.5 와 동일(이 소절 추가 전·후 재대조). `git diff bd9bc19 -- exp30/EXP30.md` 는 파일 끝 삽입 hunk 1개, 삭제 0행.
+
+#### 14.8.6 정직한 한계
+
+1. **렌즈는 이제 `bonded` 하나의 이력만 본다.** 같은 레지스트리·같은 agentId 에 다른 BondedValidator(예: Sepolia v0.2.1 `BondedValidator` 와 v0.3 `BondedValidatorV3`)가 쌓은 담보 이력은 **합산되지 않는다** — v0.3 재배포(결재 ②) 후 새 렌즈는 이력 0 에서 시작하고 기존 에이전트는 다시 신참 할증(15000bp)을 받는다. 담보 없는 응답을 걷어내는 대가이며, 다중 BV 이력 승계(허용 validator 집합)는 렌즈 설계 변경 = 별도 심의. 지금은 필터가 없는 쪽이 더 큰 구멍(14.8.2)이라 단일 validator 를 택했다.
+2. **가스 미재측정.** 필터는 이미 읽던 반환값 비교 1회라 외부호출·슬롯 수 불변이나, §13.4 프로브(`_GasProbe.t.sol`, 미커밋)를 다시 돌리지 않았다 — 수치는 §13.4 그대로 인용하되 '필터 전 측정' 임을 안다.
+3. 필터 전 렌즈로 회귀가 실패하는 것은 프로브(14.8.4-6)로 확인했으나 프로브 소스는 커밋하지 않았다 — 재현은 `_tally` 의 `|| v != validator` 를 지우고 `forge test --mt ignores_other_validator`.
+4. **'5배' 의 출처를 이 저장소에서 찾지 못했다**(`grep '5배'` 0건 — 검색된 것은 신참 할증 1.5× 뿐). 논의 메모의 추정치로 보이며, 14.8.3-(4) 는 '무근거 수치 인용 금지' 한계 명기이지 그 수치의 반박이나 확인이 아니다.
+5. §11·§12·§13 원문과 §14.1~14.7 의 '91 passed · 1 failed'·'상위 결정 대기' 문구는 시점 기록으로 남는다(원문 자리 정정 아님 — §14.6-1 과 같은 원칙). `results.json`·ERC 초안·백서는 이번에도 무수정.
+6. Halmos 는 렌즈를 증명하지 않는다(§13.5-2 그대로) — validator 필터의 ∀ 성질(모든 비-bonded 응답이 무시됨)은 코드 한 줄의 검토와 Forge 실측 1건뿐.
+7. main 무수정·Sepolia 미배포·미푸시. 결재 ①② 는 여전히 열려 있다(§12.7). 이 마감으로 Exp30 브랜치의 열림 항목은 결재 대기만 남는다.
+
+#### 14.8.7 재현
+
+```bash
+cd ~/iis-lab && git checkout exp30-liveness && cd exp3/contracts
+forge test                                                        # 93 tests: 93 passed
+forge test --mt test_R8_lens                                      # R8 4건(정정 1·회귀 3)
+cd ../.. && python3 exp6/run_exp6.py                              # VERDICT K1·K2 True (anvil 8549, numpy·matplotlib 필요)
+cd exp3/contracts && forge clean && ../../.venv-halmos/bin/halmos --contract BondedValidatorV3Proofs   # 10 passed
+../../.venv-halmos/bin/halmos --contract BondedJudgePanelV3Proofs --loop 33                          # 9 passed (~4 min)
+../../.venv-halmos/bin/halmos --contract BondedValidatorProofs                                       # 4 passed
+git checkout -- exp3/contracts/cache/solidity-files-cache.json    # 도구 부산물 복원
+```

@@ -85,7 +85,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 # Python experiments (deterministic, fixed seeds)
 .venv/bin/python exp1/train.py     # +  exp2/run_exp2.py exp8/sim.py exp10/recon.py exp13/prove.py exp18/run_exp18.py
 # Machine proofs
-cd exp3/contracts && forge test                               # 92 tests: 91 passed, 1 failed on branch exp30-liveness (69 v0.2.1 + 23 Exp30; the 1 failure is the pre-existing R8 test asserting the rounding-biased 91 — exact value is 92 after the lens fix, EXP30.md §13.3)
+cd exp3/contracts && forge test                               # 93 tests: 93 passed on branch exp30-liveness (69 v0.2.1 + 24 Exp30; the R8 test's rounding-biased 91 was corrected to the exact 92 and a validator-filter regression added — EXP30.md §14.8)
 ../../.venv/bin/halmos --contract BondedValidatorProofs       # ServiceVoucherProofs / ZkVerdictGateProofs
 ../../.venv/bin/halmos --contract BondedJudgePanelV2Proofs --loop 33   # heavy (~4 min)
 # Exp30 v0.3 (optimistic lapse) — ALWAYS run `forge clean` before halmos in a checkout where

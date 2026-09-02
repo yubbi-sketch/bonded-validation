@@ -568,9 +568,12 @@ contract Exp30LapseTest {
         require(lens.requiredBond(aid) == 15e17, "absolute bond");
     }
 
-    /// R8 렌즈 — "unchallenged" 중립화 + 언더플로 가드 (judge = this 로 직접 기록).
+    /// R8 렌즈 — "unchallenged" 중립화 + (구)언더플로 시나리오 (judge = this 로 직접 기록).
+    ///         이름의 guards_underflow 는 §4 R8 원문(avg·count < 50·d 가드) 시점의 것 — §13 수리로
+    ///         가드는 사라졌지만(정확 합계라 발생 불가) 시나리오는 회귀로 유지한다.
     function test_R8_lens_neutralizes_unchallenged_and_guards_underflow() public {
-        // 오답 1건(0점) + 소멸 3건(50점) → 순진 평균 37, 37·4 = 148 < 150 → 가드 없으면 언더플로 되돌림
+        // 오답 1건(0점) + 소멸 3건(50점) → 순진 평균 37, 37·4 = 148 < 150 → 옛 내림 복원 렌즈는 가드 필요.
+        // 순회 합계 렌즈(§13)는 소멸을 태그로 통째 제외 → (0, 1) 이 산술 그대로.
         bytes32 hw = keccak256("R8.wrong");
         _claimD(hw);
         bvD.submitVerdict(hw, 0, "", bytes32(0), "wrong");
@@ -585,9 +588,10 @@ contract Exp30LapseTest {
         require(lensD.requiredBondBp(aidD) == 15000, "bp after guard");
 
         // 정답 12건 + "disputed" 1건 추가 → 중립화 후 answered 13.
-        // 정확값 (1400−200)/13 = 92.3 이나 레지스트리 avg 는 내림(1400/17 = 82)이라
-        // 렌즈의 합계 복원 82·17 = 1394 → (1394−200)/13 = 91.8 → 91. 하향 편향 ≤ (count−1)/answered 은
-        // v0.2.1 렌즈(Exp6) 기존 성질 — Exp30 범위 밖, 한계로 등재.
+        // 정확값 (12·100 + 1·0)/13 = 92.3 → ⌊92.3⌋ = 92. 기대값 정정 이력: 원래 91 을 박제했었다 —
+        // 옛 렌즈가 레지스트리 내림 평균(1400/17 = 82)에서 합계를 복원(82·17 = 1394 → (1394−200)/13 = 91.8
+        // → 91)한 편향값이었고, §13 수리(레지스트리 순회 정확 합계)로 렌즈가 92 를 돌려주므로
+        // 92·5800bp 로 정정(§14.8). 91 은 버그 값이지 규격이 아니었다.
         for (uint256 i = 0; i < 12; i++) {
             bytes32 h = keccak256(abi.encode("R8.ok", i));
             _claimD(h);
@@ -597,8 +601,45 @@ contract Exp30LapseTest {
         _claimD(hd);
         bvD.submitVerdict(hd, 50, "", bytes32(0), "disputed"); // 패널 시한환급 대리
         (score, answered) = lensD.creditScore(aidD);
-        require(answered == 13 && score == 91, "neutralization wrong");
-        require(lensD.requiredBondBp(aidD) == 5000 + (100 - 91) * 100, "bp");
+        require(answered == 13 && score == 92, "neutralization wrong");
+        require(lensD.requiredBondBp(aidD) == 5800, "bp"); // 5000 + (100 − 92)·100
+    }
+
+    /// §14.8 마감 회귀 — 렌즈는 `bonded`(BondedValidator) 가 validator 인 응답만 집계한다.
+    ///         레지스트리 `validationRequest` 는 무허가라 제3자가 아무 agentId 에 자기 자신을
+    ///         validator 로 등록하고 스스로 응답할 수 있다(정본 레지스트리 성질, 무수정).
+    ///         필터 전 렌즈는 그 100점 10건을 answered 로 세어 신참 할증을 우회시키고("abstain"
+    ///         5건은 기권률을 왜곡) — 담보 없는 응답이 담보 이력으로 둔갑. 필터 후 (0, 0)·15000bp.
+    function test_R8_lens_ignores_other_validator_responses() public {
+        // 제3자가 자기 자신을 validator 로 등록한 요청 15건: 100점 10 + "abstain" 5
+        for (uint256 i = 0; i < 15; i++) {
+            bytes32 h = keccak256(abi.encode("R8.foreign", i));
+            vm.prank(stranger);
+            valReg.validationRequest(stranger, aidD, "", h);
+            vm.prank(stranger);
+            if (i < 10) valReg.validationResponse(h, 100, "", bytes32(0), "correct");
+            else        valReg.validationResponse(h, 0, "", bytes32(0), "abstain");
+        }
+        (uint64 naiveCount, uint256 naiveAvg) = valReg.getSummary(aidD);
+        require(naiveCount == 15 && naiveAvg == 66, "registry does count foreign responses"); // 1000/15
+        (uint256 score, uint64 answered) = lensD.creditScore(aidD);
+        require(score == 0 && answered == 0, "foreign validator counted");
+        require(lensD.requiredBondBp(aidD) == 15000, "newcomer premium bypassed by foreign validator");
+        require(lensD.abstainRateBp(aidD) == 0, "foreign abstain distorted rate");
+
+        // 진짜 담보 주장 1건(100점) + 담보 기권 1건 → 렌즈는 (100, 1)·15000bp·기권률 5000bp — 제3자 15건 무시.
+        bytes32 hb = keccak256("R8.bonded");
+        _claimD(hb);
+        bvD.submitVerdict(hb, 100, "", bytes32(0), "correct");
+        bytes32 ha = keccak256("R8.bonded.abstain");
+        _claimD(ha);
+        bvD.submitVerdict(ha, 0, "", bytes32(0), "abstain");
+        (score, answered) = lensD.creditScore(aidD);
+        require(score == 100 && answered == 1, "bonded history wrong");
+        require(lensD.requiredBondBp(aidD) == 15000, "still newcomer");
+        require(lensD.abstainRateBp(aidD) == 5000, "abstain rate must be bonded-only"); // 1/2
+        (uint256 b, uint256 atRisk,, uint256 slashed) = bvD.agents(aidD);
+        require(b == 10e18 && atRisk == 0 && slashed == 0, "bond accounting");
     }
 
     /// §12.6-A① 수리 회귀 1 — 정확 합계: 정답 100점 10건 + 소멸 990건 → (100, 10) · 5000bp.

@@ -37,7 +37,12 @@ contract ReputationLens {
     ///      (judge = EOA 경로, §12.6-A⑤) 렌즈는 흔들리지 않는다. 언더플로 가드는 불필요해져
     ///      제거. 레지스트리(정본·Sepolia 배포본)는 무수정 — 기존 view 인터페이스만 쓴다.
     ///      대가: 가스가 이력 길이에 선형(외부호출 n+1 회) — 수치는 EXP30.md §13.
-    function _tally(uint256 agentId)
+    ///      validator 필터(Exp30 §14.8 마감): 레지스트리 `validationRequest` 는 무허가라
+    ///      누구든 아무 agentId 에 자기 자신을 validator 로 등록하고 스스로 응답할 수 있다.
+    ///      필터 없이는 남이 낸 100점 10건으로 answered·점수를 부풀려 신참 할증을 우회하거나
+    ///      "abstain" 을 꽂아 기권률을 왜곡할 수 있었다(기존 구멍 — 담보 없는 응답은 담보
+    ///      이력이 아니다). `bonded` 가 낸 요청(validator == address(bonded))만 집계한다.
+    function _tally(uint256 agentId, address validator)
         internal view returns (uint256 sum, uint64 answered, uint64 abstains)
     {
         bytes32[] memory reqs = valReg.getAgentValidations(agentId);
@@ -45,9 +50,9 @@ contract ReputationLens {
         bytes32 tDisputed = keccak256(bytes(DISPUTED_TAG));
         bytes32 tUnchallenged = keccak256(bytes(UNCHALLENGED_TAG));
         for (uint256 i = 0; i < reqs.length; i++) {
-            (, , uint8 response, string memory tag, bool responded) =
+            (address v, , uint8 response, string memory tag, bool responded) =
                 valReg.getValidationStatus(reqs[i]);
-            if (!responded) continue;
+            if (!responded || v != validator) continue;
             bytes32 t = keccak256(bytes(tag));
             if (t == tAbstain) { abstains++; continue; }
             if (t == tDisputed || t == tUnchallenged) continue;
@@ -57,17 +62,17 @@ contract ReputationLens {
     }
 
     /// @notice 신용 점수 0~100 = 기권·분쟁환급·소멸 제외 평균 검증 점수(정확 합계 / 답한 건수).
-    ///         이력 없으면 (0, 0). 신참 할증(answered < 10)은 소멸·기권으로 우회 불가.
+    ///         이력 없으면 (0, 0). 신참 할증(answered < 10)은 소멸·기권·타 validator 응답으로 우회 불가.
     function creditScore(uint256 agentId) public view returns (uint256 score, uint64 answered) {
         uint256 sum;
-        (sum, answered, ) = _tally(agentId);
+        (sum, answered, ) = _tally(agentId, address(bonded));
         if (answered == 0) return (0, 0);
         score = sum / answered;
     }
 
     /// @notice 기권률(bp, 0~10000) — 감점이 아니라 정보로 노출.
     function abstainRateBp(uint256 agentId) external view returns (uint256) {
-        (, uint64 answered, uint64 abstains) = _tally(agentId);
+        (, uint64 answered, uint64 abstains) = _tally(agentId, address(bonded));
         uint64 total = answered + abstains;
         return total == 0 ? 0 : (uint256(abstains) * 10000) / total;
     }
