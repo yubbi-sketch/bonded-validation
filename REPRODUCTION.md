@@ -83,15 +83,15 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
 ```bash
 # Python experiments (deterministic, fixed seeds)
-.venv/bin/python exp1/train.py     # +  exp2/run_exp2.py exp8/sim.py exp10/recon.py exp13/prove.py exp18/run_exp18.py
+python3 exp1/train.py   # python3 with requirements.txt installed (or your own venv)     # +  exp2/run_exp2.py exp8/sim.py exp10/recon.py exp13/prove.py exp18/run_exp18.py
 # Machine proofs
 cd exp3/contracts && forge test
-../../.venv/bin/halmos --contract BondedValidatorProofs       # ServiceVoucherProofs / ZkVerdictGateProofs
-../../.venv/bin/halmos --contract BondedJudgePanelV2Proofs --loop 33   # heavy (~4 min)
+../../.venv-halmos/bin/halmos --contract BondedValidatorProofs   # halmos venv: .venv-halmos (run `forge clean` first if you ran forge test)       # ServiceVoucherProofs / ZkVerdictGateProofs
+../../.venv-halmos/bin/halmos --contract BondedJudgePanelV2Proofs --loop 33   # heavy (~4 min)
 # On-chain (each starts its own anvil)
-.venv/bin/python exp3/run_exp3.py  # exp5 exp7 exp19
+python3 exp3/run_exp3.py  # exp5 exp7 exp19
 # zkML (network for SRS)
-.venv/bin/python exp14/run_exp14.py && .venv/bin/python exp15/run_exp15.py
+python3 exp14/run_exp14.py && python3 exp15/run_exp15.py
 .venv/bin/python exp16/run_exp16.py && .venv/bin/python exp16/k2_retest.py
 ```
 
