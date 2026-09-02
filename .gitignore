@@ -11,3 +11,4 @@ papers/*.pdf
 swarm/runs/
 .venv*/
 keys/
+.venv-xverify/
