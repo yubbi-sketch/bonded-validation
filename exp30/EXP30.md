@@ -634,3 +634,66 @@ cd exp3/contracts && forge clean && ../../.venv-halmos/bin/halmos --contract Bon
 ../../.venv-halmos/bin/halmos --contract BondedValidatorProofs                                       # 4 passed
 git checkout -- exp3/contracts/cache/solidity-files-cache.json    # 도구 부산물 복원
 ```
+
+## 15. 정본 이식·K1 재실행 (2026-09-03 · `main` · 오너 결재 ① 승인 후)
+
+오너 결재(2026-09-03, "추천방향대로"): **① 소멸 규칙 채택 · ② v0.3 Sepolia 재배포(W 는 실측 후 하한 규칙으로 확정)** 승인. 이 소절은 ① 의 실행 — §4 R1~R12 의 정본 이식(브랜치 → `main`)과 §5 K1 원문("정본 이식 후 … 전부 PASS")의 재판정만 다룬다. ② 는 별도 작업(15.4-1).
+
+### 15.1 이식 — `git merge exp30-liveness` → `main`
+
+| 항목 | 값 |
+|---|---|
+| 브랜치 HEAD | `e49c67d` (base `83012fa`) |
+| main HEAD(병합 전) | `8c6124e` (base 이후 REPRODUCTION.md 경로 정정 1커밋) |
+| **병합 커밋** | **`426b555`** (`병합: exp30-liveness → main — Exp30 소멸(Optimistic Lapse) 규칙 정본 이식 (오너 결재 ① 2026-09-03)`) |
+| 충돌 | **1파일 `REPRODUCTION.md`:88~90** — main 쪽 `.venv-halmos` 경로·`python3` 정정 vs 브랜치 쪽 `93 tests` 주석·Exp30 v0.3 재현 블록(`forge clean` 경고 포함). **양쪽 모두 보존**(halmos 줄은 `.venv-halmos`, forge test 줄은 브랜치 주석, Exp30 블록 전체 유지). 코드 충돌 **0** |
+| 동일성 | `git diff --stat exp30-liveness 426b555 -- exp30/ exp3/ docs/ xverify.py` **빈 출력** — 계약·테스트·문서·로그 전부 브랜치와 바이트 동일 |
+| §5 무수정 | `sed -n '132,153p' exp30/EXP30.md \| shasum -a 256` = `37a02f2b1af0d121a7213f7b4296e1f845886e87c473bed052f5253d69c2472b` — §14.5·§14.8.5 와 동일(이 소절 추가 전·후 재대조) |
+
+### 15.2 K1 재실행 (`main` `426b555` · forge 1.7.1 · halmos 0.3.3 · `forge clean` 후 halmos · 2026-09-03 07:26~07:31 AEST = UTC 09-02 21:26~21:31)
+
+| 순서 | 도구 | 결과 | 로그 |
+|---|---|---|---|
+| 1 | `forge test` (10 suites) | **93 tests: 93 passed · 0 failed · 0 skipped** — v0.2.1 기존 69(ServiceVoucher 4 · ZkVerdictGate 6 · JudgePanelV2 7 · BondedJudgePanelV2 9 · BondManager 8 · JudgePanel 7 · BondedJudgePanel 15 · ReputationLens 5 · BondedValidator 8) + `Exp30LapseTest` 24 | `logs/forge-test-main-k1.log` |
+| 2 | `forge clean` → `halmos --contract BondedValidatorV3Proofs` | **10 passed · 0 failed** · 1.77s — T1~T4 + L1·L2·L3·L4·L5a·L5b (K1-(a)) | `logs/halmos-BondedValidatorV3Proofs-main-k1.log` |
+| 3 | `halmos --contract BondedJudgePanelV3Proofs --loop 33` | **9 passed · 0 failed** · 257.88s — PA·PB·PC·P4 + PL1a·PL1b·PL2·PL3a·PL3b (K1-(b)); PB 경로 1,104(246.55s) · PC 17 | `logs/halmos-BondedJudgePanelV3Proofs-main-k1.log` |
+| 4 | `halmos --contract BondedValidatorProofs` (v0.2.1 회귀) | **4 passed · 0 failed** · 2.24s — T1~T4 | `logs/halmos-BondedValidatorProofs-main-k1.log` |
+| 5 | `halmos --contract ServiceVoucherProofs` (Exp17 회귀) | **7 passed · 0 failed** · 0.29s — K1×3·K2×2·K3×2 | `logs/halmos-ServiceVoucherProofs-main-k1.log` |
+| 6 | `halmos --contract ZkVerdictGateProofs` (Exp20 회귀) | **5 passed · 0 failed** · 0.43s — K1·K2·K2b·K3·K4 | `logs/halmos-ZkVerdictGateProofs-main-k1.log` |
+
+- 종료 코드 6건 전부 0 — `logs/main-k1-run-header.log`(HEAD·도구 버전·타임스탬프 박제).
+- 컴파일: `forge test` 가 29 파일 컴파일 → `forge clean` → 첫 halmos(2번)가 `--ast` 로 29 파일 재컴파일, 이후 4회는 "No files changed"(halmos 자기 산출물 재사용) — `KeyError: 'ast'` **0건**, `No tests` 0건(REPRODUCTION.md 의 `forge clean` 경고가 이번에도 유효했음을 확인).
+- 4~6 은 K1 원문(§5)에 없는 **추가 회귀**(팀장 요청) — 정본 v0.2.1 증명 3종이 V3 이식으로 깨지지 않았음을 본다.
+
+### 15.3 K1 판정 (§5 원문 무수정 기준)
+
+| K1 조항 | 원문 조건 | 실측 | 판정 |
+|---|---|---|---|
+| (a) | `halmos --contract BondedValidatorV3Proofs` — T1~T4 회귀(단언 무수정) + L1~L5 전부 PASS | 10/10, 반례 0 | **PASS** |
+| (b) | `halmos --contract BondedJudgePanelV3Proofs --loop 33` — PA/PB/PC/P4 회귀 + PL1·PL2·PL3 PASS | 9/9, 반례 0, timeout 0 | **PASS** |
+| (c) | `forge test` — 기존 69 + 신규 ≥ 12, 0 fail | 69 + 24, 0 fail | **PASS** |
+
+**K1 = PASS.** FAIL·counterexample·timeout 0건, 파라미터 조정 0건. 브랜치 시점(§11.2·§12.5·§14.8.4)과 판정 동일 — 병합이 코드를 바꾸지 않았으므로 기대값 그대로다. K1 원문의 '정본 이식 후' 조건이 이제 충족됐다(브랜치 시점 판정은 '이식 전'이었음, §11.2).
+
+### 15.4 정직한 한계
+
+1. **이 소절은 K1 만이다.** K2(c)(Sepolia v0.3 실주장 소멸·리셋 후 소멸)는 결재 ② 의 실행 = **별도 작업**이며 이 소절 시점 **미배포**. K3·K4·z3/cvc5·Exp6 재실행(`prove.py`·`xverify.py`·`sim.py`·`run_exp6.py`)은 하지 않았다 — 병합이 계약·스크립트를 바이트 하나 바꾸지 않았으므로(15.1 동일성) 브랜치 시점 결과(§11.2·§12.4·§14.8.4)가 그대로 성립한다고 보지만, `main` 에서의 재실측은 아니다.
+2. Halmos 경로 수는 실행 간 변동(PB 1,052/1,066/1,049/1,077 → 1,104; §14.1-3) — 판정 불변, 시간 257.88s 는 기록 중 최장.
+3. `REPRODUCTION.md:88` 주석 "93 tests … on branch exp30-liveness" 는 병합으로 `main` 에도 해당하나 문구는 충돌 해결 원칙(양쪽 보존·재서술 금지)대로 그대로 둠.
+4. 원격 **미푸시**(오너가 한다). `main` 은 로컬에서만 전진. 브랜치 `exp30-liveness` 는 삭제하지 않았다.
+5. 렌즈(`ReputationLens`)는 여전히 Halmos 대상이 아니다(§13.5-2·§14.8.6-6) — K1 은 렌즈를 증명하지 않는다.
+6. `exp3/contracts/cache/solidity-files-cache.json` 은 도구 부산물이라 HEAD 로 복원(커밋 제외). 이 소절과 로그 7건(`*-main-k1.log`)의 커밋은 `426b555` 바로 다음 `main` 커밋이다(`git log --oneline -2`).
+
+### 15.5 재현
+
+```bash
+cd ~/iis-lab && git checkout main && git log --oneline -1 426b555      # 병합 커밋 확인
+git diff --stat exp30-liveness 426b555 -- exp30/ exp3/ docs/ xverify.py # 빈 출력 = 브랜치와 동일
+cd exp3/contracts && forge test                                          # 93 tests: 93 passed
+forge clean && ../../.venv-halmos/bin/halmos --contract BondedValidatorV3Proofs               # 10 passed
+../../.venv-halmos/bin/halmos --contract BondedJudgePanelV3Proofs --loop 33                  # 9 passed (~4 min)
+../../.venv-halmos/bin/halmos --contract BondedValidatorProofs                               # 4 passed
+../../.venv-halmos/bin/halmos --contract ServiceVoucherProofs                                # 7 passed
+../../.venv-halmos/bin/halmos --contract ZkVerdictGateProofs                                 # 5 passed
+git checkout -- exp3/contracts/cache/solidity-files-cache.json         # 도구 부산물 복원
+```

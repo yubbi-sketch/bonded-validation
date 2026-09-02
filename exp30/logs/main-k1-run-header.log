@@ -1,0 +1,12 @@
+K1 rerun on main after merge — 2026-09-02T21:26:24Z
+HEAD: 426b55520a72cf7e287627e3988a35e1d67c80fd (main)
+forge Version: 1.7.1
+halmos: halmos 0.3.3
+forge_test_exit=0
+forge_clean_exit=0
+halmos_BondedValidatorV3Proofs_exit=0
+halmos_BondedJudgePanelV3Proofs_exit=0
+halmos_BondedValidatorProofs_exit=0
+halmos_ServiceVoucherProofs_exit=0
+halmos_ZkVerdictGateProofs_exit=0
+ALL_DONE 2026-09-02T21:31:01Z
