@@ -37,7 +37,7 @@ from redistributive designs (UMA, Kleros).
 
 **(3) The proven incentives, made real.** We close the loop empirically: a
 zero-knowledge re-execution proof of the full extractor forward pass, measured
-end-to-end (ezkl/halo2: 17.2 s to prove, 0.1 s to verify, and **864,652 gas** to
+end-to-end (ezkl/halo2: 17.2 s to prove, 0.1 s to verify, and **≈864,652 gas** to
 verify on-chain, in a 19,683-byte verifier under EIP-170); a binding circuit that
 ties each proof to its input hash, model, and outputs so a proof cannot be
 replayed against a different *input* (case-level requestHash binding is future
@@ -91,7 +91,7 @@ two independent reviews found the slot occupied, and the program pivoted here.
 
 ## 2. Related Work
 
-**Agent trust stacks.** ERC-8004 ("Trustless Agents", in Review) provides
+**Agent trust stacks.** ERC-8004 ("Trustless Agents", still a Draft — status re-checked 2026-09-03) provides
 identity, reputation, and validation registries and delegates collateral and
 slashing upward — the slot this work fills. A comparative study of inter-agent
 trust models (arXiv:2511.03434) recommends this shape: bonds proportional to
@@ -239,8 +239,8 @@ against a **local Anvil chain**; Sepolia deployments (§8) are the same contract
 | Exp10 | Extractor ZK-feasible? | Quantization: 0.00 pp change at scales 2^10–2^14, −0.05 pp at 2^8 (n = 4,372); census 78,976 MACs → ≈2^19 rows by a stated heuristic. Prover not yet run (see Exp14). |
 | Exp13 | Is "no bounty" provable, not just simulated? | The Exp8 result formalized: seven z3 checks — bond-ratio threshold, payment-schedule invariance, and a budget-feasible bounty counterexample — all pass (§5.2). Formal verification, not a kill-criteria experiment. |
 | Exp14 | Does the extractor actually prove? | Full forward pass proven+verified (ezkl/halo2): logrows 18, **prove 17.2 s, verify 0.1 s**, proof 40 KB, peak 5.3 GB; circuit argmax = float on 20/20. K1–K3 passed. Single-sentence only. |
-| Exp15 | zk verdict on-chain — how much? | ezkl EVM verifier on Anvil verifies the real proof: **864,652 gas** (2.9% of block limit), code **19,683 B < EIP-170 24,576** (no limit lift needed). Optimistic use → cost only on dispute. |
-| Exp16 | Can a proof be replayed? | Binding circuit (input Poseidon hash + outputs as 63 public instances, model = verifier vk): tampering the claimed **input hash** is **cryptographically rejected** on-chain (output-instance tampering is likewise expected but was demonstrated only via the input-hash case; case↔requestHash binding is off-chain, future work). Gas 975,182; code 24,257 B (**319 B under EIP-170** — a hard margin, §9.3). |
+| Exp15 | zk verdict on-chain — how much? | ezkl EVM verifier on Anvil verifies the real proof: **≈864,652 gas** (2.9% of block limit; 864,388 reproduced), code **19,683 B < EIP-170 24,576** (no limit lift needed). Optimistic use → cost only on dispute. |
+| Exp16 | Can a proof be replayed? | Binding circuit (input Poseidon hash + outputs as 63 public instances, model = verifier vk): tampering the claimed **input hash** is **cryptographically rejected** on-chain (output-instance tampering is likewise expected but was demonstrated only via the input-hash case; case↔requestHash binding is off-chain, future work). Gas ≈975,182; code 24,257 B (**319 B under EIP-170** — a hard margin, §9.3). |
 | Exp17 | Can the service token become an investment? | Regulation-invariant voucher: the four properties (no appreciation / transfer / pooling / yield) are **machine-checked** (Halmos 7/7) as invariants over its six external state-changing functions (buy/refund proven for amt < 1e30, not all uint256; coverage rests on manual surface enumeration). Structure, not a legal opinion (§7.2, §9.6). |
 | Exp18 | Do the proven incentives yield the honest equilibrium? | Agent-based sim: self-interested adaptive agents hill-climb, unscripted, so the **population mean** threshold reaches **τ* = B/(B+R) = 0.4** (mean learned θ = 0.447, σ = 0.215 — individuals stay dispersed); a winner-bounty control revives the gambler (Theorem 3, behaviorally). **K1 (gambler extinct) failed as pre-registered** — "always answer" pays if competent; the mechanism punishes *unconfident* answering, shown by K2 and by incompetent gamblers reaching 100% bankruptcy. |
 | Exp19 | Does the equilibrium hold on the real contract? | On-chain pilot, 40 autonomous wallets × 25 rounds on the deployed BondedValidator: rational agents net 20 → 39.1 (1/26 bankrupt); unconfident gamblers 20 → 14.9 (**6/9 bankrupt**); abstainers 20.0 flat. **Token conservation exact.** |
@@ -258,7 +258,7 @@ outside SMT scope) and symbolic votes:
   ∧ ¬abstain, exactly `minBondPerClaim`; over-/arbitrary slashing unsatisfiable);
   **T3 No double settlement**; **T4 Settlement conservation**.
 - Panel refinement (implementation ≡ independently written spec): **PA** unanimity
-  (none slashed, fee split three ways); **PB** majority, 1,127 paths (only voters
+  (none slashed, fee split three ways); **PB** majority, ≈1,127 paths (path count varies by run and Halmos version — 1,086 in the reproduction audit; only voters
   against the final verdict slashed, every judge's income exactly the fixed fee,
   agent slashed iff verdict < 50 — **the no-bounty invariant, machine-checked**);
   **PC** 2/2/1 split (lossless refund); **P4** timeout (judge bonds untouched in
@@ -343,7 +343,8 @@ end-to-end:
   is lossless (SSM gate constants fold at compile time; runtime nonlinearities
   reduce to rsqrt/tanh lookups).
 - **On-chain verification (Exp15).** ezkl's EVM verifier verifies the real proof
-  on-chain for **864,652 gas** — 2.9% of the block limit, well inside the range
+  on-chain for **≈864,652 gas** (864,388 in the reproduction re-run — run-to-run
+  variance ±0.03%) — 2.9% of the block limit, well inside the range
   for dispute-time verification — in a **19,683-byte** contract, under EIP-170
   without lifting the size limit. Under an optimistic design, proofs are produced
   only on dispute, so steady-state cost is zero.
@@ -351,7 +352,7 @@ end-to-end:
   outputs as 63 public instances, with the model commitment being the verifier's
   baked-in vk; a proof whose input-hash instance is altered is **cryptographically
   rejected** on-chain (output-instance tampering is likewise expected, shown via
-  the input-hash case). Cost rises to 975,182 gas and 24,257 bytes — **319 bytes
+  the input-hash case). Cost rises to ≈975,182 gas (975,218 reproduced) and 24,257 bytes — **319 bytes
   under EIP-170**, a hard margin we flag: the further binding needed for a full
   protocol integration (requestHash in the instance — the case↔input mapping is
   still off-chain — and symbolic-stage coverage) must fit or move to
@@ -553,7 +554,7 @@ AI가 아무리 똑똑해져도 안 뚫리는 보안은 지능이 아니라 수�
 틀리면 정확히 그만큼만 몰수, 모르면 기권해 무손실. 판정자도 담보를 걸고, 몰수분은
 승자가 아니라 소각·배상으로 흐른다(승자 상금 = 매수 자금, z3 반례). v1.0에서
 새로 닫은 것: **zk 증명을 실제로 돌려 온체인 검증 가스까지 측정**(생성 17.2초·검증
-0.1초·온체인 864,652 가스), **증명 재사용을 암호학적으로 봉쇄**(바인딩 회로), 그리고
+0.1초·온체인 ≈864,652 가스, 재현 864,388), **증명 재사용을 암호학적으로 봉쇄**(바인딩 회로), 그리고
 **40개 자율 에이전트가 실제 컨트랙트 위에서 정리가 예측한 정직 균형으로 수렴**
 (합리적 성장·무근거 발화자 파산·토큰 보존). 정직: Exp18 K1은 사전등록대로 실패로
 기록(구부리지 않음), Exp17 규제 불변 바우처는 구조 증명이지 합법 보증 아님. 한계는

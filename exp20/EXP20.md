@@ -40,7 +40,7 @@ forge test --match-contract ZkVerdictGateTest
 
 ## 결과 (2026-08-27) — K1~K4 전부 통과
 
-`ZkVerdictGate.sol`(judge 자리) + `IZkVerifier`(외부·Exp15/16 실물). Halmos 5/5, Forge 6/6(전체 69/69).
+`ZkVerdictGate.sol`(judge 자리) + `IZkVerifier`(외부·Exp15/16 실물). Halmos 5/5, Forge 6/6(전체 69/69 — Exp20 시점; 2026-09-03 Exp30 병합 후 `forge test` 실측 93/93).
 
 | 킬 기준 | 증명 |
 |---|---|

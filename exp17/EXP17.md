@@ -44,7 +44,7 @@ forge test --match-contract ServiceVoucherTest
 | K3 무이익 환불 | refund 정확히 액면(amount×PRICE), priceWei·SPC immutable | ✅ |
 | K4 표면 완전성 | 외부 상태변경 함수 6개 전부 함수별 증명으로 덮음 | ✅ |
 
-Halmos 7/7 (심볼릭, 전 입력), 동작 Forge 4/4, 전체 스위트 63/63.
+Halmos 7/7 (심볼릭, 전 입력), 동작 Forge 4/4, 전체 스위트 63/63(Exp17 시점 2026-08-27; 2026-09-03 Exp30 병합 후 `forge test` 실측 93/93 — 이후 병합에 따라 변동, 정본은 `forge test`).
 
 **의미:** "이 토큰은 어떤 실행 경로로도 상승·전매·수익을 못 만든다"가 주장이
 아니라 **기계 증명된 컨트랙트 불변식**이 됐다. 규제 불변 축의 첫 실물 — 합법성이

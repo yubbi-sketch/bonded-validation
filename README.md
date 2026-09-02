@@ -67,14 +67,14 @@ agents reach the theorem-predicted honest equilibrium on the deployed contract. 
   pipeline reaches 98.4% vs 65.6% end-to-end on natural-language multi-hop logic
   (910 tests, pre-registered kill criteria). Disclosed confound: the extractor
   received gold slot-level supervision and a larger training budget that the
-  end-to-end baselines did not — see whitepaper §8.1.
+  end-to-end baselines did not — see whitepaper §9.1.
 - **Errors are localizable:** 100% of observed pipeline errors sat in the lowest
   7.3% of model confidence.
 - **Abstention buys correctness:** confidence threshold τ=0.9 → 0 observed wrong
   answers / 910 at 92.7% coverage (observed, not a guarantee).
 - **Hallucination gets a price:** over 300 bonded utterances, a hallucinating agent
   went bankrupt (50 → 0 tokens); a verifier-backed agent with abstention finished
-  lossless (50 → 50). Contract suite: 63/63 Foundry tests; machine proofs via Halmos + z3.
+  lossless (50 → 50). Contract suite: 93/93 Foundry tests (`forge test`, 2026-09-03, after the Exp30 v0.3 merge — the count moves with the suite; `forge test` is the source of truth); machine proofs via Halmos + z3 (cvc5 cross-check).
 
 ## Live on Sepolia
 
@@ -123,7 +123,7 @@ corrected two Exp8 overclaims and documents setup friction. Deps in
   (re-execution consensus for deterministic claims; zk/optimistic paths beyond)
   is the research core going forward.
 - Benchmarks are toy-scale and synthetic; no claim of real-world extrapolation yet.
-- ERC-8004 is in Review; registry interfaces are treated as adapters.
+- ERC-8004 is a Draft (status re-checked at eips.ethereum.org/EIPS/eip-8004, 2026-09-03); registry interfaces are treated as adapters.
 - This research trail includes a killed project: our earlier account-layer policy
   ERC idea was retired after two independent adversarial reviews found
   ERC-7710/7780 + caveat enforcers already occupy that slot. The kill is documented

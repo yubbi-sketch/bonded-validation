@@ -45,7 +45,7 @@ are only tractable for small components. We optimize under the constraint
 3. Research report: abstention economics for bonded agents (slash ratio ⇄ abstention threshold)
 
 **Known limitations (stated, not hidden).** Trusted judge in v0 (decentralizing judgment is
-the research core going forward); toy-scale synthetic benchmarks; ERC-8004 in Review —
+the research core going forward); toy-scale synthetic benchmarks; ERC-8004 still a Draft (re-checked 2026-09-03) —
 registries treated as adapters.
 
 **Track record of intellectual honesty.** Our previous target (account-layer policy
