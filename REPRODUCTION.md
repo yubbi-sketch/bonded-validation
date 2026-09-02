@@ -85,9 +85,21 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 # Python experiments (deterministic, fixed seeds)
 python3 exp1/train.py   # python3 with requirements.txt installed (or your own venv)     # +  exp2/run_exp2.py exp8/sim.py exp10/recon.py exp13/prove.py exp18/run_exp18.py
 # Machine proofs
-cd exp3/contracts && forge test
+cd exp3/contracts && forge test                               # 93 tests: 93 passed on branch exp30-liveness (69 v0.2.1 + 24 Exp30; the R8 test's rounding-biased 91 was corrected to the exact 92 and a validator-filter regression added — EXP30.md §14.8)
 ../../.venv-halmos/bin/halmos --contract BondedValidatorProofs   # halmos venv: .venv-halmos (run `forge clean` first if you ran forge test)       # ServiceVoucherProofs / ZkVerdictGateProofs
 ../../.venv-halmos/bin/halmos --contract BondedJudgePanelV2Proofs --loop 33   # heavy (~4 min)
+# Exp30 v0.3 (optimistic lapse) — ALWAYS run `forge clean` before halmos in a checkout where
+# `forge test`/`forge build` has run. forge's cache does not invalidate on halmos's `--ast` flag:
+# when forge reports "No files changed, compilation skipped", halmos skips every artifact with
+# "KeyError: 'ast'" and ends with "No tests with --match-contract" (exit 1). Conditional, not
+# guaranteed: reproduced 2026-09-03 twice (implementation run; and again right after `forge test`,
+# exp30/logs/halmos-bv3-nocleanprobe-docfix.log — 46 artifacts skipped, 0 tests) but NOT reproduced
+# by the independent re-verification on the same forge 1.7.1 · halmos 0.3.3 (halmos recompiled and
+# passed 10/10). What made that run recompile is unknown; treat `forge clean` as mandatory.
+forge clean && ../../.venv-halmos/bin/halmos --contract BondedValidatorV3Proofs            # T1–T4 + L1–L5, 10 passed / ~1.8s
+../../.venv-halmos/bin/halmos --contract BondedJudgePanelV3Proofs --loop 33                 # PA/PB/PC/P4 + PL1–PL3 (heavy)
+cd ../.. && .venv-halmos/bin/python exp30/prove.py && .venv-xverify/bin/python xverify.py exp30   # z3 17 checks + cvc5 cross
+.venv-halmos/bin/python exp30/sim.py                          # K3 anvil re-simulation, q ∈ {1, 0.5, 0} (needs anvil/forge/cast)
 # On-chain (each starts its own anvil)
 python3 exp3/run_exp3.py  # exp5 exp7 exp19
 # zkML (network for SRS)

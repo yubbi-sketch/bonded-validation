@@ -23,23 +23,56 @@ contract ReputationLens {
     }
 
     string public constant DISPUTED_TAG = "disputed";
+    string public constant UNCHALLENGED_TAG = "unchallenged"; // Exp30 R8 — 소멸(미검증 해제)
 
-    /// @notice 신용 점수 0~100 = 기권·분쟁환급 제외 평균 검증 점수. 이력 없으면 0.
-    /// @dev 분쟁 타임아웃 환급은 점수 50 고정 태그 "disputed"로 기록되므로
-    ///      (JudgePanelV2), 합계에서 50×건수를 걷어내면 중립화된다 — 분쟁은
-    ///      에이전트의 잘못이 증명된 게 아니므로 신용에 중립이어야 한다.
+    /// @dev 레지스트리 직접 순회 — 정확 합계 (Exp30 §12.6-A① 수리, §13).
+    ///      이전 구현은 getSummaryExcluding 의 내림 평균에서 avg·count 로 합계를 복원했다.
+    ///      복원 오차 ≤ count−1 이 answered 로 나뉘므로 d ≫ answered 이면 편향이 무계였다
+    ///      (정답 100점 10건 + 소멸 990건 → 50, 정확값 100). 순회 합계는 반올림이 없어
+    ///      내림은 마지막 나눗셈 한 번(< 1점)뿐이다.
+    ///      중립 태그("disputed" 시한환급 · "unchallenged" 소멸)는 점수와 무관하게 통째로
+    ///      제외한다 — R8 '소멸은 평판 중립' 을 "50점을 걷어냄" 이 아니라 "답한 이력에
+    ///      없음" 으로 실현한다(둘 다 에이전트의 잘못이 증명된 게 아니고, 소멸은 검증도
+    ///      아니다 — 규격 v0.1 §1 'VERIFIED 없음'). 예약 태그에 50 이외 점수가 기록돼도
+    ///      (judge = EOA 경로, §12.6-A⑤) 렌즈는 흔들리지 않는다. 언더플로 가드는 불필요해져
+    ///      제거. 레지스트리(정본·Sepolia 배포본)는 무수정 — 기존 view 인터페이스만 쓴다.
+    ///      대가: 가스가 이력 길이에 선형(외부호출 n+1 회) — 수치는 EXP30.md §13.
+    ///      validator 필터(Exp30 §14.8 마감): 레지스트리 `validationRequest` 는 무허가라
+    ///      누구든 아무 agentId 에 자기 자신을 validator 로 등록하고 스스로 응답할 수 있다.
+    ///      필터 없이는 남이 낸 100점 10건으로 answered·점수를 부풀려 신참 할증을 우회하거나
+    ///      "abstain" 을 꽂아 기권률을 왜곡할 수 있었다(기존 구멍 — 담보 없는 응답은 담보
+    ///      이력이 아니다). `bonded` 가 낸 요청(validator == address(bonded))만 집계한다.
+    function _tally(uint256 agentId, address validator)
+        internal view returns (uint256 sum, uint64 answered, uint64 abstains)
+    {
+        bytes32[] memory reqs = valReg.getAgentValidations(agentId);
+        bytes32 tAbstain = keccak256(bytes(ABSTAIN_TAG));
+        bytes32 tDisputed = keccak256(bytes(DISPUTED_TAG));
+        bytes32 tUnchallenged = keccak256(bytes(UNCHALLENGED_TAG));
+        for (uint256 i = 0; i < reqs.length; i++) {
+            (address v, , uint8 response, string memory tag, bool responded) =
+                valReg.getValidationStatus(reqs[i]);
+            if (!responded || v != validator) continue;
+            bytes32 t = keccak256(bytes(tag));
+            if (t == tAbstain) { abstains++; continue; }
+            if (t == tDisputed || t == tUnchallenged) continue;
+            answered++;
+            sum += response;
+        }
+    }
+
+    /// @notice 신용 점수 0~100 = 기권·분쟁환급·소멸 제외 평균 검증 점수(정확 합계 / 답한 건수).
+    ///         이력 없으면 (0, 0). 신참 할증(answered < 10)은 소멸·기권·타 validator 응답으로 우회 불가.
     function creditScore(uint256 agentId) public view returns (uint256 score, uint64 answered) {
-        (uint64 count, uint256 avg) = valReg.getSummaryExcluding(agentId, ABSTAIN_TAG);
-        uint64 d = valReg.getSummaryByTag(agentId, DISPUTED_TAG);
-        if (count <= d) return (0, 0);
-        answered = count - d;
-        score = (avg * count - 50 * uint256(d)) / answered;
+        uint256 sum;
+        (sum, answered, ) = _tally(agentId, address(bonded));
+        if (answered == 0) return (0, 0);
+        score = sum / answered;
     }
 
     /// @notice 기권률(bp, 0~10000) — 감점이 아니라 정보로 노출.
     function abstainRateBp(uint256 agentId) external view returns (uint256) {
-        (, uint64 answered) = creditScore(agentId);
-        uint64 abstains = valReg.getSummaryByTag(agentId, ABSTAIN_TAG);
+        (, uint64 answered, uint64 abstains) = _tally(agentId, address(bonded));
         uint64 total = answered + abstains;
         return total == 0 ? 0 : (uint256(abstains) * 10000) / total;
     }

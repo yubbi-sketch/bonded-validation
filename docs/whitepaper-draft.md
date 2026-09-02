@@ -178,11 +178,44 @@ is drawn in a later block seeded by that block's hash, so the seed does not exis
 when the opener chooses the request hash — eliminating free grinding.
 Proposer-level bias remains (§9.3).
 
+**Second backstop — optimistic lapse (v0.3, Exp30; branch, not yet deployed).**
+v0.2.1 had a liveness gap: a claim locks bond at `requestValidation`, but the only
+release path was a verdict, and a verdict requires someone to *pay the fee to open
+a case*. An unopened claim stayed locked forever (a one-year warp still returned
+"claims pending"). v0.3 records `claimedAt` and a challenge window `W`: inside the
+window the panel's `openCase` marks the claim *engaged* (judge-only); once the
+window closes an **unengaged** claim can be released by anyone, with zero token
+movement, as score 50 / tag "unchallenged" — *not* a verification, an unverified
+release. `engage` (`<`) and lapse (`≥`) partition every timestamp, so there is no
+race at the edge. A commit that never drew a panel (pool < 3) is **reset**, not
+settled — fee returned, mark cleared, window still running — which closes the
+self-open bypass that would otherwise shrink an effective window to one vote
+timeout. No reimbursement or bounty is attached to opening a case: `R_c = 0` is
+forced by an impossibility (§5.2, S6) — a positive challenger payoff makes the
+opener+judge coalition's income outcome-dependent, i.e. the Theorem 3 subsidy
+relocated to the opener. The price is that deterrence becomes conditional on the
+probability `q` that a false claim is engaged inside `W` (§9.8). Every claim is
+now settleable by permissionless calls within
+`T_max = W + 2·voteTimeout + disputeTimeout` (Forge-measured, §5.1).
+
+**A pre-existing wedge, fixed in the same version.** `voteVerdict` accepted any
+`uint8` score while the registry requires `≤ 100`: two matching initial votes of
+101 made every settlement path revert forever ("range"), locking the agent's
+whole stake and three judges' case bonds. Halmos had not seen it because a
+reverting path is discarded, not reported (P4 was vacuous there). v0.3 bounds
+score (≤ 100), tag length (≤ 1024 B — settlement gas exceeds voting gas at every
+measured tag size, so an unbounded tag can make a vote land while its settlement
+cannot) and forbids judges from voting the reserved tags "unchallenged" /
+"disputed". PL1 now proves the timeout path *does not revert* for all score pairs.
+
 ### 3.3 Parameters (Sepolia)
 
 `minBondPerClaim` 1 token; judge `perCaseBond` 10; `judgeFee` 1; vote timeout
 3600 s; dispute timeout 86400 s; veteran threshold 3; seed window 256 blocks. The
 token (IISLAB) is valueless: no sale, no listing, no plans for either.
+v0.3 adds `challengeWindow W = 86,400 s` (**provisional**, pre-registered with the
+lower-bound rule `W ≥ k·(forced-inclusion delay) + voteTimeout`, `k ≥ 2`; the
+final value waits on measured L1/L2 inclusion delays), giving `T_max = 180,000 s`.
 
 ## 4. Empirical Results
 
@@ -234,6 +267,29 @@ outside SMT scope) and symbolic votes:
 PB/PC partition the verdict space by class, with the majority's *position* fixed
 without loss of generality — argued by symmetry, **not machine-checked**; the
 unpartitioned 8-vote refinement exceeded practical SMT budget and remains open.
+
+v0.3 (Exp30, `BondedValidatorV3Proofs` 10/10 · `BondedJudgePanelV3Proofs`, symbolic
+`dt` over `uint64`, concrete `W`): **T1–T4 regress unmodified** on the new
+contract; **L1** lapse is lossless and complete (∀ dt ≥ W: bond, slashedTotal and
+contract balance unchanged, atRisk released by exactly `minBondPerClaim`, registry
+= (50, "unchallenged")); **L2** no early lapse (∀ dt < W); **L3** enabled(engage)
+XOR enabled(lapse) at every dt, and the verdict path is closed with the window;
+**L4** an engaged claim never lapses, and after `disengage` it behaves exactly as
+unengaged; **L5** single settlement across both paths. Panel: **PA/PB/PC/P4
+regress unmodified**; **PL1** ∀ (s1, s2) ≤ 100 the timeout after two votes does
+not revert (asserted on the raw call — the region where P4 had been vacuous) and
+∀ s > 100 the vote itself reverts; **PL2** a commit timeout with no panel is a
+reset (phase None, fee back to the opener, mark cleared, claim unsettled); **PL3**
+reserved tags are refused and lapse leaves every judge's (bond, atRisk,
+settledCount, slashedTotal, balance) unchanged. Forge (measurement, not proof):
+settlement within `T_max` on every reachable state, including the worst path
+(open at the last second, draw at the exact commit-timeout second — `drawPanel`
+and `drawExpanded` carry no upper deadline, so an adversary can pre-empt the
+reset at the boundary — disputed initial timeout, expanded timeout) at
+`T_max − 1 s`, strictly inside `T_max`. An earlier draft of this paragraph said
+"exactly `T_max − 2 s`" from a draw one second *before* the timeout; independent
+re-verification (2026-09-03) found the tighter boundary path. The bound is
+unchanged; the stated worst path was.
 
 ### 5.2 Economic theorems (SMT, z3 — proofs by unsatisfiability)
 
@@ -442,6 +498,21 @@ dependency, decided in the open).
    it does not guarantee any classification.
 7. **Adoption.** No external reproduction or third-party audit yet; this version
    is intended to invite both.
+8. **Conditional deterrence under optimistic lapse (v0.3).** With a challenge
+   window, a false claim is punished only if someone pays to engage it inside `W`:
+   the expected penalty is `q·B_a`, exactly `(1−q)·B_a` less than v0.2.1 (z3 R1),
+   and a lie whose harm is dispersed (no single victim gains more than fee + gas
+   by challenging) faces `q = 0` in equilibrium. We could not buy challenger
+   supply: every optimistic precedent we measured (UMA OOv3, OP fault proofs) pays
+   the loser's bond to the winner, which Theorem 3 forbids; and any challenger
+   payoff `R_c > 0` with a positive fee makes coalition income outcome-dependent
+   (S6, unsat). So v0.3 buys a *bound on lock time*, not deterrence; "unchallenged"
+   is an unverified release and consumers must not count it as verification. A
+   judging pool below three for the whole window turns lapse into a lossless exit
+   for a liar; the registry sees each lapse as a 50-point response unless it
+   filters the tag; a settlement whose fee transfer reverts (hook/blacklist
+   tokens) would still wedge — LabToken cannot, real tokens are unverified.
+   Proofs are single-claim with concrete `W`; `W = 86,400 s` is provisional.
 
 ## 10. Conclusion
 

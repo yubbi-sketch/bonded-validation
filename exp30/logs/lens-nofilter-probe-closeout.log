@@ -1,0 +1,29 @@
+Compiling 2 files with Solc 0.8.28
+Solc 0.8.28 finished in 896.42ms
+Compiler run successful with warnings:
+Warning (5667): Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> src/ReputationLens.sol:45:38:
+   |
+45 |     function _tally(uint256 agentId, address validator)
+   |                                      ^^^^^^^^^^^^^^^^^
+
+Warning (2072): Unused local variable.
+  --> src/ReputationLens.sol:53:14:
+   |
+53 |             (address v, , uint8 response, string memory tag, bool responded) =
+   |              ^^^^^^^^^
+
+
+Ran 1 test for test/Exp30Lapse.t.sol:Exp30LapseTest
+[FAIL: foreign validator counted] test_R8_lens_ignores_other_validator_responses() (gas: 2593266)
+Suite result: FAILED. 0 passed; 1 failed; 0 skipped; finished in 7.22ms (498.92µs CPU time)
+
+Ran 1 test suite in 15.88ms (7.22ms CPU time): 0 tests passed, 1 failed, 0 skipped (1 total tests)
+
+Failing tests:
+Encountered 1 failing test in test/Exp30Lapse.t.sol:Exp30LapseTest
+[FAIL: foreign validator counted] test_R8_lens_ignores_other_validator_responses() (gas: 2593266)
+
+Encountered a total of 1 failing tests, 0 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 1 failed test

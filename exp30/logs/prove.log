@@ -1,0 +1,73 @@
+── Q1. 조건부 억지 — 거짓말 기대이익 Π_lie = G − q·ρ·B_a (v0.2.1 은 q ≡ 1) ──
+[OK ] [THM] Q1  q·ρ·B_a ≥ G ⟹ Π_lie ≤ 0: unsat (기대 unsat)
+[OK ] [THM] Q1-v021 q = 1, ρ = 1, G ≤ B_a ⟹ Π_lie ≤ 0 (현행 항상판정과 동치): unsat (기대 unsat)
+[OK ] [WIT] Q1′ q < q* = G/(ρ·B_a) 이면 수익 가능한 거짓말 존재 (억지력은 q 에 조건부): sat (기대 sat)
+       증인: [q = 0.5,
+ G = 2,
+ rho = 0.5,
+ w = 0.5,
+ B_a = 1,
+ gas = 1,
+ R_c = 0,
+ F = 0]
+[OK ] [WIT] Q1″ 분산피해형 거짓말(G 가 커도 q = 0)은 Π_lie = G > 0 (Exp30 §7-1 R3): sat (기대 sat)
+       증인: [rho = 0.5,
+ w = 0.5,
+ R_c = 0,
+ F = 0,
+ G = 1,
+ gas = 1,
+ B_a = 1,
+ q = 0]
+── S1/S6. 도전자 공급 불가능성 — R_c = 0 선택의 근거 ──
+[OK ] [THM] S1  R_c ≤ F ⟹ 도전자 EV = w·R_c − F − gas < 0 (w = 1 이어도): unsat (기대 unsat)
+[OK ] [THM] S6  [Δ = 0] ∧ [도전자 EV = w·R_c − F ≥ 0] ∧ F > 0 은 동시 불가: unsat (기대 unsat)
+[OK ] [WIT] S6′ F = 0 이면 동시 가능 — 그러나 그리핑 비용 0(개설 무료): sat (기대 sat)
+       증인: [rho = 0.5,
+ w = 0.5,
+ q = 0.5,
+ gas = 1,
+ B_a = 1,
+ R_c = 0,
+ F = 0]
+[OK ] [WIT] S6″ 도전자 EV ≥ 0 을 사려면 Δ = R_c > 0 이 강제된다 (정리 3 보조금의 개설자 이식): sat (기대 sat)
+       증인: [F = 1,
+ R_c = 1,
+ rho = 0.5,
+ w = 1,
+ q = 0.5,
+ gas = 1,
+ B_a = 1]
+── B5. 풀 장악(ρ = 환류 비율) 사건당 수익 = R_c + ρ·F − F ──
+[OK ] [THM] B5  R_c = 0 ⟹ 장악해도 사건당 수익 ≤ 0 (v0.2.1 = v0.3): unsat (기대 unsat)
+[OK ] [WIT] B5′ R_c > 0, ρ = 1 ⟹ 사건당 +R_c (장악 자기조달): sat (기대 sat)
+       증인: [R_c = 1,
+ w = 0.5,
+ q = 0.5,
+ gas = 1,
+ B_a = 1,
+ F = 0,
+ rho = 1]
+[OK ] [THM] B5″ R_c = 0 ⟹ 어떤 N 으로도 장악비용 C > 0 회수 불가 (S7′): unsat (기대 unsat)
+── R1. 한계 박제 — v0.2.1 대비 기대벌칙 감소분 ──
+[OK ] [THM] R1  ∀ q < 1, ρ = 1: 감소분 = (1−q)·B_a 정확 (다른 값 불가): unsat (기대 unsat)
+[OK ] [THM] R1′ ∀ q < 1, ρ > 0: v0.3 기대벌칙 < v0.2.1 기대벌칙 (엄격): unsat (기대 unsat)
+[OK ] [THM] R1″ q = 1 이면 감소분 0 (창 안 도전이 확실하면 현행과 동치): unsat (기대 unsat)
+── W1. wash — 에이전트 + 공모 개설자가 고의 오답을 슬래시당해 R_c 회수 ──
+[OK ] [THM] W1  R_c = 0 ⟹ wash 공동이득 ≤ 0 (∀ ρ ≤ 1): unsat (기대 unsat)
+[OK ] [THM] W1′ R_c ≤ B_a (Exp26 (W)) 이어도 ≤ 0: unsat (기대 unsat)
+[OK ] [WIT] W1″ R_c > B_a 면 wash 가능 (조건 필요성): sat (기대 sat)
+       증인: [q = 0.5,
+ R_c = 2,
+ w = 0.5,
+ B_a = 1,
+ gas = 1,
+ F = 0,
+ rho = 1]
+── T_max 산술 (증명 아님·기록): W + 2·voteTimeout + disputeTimeout ──
+     W=86400 voteTimeout=3600 disputeTimeout=86400 → T_max = 180000s (50.0h)
+
+결론: z3 판정 17건 전부 기대와 일치 (17/17).
+  R_c = 0 이 지배적: 같은(0) 도전자 공급(S1)·엄격히 작은 공격면(B5·W1)·정리 3/Exp26 (W)/Exp27 정합.
+  대가(한계): 억지력은 q 에 조건부(Q1′), 감소분은 정확히 (1−q)·B_a (R1), 분산피해형은 q=0 (Q1″).
+→ exp30/out/prove.json 기록

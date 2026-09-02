@@ -1,0 +1,125 @@
+anvil(8549) up
+IdentityRegistry=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+ValidationRegistry=0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
+BondedValidator=0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9
+ReputationLens=0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
+registered agentIds: {'honest': 1, 'extractor': 2, 'hallucinator': 3}
+== 추출기 준비 (Exp1 구성 + Exp2 확신도)
+  [extractor] epoch 1/40 loss=2.5329
+  [extractor] epoch 2/40 loss=0.5888
+  [extractor] epoch 3/40 loss=0.3412
+  [extractor] epoch 4/40 loss=0.2356
+  [extractor] epoch 5/40 loss=0.1728
+  [extractor] epoch 6/40 loss=0.1296
+  [extractor] epoch 7/40 loss=0.1022
+  [extractor] epoch 8/40 loss=0.0823
+  [extractor] epoch 9/40 loss=0.0656
+  [extractor] epoch 10/40 loss=0.0520
+  [extractor] epoch 11/40 loss=0.0430
+  [extractor] epoch 12/40 loss=0.0341
+  [extractor] epoch 13/40 loss=0.0299
+  [extractor] epoch 14/40 loss=0.0255
+  [extractor] epoch 15/40 loss=0.0214
+  [extractor] epoch 16/40 loss=0.0185
+  [extractor] epoch 17/40 loss=0.0164
+  [extractor] epoch 18/40 loss=0.0148
+  [extractor] epoch 19/40 loss=0.0137
+  [extractor] epoch 20/40 loss=0.0121
+  [extractor] epoch 21/40 loss=0.0109
+  [extractor] epoch 22/40 loss=0.0101
+  [extractor] epoch 23/40 loss=0.0091
+  [extractor] epoch 24/40 loss=0.0085
+  [extractor] epoch 25/40 loss=0.0078
+  [extractor] epoch 26/40 loss=0.0071
+  [extractor] epoch 27/40 loss=0.0067
+  [extractor] epoch 28/40 loss=0.0064
+  [extractor] epoch 29/40 loss=0.0061
+  [extractor] epoch 30/40 loss=0.0057
+  [extractor] epoch 31/40 loss=0.0052
+  [extractor] epoch 32/40 loss=0.0049
+  [extractor] epoch 33/40 loss=0.0046
+  [extractor] epoch 34/40 loss=0.0044
+  [extractor] epoch 35/40 loss=0.0042
+  [extractor] epoch 36/40 loss=0.0040
+  [extractor] epoch 37/40 loss=0.0038
+  [extractor] epoch 38/40 loss=0.0036
+  [extractor] epoch 39/40 loss=0.0035
+  [extractor] epoch 40/40 loss=0.0033
+  20/100  bonds: honest=50 extractor=50 hallucinator=44
+  40/100  bonds: honest=50 extractor=50 hallucinator=33
+  60/100  bonds: honest=50 extractor=50 hallucinator=21
+  80/100  bonds: honest=50 extractor=50 hallucinator=11
+  100/100  bonds: honest=50 extractor=50 hallucinator=0
+{
+  "n_problems": 100,
+  "tau": 0.9,
+  "final_bonds": {
+    "honest": 50.0,
+    "extractor": 50.0,
+    "hallucinator": 0.0
+  },
+  "moves": {
+    "honest": {
+      "correct": 100,
+      "wrong": 0,
+      "abstain": 0
+    },
+    "extractor": {
+      "correct": 84,
+      "wrong": 0,
+      "abstain": 16
+    },
+    "hallucinator": {
+      "correct": 50,
+      "wrong": 50,
+      "abstain": 0
+    }
+  },
+  "onchain_reputation_naive": {
+    "honest": {
+      "validations": 100,
+      "avg_score": 100
+    },
+    "extractor": {
+      "validations": 100,
+      "avg_score": 84
+    },
+    "hallucinator": {
+      "validations": 100,
+      "avg_score": 50
+    }
+  },
+  "reputation_lens": {
+    "honest": {
+      "score_neutral": 100,
+      "answered": 100,
+      "abstain_rate_bp": 0,
+      "required_bond_bp": 5000
+    },
+    "extractor": {
+      "score_neutral": 100,
+      "answered": 84,
+      "abstain_rate_bp": 1600,
+      "required_bond_bp": 5000
+    },
+    "hallucinator": {
+      "score_neutral": 50,
+      "answered": 100,
+      "abstain_rate_bp": 0,
+      "required_bond_bp": 10000
+    }
+  },
+  "verdict": {
+    "K1_abstain_neutral_pass": true,
+    "K2_bond_ordering_pass": true
+  },
+  "contracts": {
+    "IdentityRegistry": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "ValidationRegistry": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "BondedValidator": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
+  }
+}
+VERDICT: {'K1_abstain_neutral_pass': True, 'K2_bond_ordering_pass': True}
+VERDICT: {'K1_abstain_neutral_pass': True, 'K2_bond_ordering_pass': True}
+plot saved
+exit=0
