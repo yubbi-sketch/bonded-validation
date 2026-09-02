@@ -1,0 +1,135 @@
+Compiling 3 files with Solc 0.8.28
+Solc 0.8.28 finished in 995.11ms
+Compiler run successful!
+
+Ran 8 tests for test/BondManager.t.sol:BondManagerTest
+[PASS] test_claim_requires_bond() (gas: 13296)
+[PASS] test_free_bond_gates_parallel_claims() (gas: 765568)
+[PASS] test_no_double_settle() (gas: 160050)
+[PASS] test_only_judge_settles() (gas: 130065)
+[PASS] test_slash_reduces_bond() (gas: 162031)
+[PASS] test_uphold_keeps_bond() (gas: 137580)
+[PASS] test_withdraw_after_delay() (gas: 46981)
+[PASS] test_withdraw_needs_delay_and_no_pending() (gas: 155617)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 964.17µs (679.50µs CPU time)
+
+Ran 8 tests for test/BondedValidator.t.sol:BondedValidatorTest
+[PASS] test_abstain_no_loss_even_with_zero_score() (gas: 297579)
+[PASS] test_high_score_releases() (gas: 317576)
+[PASS] test_low_score_slashes_and_records() (gas: 346043)
+[PASS] test_only_agent_wallet_can_speak() (gas: 16614)
+[PASS] test_only_bonded_validator_can_respond_registry() (gas: 262828)
+[PASS] test_registry_summary_averages_scores() (gas: 568682)
+[PASS] test_request_requires_bond() (gas: 74766)
+[PASS] test_withdraw_blocked_by_pending_then_ok() (gas: 338629)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 915.08µs (516.46µs CPU time)
+
+Ran 4 tests for test/ServiceVoucher.t.sol:ServiceVoucherTest
+[PASS] test_buy_use_flow() (gas: 103396)
+[PASS] test_refund_face_value() (gas: 105146)
+[PASS] test_transfer_blocked() (gas: 98374)
+[PASS] test_use_over_balance_reverts() (gas: 94276)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 1.04ms (797.67µs CPU time)
+
+Ran 6 tests for test/ZkVerdictGate.t.sol:ZkVerdictGateTest
+[PASS] test_attest_settles_and_reimburses() (gas: 231977)
+[PASS] test_bad_verify_reverts() (gas: 18666)
+[PASS] test_no_double_attest() (gas: 239597)
+[PASS] test_score_forgery_reverts() (gas: 11796)
+[PASS] test_wrong_case_binding_reverts() (gas: 11697)
+[PASS] test_wrong_verdict_slashes_agent() (gas: 271310)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 1.06ms (758.33µs CPU time)
+
+Ran 15 tests for test/BondedJudgePanel.t.sol:BondedJudgePanelTest
+[PASS] test_expanded_majority_slashes_minority_burn_and_compensate() (gas: 2009161)
+[PASS] test_expanded_majority_wrong_slashes_agent_too() (gas: 2002409)
+[PASS] test_expanded_split_no_majority_refunds_without_slash() (gas: 1968278)
+[PASS] test_expanded_timeout_refunds_without_slash() (gas: 1495531)
+[PASS] test_initial_timeout_disputed_escalates() (gas: 1235860)
+[PASS] test_initial_timeout_single_vote_refunds() (gas: 813587)
+[PASS] test_initial_timeout_two_matching_settle() (gas: 921961)
+[PASS] test_non_panelist_and_double_vote_revert() (gas: 781850)
+[PASS] test_open_draws_three_and_locks_bonds() (gas: 684828)
+[PASS] test_open_requires_existing_unsettled_claim() (gas: 16355)
+[PASS] test_register_requires_entry_bond_and_identity() (gas: 260303)
+[PASS] test_slashed_newcomer_loses_draw_eligibility() (gas: 2438838)
+[PASS] test_unanimous_settles_fee_split_no_agent_slash() (gas: 1041541)
+[PASS] test_veteran_threshold_zero_lowers_entry() (gas: 2566740)
+[PASS] test_withdraw_delayed_and_blocked_while_at_risk() (gas: 1042459)
+Suite result: ok. 15 passed; 0 failed; 0 skipped; finished in 3.87ms (3.45ms CPU time)
+
+Ran 9 tests for test/BondedJudgePanelV2.t.sol:BondedJudgePanelV2Test
+[PASS] test_committed_timeout_refunds_fee_to_opener() (gas: 409275)
+[PASS] test_draw_blocked_in_commit_block() (gas: 673088)
+[PASS] test_expanded_commit_timeout_refunds() (gas: 1090362)
+[PASS] test_expanded_majority_slashes_minority_no_bounty() (gas: 2054109)
+[PASS] test_expanded_split_refunds_without_slash() (gas: 2013537)
+[PASS] test_initial_timeout_disputed_goes_to_expanded_commit() (gas: 1265377)
+[PASS] test_seed_expiry_forces_recommit() (gas: 679996)
+[PASS] test_unanimous_settles_fee_split() (gas: 1060468)
+[PASS] test_vote_blocked_before_reveal() (gas: 338900)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 3.95ms (2.66ms CPU time)
+
+Ran 5 tests for test/ReputationLens.t.sol:ReputationLensTest
+[PASS] test_abstain_neutral_score() (gas: 4936946)
+[PASS] test_abstain_rate_exposed_separately() (gas: 4912992)
+[PASS] test_half_score_full_bond() (gas: 4905324)
+[PASS] test_required_bond_tiers() (gas: 3126966)
+[PASS] test_wrongs_still_hurt() (gas: 4905128)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 3.89ms (5.07ms CPU time)
+
+Ran 7 tests for test/JudgePanel.t.sol:JudgePanelTest
+[PASS] test_double_vote_reverts() (gas: 366404)
+[PASS] test_eoa_cannot_bypass_panel() (gas: 262573)
+[PASS] test_non_judge_reverts() (gas: 264821)
+[PASS] test_single_corrupt_cannot_exonerate_either() (gas: 448299)
+[PASS] test_single_dissent_blocks_slash() (gas: 454024)
+[PASS] test_unanimous_correct_releases() (gas: 508260)
+[PASS] test_unanimous_wrong_slashes() (gas: 511645)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 43.51ms (1.24ms CPU time)
+
+Ran 7 tests for test/JudgePanelV2.t.sol:JudgePanelV2Test
+[PASS] test_arbiter_only_on_disputes() (gas: 388538)
+[PASS] test_arbiter_resolves_dispute_with_slash() (gas: 559434)
+[PASS] test_dispute_timeout_refunds_neutral() (gas: 525847)
+[PASS] test_laggard_two_votes_settle_and_record() (gas: 495884)
+[PASS] test_non_arbiter_cannot_rule() (gas: 418593)
+[PASS] test_single_vote_timeout_refunds() (gas: 457608)
+[PASS] test_unanimous_still_settles_immediately() (gas: 512223)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 43.24ms (660.04µs CPU time)
+
+Ran 23 tests for test/Exp30Lapse.t.sol:Exp30LapseTest
+[PASS] test_A_thin_pool_self_open_no_longer_bypasses_window() (gas: 1788648)
+[PASS] test_K2a_expanded_commit_timeout_within_Tmax() (gas: 3016227)
+[PASS] test_K2a_expanded_split_221_refunds_within_Tmax() (gas: 3990944)
+[PASS] test_K2a_last_second_open_pool0_resets_then_lapses() (gas: 452036)
+[PASS] test_K2a_pool2_resets_then_lapses() (gas: 948788)
+[PASS] test_K2a_reset_reopen_reset_lapse_bounded() (gas: 958795)
+[PASS] test_K2a_two_matching_votes_timeout_settles_within_Tmax() (gas: 3016633)
+[PASS] test_K2a_unopened_lapses_at_W_zero_liquidity_agent_withdraws() (gas: 2503003)
+[PASS] test_K2a_worst_path_expanded_timeout_hits_Tmax_bound() (gas: 3416184)
+[PASS] test_K2b_wedge_closed_score_range_tag_length_reserved() (gas: 10108333)
+[PASS] test_K4a_lapse_moves_zero_tokens() (gas: 1127461)
+[PASS] test_K4b_captured_pool_griefing_correct_claim_net_income_zero() (gas: 1773509)
+[PASS] test_K4b_two_seats_silent_third_timeout_verdict_net_income_zero() (gas: 1648846)
+[PASS] test_K4c_unchallenged_lock_is_exactly_W_with_prearmed_unbond() (gas: 366830)
+[PASS] test_K4d_100_lapses_lens_stable() (gas: 28507940)
+[PASS] test_L5_single_settlement_concrete() (gas: 619879)
+[PASS] test_R2R3_engage_disengage_only_judge() (gas: 306264)
+[PASS] test_R5_direct_verdict_inside_window_only_unless_engaged() (gas: 865784)
+[FAIL: neutralization wrong] test_R8_lens_neutralizes_unchallenged_and_guards_underflow() (gas: 5089432)
+[PASS] test_R8fix_exact_sum_100x10_plus_990_lapses() (gas: 288990537)
+[PASS] test_R8fix_exact_sum_49x10_plus_100_lapses() (gas: 30991322)
+[PASS] test_R9_constructor_rejects_bad_window() (gas: 1386489)
+[PASS] test_reopen_after_reset_draws_and_settles_cleanly() (gas: 3136795)
+Suite result: FAILED. 22 passed; 1 failed; 0 skipped; finished in 43.57ms (65.39ms CPU time)
+
+Ran 10 test suites in 44.23ms (146.02ms CPU time): 91 tests passed, 1 failed, 0 skipped (92 total tests)
+
+Failing tests:
+Encountered 1 failing test in test/Exp30Lapse.t.sol:Exp30LapseTest
+[FAIL: neutralization wrong] test_R8_lens_neutralizes_unchallenged_and_guards_underflow() (gas: 5089432)
+
+Encountered a total of 1 failing tests, 91 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 1 failed test

@@ -432,3 +432,69 @@ cd ../.. && .venv-halmos/bin/python exp30/prove.py && .venv-xverify/bin/python x
 ### 12.8 다음 한 수
 
 결재 전, 브랜치에서 **되돌릴 수 있는 정정 묶음 1회**: (a) `ReputationLens.creditScore` 를 내림 평균 복원 대신 정확 합계(레지스트리 순회 또는 다중태그 제외 합계 함수)로 수리 + Forge 회귀 2건(100점 10 + 소멸 990 → (100, 10)·5000bp / 49점 10 + 소멸 100 → 49) + Halmos·Forge 전량 재실행; (b) 문서 정정 — T_max−1·캐시 함정 조건·경로 수 변동·§7-5(`_resetCommit`)·§7-13(능동형·지연 매개변수)·§7-14 문구·ZkVerdictGate W 마감·K1 라벨·헤더 지위; (c) 발견 대장 RT 등재 2건. 그 다음 **① 결재 → main 이식 → K1 재실행 → ② W 확정(강제포함 지연 실측) → Sepolia 배포 → K2(c) 실측**. 불참 페널티·판정자 용량 하한은 별도 심의로 분리.
+
+---
+
+## 13. 결재 전 정정 묶음 (a) — 렌즈 내림 편향 수리 (2026-09-03 · 브랜치 `exp30-liveness` · §12.8 (a) 실행 · 결재 ①② 전)
+
+> 지위: 되돌릴 수 있는 정정. 정본(`Erc8004Registries.sol`·`BondedValidator.sol`·`BondedJudgePanelV2.sol`·`ZkVerdictGate.sol`) 무수정 · main 무수정 · 미배포. §5 킬기준 원문은 바이트 단위로 손대지 않았다(§12 이전 절 전부 무수정 — 이 절만 추가).
+
+### 13.1 무엇을 어떻게 고쳤나
+
+- **대상:** `exp3/contracts/src/ReputationLens.sol` — `creditScore`·`abstainRateBp` (둘 다 view, 상태 없음).
+- **원인(§12.6-A①):** 레지스트리 `getSummaryExcluding` 은 내림 평균 avg = ⌊S/count⌋ 만 돌려주므로 렌즈가 `avg·count` 로 합계 S 를 복원했다. 복원 오차 ≤ count−1 이 answered 로 나뉘어 중립 건수 d ≫ answered 이면 편향이 무계 — 정답 100점 10건 + 소멸 990건 → 50(정확 100), `requiredBondBp` 10000(정확 5000).
+- **수리(수식):** 렌즈가 레지스트리를 직접 순회해 정확 합계를 만든다.
+  `_tally(agentId)`: `reqs = valReg.getAgentValidations(agentId)`; 각 `h ∈ reqs` 에 대해 `(…, response, tag, responded) = valReg.getValidationStatus(h)`; `responded` 인 것만, `tag = "abstain"` 이면 `abstains++`, `tag ∈ {"disputed", "unchallenged"}` 이면 건너뜀, 그 외 `answered++`, `sum += response`.
+  `creditScore = answered == 0 ? (0, 0) : (⌊sum / answered⌋, answered)` · `abstainRateBp = ⌊abstains·10000 / (answered + abstains)⌋`.
+  내림은 마지막 나눗셈 한 번(< 1점)뿐. 이전의 `avg·count < 50·d` 언더플로 가드는 정확 합계에선 발생 불가라 제거.
+- **R8 '소멸은 평판 중립' 보존 방식:** "50점을 걷어냄"(점수 의존)이 아니라 **"답한 이력에 없음"**(태그 의존)으로 실현. 소멸 990건이 있어도 answered = 10 이라 신참 할증(answered < 10 → 15000bp) 우회 불가(K4(d) `test_K4d_100_lapses_lens_stable` 그대로 통과), 예약 태그에 50 이외 점수가 기록되는 judge = EOA 경로(§12.6-A⑤)에서도 렌즈는 흔들리지 않는다. `"disputed"`(JudgePanelV2 시한환급) 중립도 같은 방식으로 유지(`JudgePanelV2.t.sol` 2건 통과).
+- **왜 '순회'이고 '다중태그 제외 합계 함수'가 아닌가:** 후자는 정본 레지스트리(Sepolia 배포본) 수정 + 재배포 = 결재 범위 확대. 순회는 렌즈 단독 변경(렌즈는 상태 없는 view 계약이라 재배포로 교체 가능)이며 되돌릴 수 있다.
+
+### 13.2 회귀 테스트 2건 (Forge · `exp3/contracts/test/Exp30Lapse.t.sol` · 실제 `BondedValidatorV3.settleUnchallenged` 소멸 경로, judge = this)
+
+| 테스트 | 시나리오 | 수리 전(내림 복원) | 수리 후 |
+|---|---|---|---|
+| `test_R8fix_exact_sum_100x10_plus_990_lapses` | 정답 100점 10건 → 소멸 990건 (n = 1,000) | (50, 10) · 10000bp | **(100, 10) · 5000bp** · `requiredBond` 5e17 · abstainBp 0 · 담보 10e18 무손실(atRisk 0·slashed 0) — PASS |
+| `test_R8fix_exact_sum_49x10_plus_100_lapses` | 소멸 50 → 49점 10건 → 소멸 50 (순서 무관 확인, n = 110; 49 < THRESHOLD 라 10건 슬래시, 담보 10e18 추가 예치) | 39 · 11100bp | **49** · 10100bp · slashed 10e18 정확 — PASS |
+
+### 13.3 실행 결과 (수리 후 전량 재실행 · forge 1.7.1 · halmos 0.3.3 · `forge clean` 후 halmos)
+
+| 도구 | 대상 | 결과 | 로그 |
+|---|---|---|---|
+| Forge | 10 suites, 92 tests (기존 90 + 신규 2) | **91 passed · 1 failed** · 44ms | `logs/forge-test-lensfix.log` |
+| Halmos | `BondedValidatorV3Proofs` T1~T4 + L1~L5 | **10/10** · 1.78s (wall 5.4s 컴파일 포함) | `logs/halmos-bv3-lensfix.log` |
+| Halmos `--loop 33` | `BondedJudgePanelV3Proofs` PA/PB/PC/P4 + PL1~PL3 | **9/9** · 244.65s (wall 4:09; PB 경로 수 1,074 — 실행 간 변동) | `logs/halmos-panel3-lensfix.log` |
+| Halmos | v0.2.1 `BondedValidatorProofs` 회귀 T1~T4 | **4/4** · 1.04s | `logs/halmos-bv021-regression-lensfix.log` |
+
+- **실패 1건 = 기존 테스트, 지시대로 미수정.** `test_R8_lens_neutralizes_unchallenged_and_guards_underflow` 2단계 단언 `answered == 13 && score == 91` — 이 91 은 내림 편향값을 기대값으로 박제한 것(같은 테스트 주석에 '정확값 92.3' 명기). 수리 후 렌즈는 ⌊(12·100 + 1·0) / 13⌋ = **92** 를 돌려줘 단언이 깨진다(실측 revert 사유 `neutralization wrong`; 1단계 언더플로 시나리오 오답 1·소멸 3 → (0, 1)·15000bp 는 통과 지점을 지남). 수정안(상위 결정): `91 → 92`, bp `5000 + (100 − 92)·100 = 5800`. 그 외 90건(기존 `ReputationLens.t.sol` 5/5 · `JudgePanelV2.t.sol` disputed 중립 · K4(d) 포함) 전부 통과.
+- Halmos 는 렌즈를 import 하는 대상이 없어 '동일'이 기대값이며 실측도 동일(경로 수는 실행 간 변동 — §12.6-B).
+
+### 13.4 가스 (`logs/lens-gas-probe.log` · 임시 프로브 `_GasProbe.t.sol`, 미커밋 · revm gasleft() 차분, 테스트 → 렌즈 외부호출 포함)
+
+| 시나리오 | `creditScore` 콜드(별도 tx) 전 → 후 | 웜 전 → 후 | `abstainRateBp` 웜 전 → 후 |
+|---|---|---|---|
+| n = 1,000 (100점 10 + 소멸 990) | 11,977,830 → **15,957,620 (+33%)** | 3,968,826 → 3,948,616 (−0.5%) | 5,150,867 → 3,948,743 (−23%) |
+| n = 110 (49점 10 + 소멸 100) | 1,330,760 → 1,743,700 (+31%) | 441,756 → 414,696 | 573,597 → 414,862 |
+| n = 20 (100점 12 + 기권 8) | 234,508 → 328,707 (+40%) | 81,504 → 79,703 | 108,033 → 79,872 |
+
+이유: 이전 구현은 레지스트리 안에서 3회 순회(제외 평균 1 + 태그 건수 2, 건당 3슬롯), 새 구현은 렌즈에서 1회 순회이나 건당 외부호출 1 + 5슬롯(`getValidationStatus` 가 validator·agentId 도 읽음). 콜드에선 슬롯 수가, 웜에선 순회 횟수가 지배한다. **두 구현 모두 이력 길이에 선형** — n = 1,000 이면 콜드 12~16M gas 로 어느 쪽도 온체인 호출(Exp31 `requiredBond` 강제)엔 못 쓴다; 오프체인 `eth_call` 용도(현재)는 영향 없음.
+**대안(한 줄):** 정산 시점(`_settle`/`validationResponse`)에 에이전트별 (sum, answered, abstains) 누적 캐시를 O(1) 로 갱신하고 렌즈가 그것만 읽으면 호출당 상수 gas — 정본 수정이라 Exp31 심의 항목.
+
+### 13.5 정직한 한계
+
+1. 전량 녹색이 아니다 — 기존 실패 1건(13.3)을 남긴 채 커밋(지시). `results.json`·§12.4 의 Forge 90/90 은 §12 시점 기록으로 그대로 둠.
+2. 순회 렌즈에 ∀ 증명은 없다(Halmos 대상 아님) — Forge 실측 신규 2 + 기존 5 + K4(d) + JudgePanelV2 2 뿐.
+3. 가스는 forge revm 측정치 — 실제 노드 `eth_call` 절대치와 다를 수 있다(상대 비교용). 콜드 여부는 forge 가 setUp 과 테스트를 별도 tx 로 돌린다는 전제(콜드 ≫ 웜 실측으로 확인).
+4. `getSummaryExcluding` 의 내림은 레지스트리 정본 성질 그대로 — 렌즈만 우회했다. 다른 소비자가 그 함수로 평균을 쓰면 같은 편향이 남는다(ERC 초안 R12 MUST-exclude 는 권고).
+5. §11.3-3·§11.3-8·§12.6-A① 의 '수리 전' 서술과 `REPRODUCTION.md:88` '90 passed' 는 문서 정정 묶음 (b) 에서 함께 손볼 것(이 커밋은 코드·테스트·이 절·로그만).
+6. 렌즈 의미 변화: 예약 태그 건은 점수와 무관하게 제외 — 이전엔 정확히 50점일 때만 중립이었다. 소비자 문서(ERC 초안 R12)엔 미반영.
+
+### 13.6 재현
+
+```bash
+cd ~/iis-lab && git checkout exp30-liveness && cd exp3/contracts
+forge test                                                        # 92 tests: 91 passed, 1 failed (기존 R8 단언 91 vs 정확값 92)
+forge clean && ../../.venv-halmos/bin/halmos --contract BondedValidatorV3Proofs      # 10 passed
+../../.venv-halmos/bin/halmos --contract BondedJudgePanelV3Proofs --loop 33          # 9 passed (~4 min)
+../../.venv-halmos/bin/halmos --contract BondedValidatorProofs                       # 4 passed
+```

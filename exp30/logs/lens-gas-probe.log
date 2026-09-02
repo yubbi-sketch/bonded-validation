@@ -1,0 +1,57 @@
+# ReputationLens 가스 프로브 (Exp30 §13 · 2026-09-03 · forge 1.7.1, revm, optimizer 200)
+# 임시 테스트 test/_GasProbe.t.sol(미커밋)로 측정. 이력은 setUp 에서 만들고 테스트 함수에서
+# 측정 → 첫 호출은 콜드(EIP-2929, 별도 tx), 두 번째 호출은 웜. 시나리오:
+#   n1000 = 정답 100점 10건 + 소멸(settleUnchallenged) 990건
+#   n110  = 49점 10건 + 소멸 100건
+#   n20   = 정답 100점 12건 + 기권 8건
+# 단위: gas (테스트 컨트랙트 → 렌즈 외부호출 포함, gasleft() 차분)
+
+##### OLD lens (HEAD 23b0e95: getSummaryExcluding 내림 평균 복원)
+  n1000 creditScore(cold) 11977830
+  n1000 -> score 50
+  n1000 -> answered 10
+  n1000 creditScore(warm) 3968826
+  n1000 abstainRateBp(warm) 5150867
+  n1000 -> abstainBp 0
+  n1000 -> bp 10000
+  n110 creditScore(cold) 1330760
+  n110 -> score 39
+  n110 -> answered 10
+  n110 creditScore(warm) 441756
+  n110 abstainRateBp(warm) 573597
+  n110 -> abstainBp 0
+  n110 -> bp 11100
+  n20 creditScore(cold) 234508
+  n20 -> score 100
+  n20 -> answered 12
+  n20 creditScore(warm) 81504
+  n20 abstainRateBp(warm) 108033
+  n20 -> abstainBp 4000
+  n20 -> bp 5000
+
+##### NEW lens (레지스트리 순회 정확 합계 _tally)
+  n1000 creditScore(cold) 15957620
+  n1000 -> score 100
+  n1000 -> answered 10
+  n1000 creditScore(warm) 3948616
+  n1000 abstainRateBp(warm) 3948743
+  n1000 -> abstainBp 0
+  n1000 -> bp 5000
+  n110 creditScore(cold) 1743700
+  n110 -> score 49
+  n110 -> answered 10
+  n110 creditScore(warm) 414696
+  n110 abstainRateBp(warm) 414862
+  n110 -> abstainBp 0
+  n110 -> bp 10100
+  n20 creditScore(cold) 328707
+  n20 -> score 100
+  n20 -> answered 12
+  n20 creditScore(warm) 79703
+  n20 abstainRateBp(warm) 79872
+  n20 -> abstainBp 4000
+  n20 -> bp 5000
+
+# 요약: 콜드 creditScore +33%(n1000 11.98M→15.96M) · +31%(n110) · +40%(n20);
+#       웜 creditScore ≈ 동일(−0.5%); abstainRateBp 웜 −23%(순회 1회 공유).
+#       두 구현 모두 이력 길이에 선형 — n=1000 이면 콜드 12~16M gas 로 온체인 호출(Exp31) 불가 영역.

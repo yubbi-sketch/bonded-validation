@@ -601,6 +601,57 @@ contract Exp30LapseTest {
         require(lensD.requiredBondBp(aidD) == 5000 + (100 - 91) * 100, "bp");
     }
 
+    /// §12.6-A① 수리 회귀 1 — 정확 합계: 정답 100점 10건 + 소멸 990건 → (100, 10) · 5000bp.
+    ///         수리 전(내림 평균 복원)은 (50, 10) · 10000bp 였다(logs/lens-gas-probe.log).
+    function test_R8fix_exact_sum_100x10_plus_990_lapses() public {
+        for (uint256 i = 0; i < 10; i++) {
+            bytes32 h = keccak256(abi.encode("R8fix.ok", i));
+            _claimD(h);
+            bvD.submitVerdict(h, 100, "", bytes32(0), "correct");
+        }
+        for (uint256 i = 0; i < 990; i++) {
+            bytes32 h = keccak256(abi.encode("R8fix.lapse", i));
+            _claimD(h);
+            vm.warp(block.timestamp + W);
+            bvD.settleUnchallenged(h);
+        }
+        require(valReg.getSummaryByTag(aidD, "unchallenged") == 990, "lapse count");
+        (uint256 score, uint64 answered) = lensD.creditScore(aidD);
+        require(score == 100 && answered == 10, "floor bias not fixed");
+        require(lensD.requiredBondBp(aidD) == 5000, "bp must be perfect discount");
+        require(lensD.requiredBond(aidD) == 5e17, "absolute bond");
+        require(lensD.abstainRateBp(aidD) == 0, "abstain rate");
+        (uint256 b, uint256 atRisk,, uint256 slashed) = bvD.agents(aidD);
+        require(b == 10e18 && atRisk == 0 && slashed == 0, "lapses must be lossless");
+    }
+
+    /// §12.6-A① 수리 회귀 2 — 49점 10건 + 소멸 100건 → 49 (수리 전 39). 순서 무관을 보이려
+    ///         소멸 50 · 답 10 · 소멸 50 으로 끼워 넣는다. 49 < THRESHOLD 라 답 10건은 전부
+    ///         슬래시(10e18) — 담보 10e18 추가 예치 후 실행.
+    function test_R8fix_exact_sum_49x10_plus_100_lapses() public {
+        vm.prank(wallet);
+        bvD.stake(aidD, 10e18);
+        for (uint256 i = 0; i < 100; i++) {
+            if (i == 50) {
+                for (uint256 k = 0; k < 10; k++) {
+                    bytes32 ha = keccak256(abi.encode("R8fix.49", k));
+                    _claimD(ha);
+                    bvD.submitVerdict(ha, 49, "", bytes32(0), "partial");
+                }
+            }
+            bytes32 h = keccak256(abi.encode("R8fix.lapse49", i));
+            _claimD(h);
+            vm.warp(block.timestamp + W);
+            bvD.settleUnchallenged(h);
+        }
+        require(valReg.getSummaryByTag(aidD, "unchallenged") == 100, "lapse count");
+        (uint256 score, uint64 answered) = lensD.creditScore(aidD);
+        require(score == 49 && answered == 10, "floor bias not fixed (49)");
+        require(lensD.requiredBondBp(aidD) == 5000 + (100 - 49) * 100, "bp 10100");
+        (uint256 b, uint256 atRisk,, uint256 slashed) = bvD.agents(aidD);
+        require(b == 10e18 && atRisk == 0 && slashed == 10e18, "slash accounting");
+    }
+
     // ═══ R2/R3/R5/R9 — 권한·창·생성자 ═══
 
     /// R2/R3 engage·disengage 는 judge 전용; 비표식 disengage 불가.
