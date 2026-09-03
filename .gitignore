@@ -12,3 +12,4 @@ swarm/runs/
 .venv*/
 keys/
 .venv-xverify/
+docs/owner-intent-gemini-2026-08.md
