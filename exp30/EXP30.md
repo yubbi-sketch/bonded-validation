@@ -777,3 +777,9 @@ curl -s https://sourcify.dev/server/v2/contract/11155111/$BV3 | python3 -c "impo
 # 소멸(1788471864 이후 · 제3자 EOA · 키는 명령줄에 남기지 말 것):
 # cast send $BV3 "settleUnchallenged(bytes32)" $H --rpc-url $RPC --private-key "$(security find-generic-password -a <third-party-item> -w)"
 ```
+
+### 16.7 K2(c) 후반 준비 완료 (2026-09-03 14:57 AEST)
+- 제3자 EOA: `0xd9E90164623bFe77d7DfE008d21032943808bb79` (keys/exp30-k2c-thirdparty 키스토어, gitignore) — 배포자 `0x47b3…9FD1`과 다른 주소. 가스 충전 0.005 ETH: tx `0x49bad71823ec361114823839072173f6895edcb8123be6f75ec9b56866526c25` (status 1).
+- 호출 스크립트 `exp30/k2c_settle.sh` (키 값 미출력, `dry` 모드는 cast call만). 드라이런 2026-09-03T04:56:50Z: chain ts 1788411408 < lapse_at 1788471864 → `window open` revert 확인(정상).
+- 예약 실행: launchd `com.iislab.exp30-k2c-settle` 2026-09-04 07:50 AEST(= 소멸 가능 시각 +6분) → 로그 `exp30/logs/sepolia-v03-k2c-settle.log`. 실패 시 수동 재실행 `zsh exp30/k2c_settle.sh run`.
+- 미착수: K2(c) 2건째(W−60s 개설·풀0·resolveTimeout 리셋→소멸)는 판정자 풀 0 상태를 만들어야 하므로 별도 실행 계획 필요.
