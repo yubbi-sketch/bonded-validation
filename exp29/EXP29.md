@@ -361,3 +361,13 @@ python3 policy.py                                       # logs/policy-selftest.l
 **K4(d) 양의 지급 없음 — PASS.** `BondedValidatorV3.sol` 코드 리뷰: 되묻기·답변에 대한 보상 함수 자체가 존재하지 않는다(요청/제출/정산 함수 외 없음).
 
 **정직한 범위:** K4(b)(위조 서명 판정기 거부)·K4(c)(이동표적 슬래시 0) 미실행 — 판정기에 적대적 입력을 실제로 밀어넣는 별도 테스트가 필요. main 이식 없음, 오너 결재 대기.
+
+---
+
+## 15. Phase 2 결과 — K4(b)·K4(c) (2026-09-03)
+
+**K4(b) 위조 서명 방어 — PASS.** `legit_check.py`(오프체인 R8 판정기 재구현, HMAC 서명 시뮬)로 200건 실측: 진짜 요청자 키로 서명한 답변은 결정성 그대로 판별(legit 139/vacuous 61, 오분류 0) · **공격자 키로 위조한 답변은 200/200 전부 `unsigned-premise`로 걸러짐**(위조가 통과된 건수 0) · `in_reply_to` 조작(다른 질문에 답 끼워넣기)도 200/200 `malformed`로 차단. 재현: `python3 legit_check.py 200`.
+
+**K4(c) 이동표적 방어 — PASS.** `run_exp29_k4c_movingtarget.py`(Anvil, 컨트랙트 무수정) 40스레드: 요청자가 해석 A로 답해줘서 에이전트가 A 전제로 정답을 말했을 때(r'), (a) 같은 해시로 "사실 다른 뜻이었다"며 재개설 시도 → **40/40 전부 `dup claim` revert** — 코드가 이미 막고 있음(`requestValidation`의 `require(!claimExists[...])`, R4의 해시 자체에 전제가 박히는 설계) (b) 진짜 별개 해석 B로 새 발화 r''을 열어 오답으로 정산해도 → **40/40 원래 r'(A)의 정산 상태·담보 잔액은 완전히 그대로**(정산 직후 20e18 유지, r'' 슬래시로 인한 −1e18만 별도 반영, A 몫은 안 건드려짐). 재현: `python3 run_exp29_k4c_movingtarget.py 40`.
+
+**Exp29 Phase 1·2 킬기준 전체 요약 — K1·K2·K4 전부 PASS.** K3(a)·K3(b) 모드B만 문자상 KILL(§14, 블록타임 양자화 원인 규명·규칙 정정 필요). 결정 사항: main 이식은 오너 결재 대기(§10).
