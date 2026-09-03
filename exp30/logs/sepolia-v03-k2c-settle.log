@@ -1,0 +1,15 @@
+=== 2026-09-03T04:56:50Z k2c_settle start (mode=dry) ===
+chain ts=1788411408 lapse_at=1788471864
+before: claimSettled=false engaged=false
+dry-run: cast call (no tx)
+Error: server returned an error response: error code 3: execution reverted: window open, data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b77696e646f77206f70656e000000000000000000000000000000000000000000"
+=== dry end ===
+=== 2026-09-03T21:50:04Z k2c_settle start (mode=run) ===
+chain ts=1788472200 lapse_at=1788471864
+before: claimSettled=false engaged=false
+third-party balance wei=5000000000000000
+tx 0x29b03cec6b46ceabf56ecf9a0bb57b06995157a19e1e8311ba3e9b2cb54b4773 status 0x1 block 0xb172d4
+logs 3
+after: claimSettled=true
+ClaimLapsed events: 1
+=== end ===

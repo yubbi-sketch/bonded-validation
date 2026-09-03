@@ -783,3 +783,15 @@ curl -s https://sourcify.dev/server/v2/contract/11155111/$BV3 | python3 -c "impo
 - 호출 스크립트 `exp30/k2c_settle.sh` (키 값 미출력, `dry` 모드는 cast call만). 드라이런 2026-09-03T04:56:50Z: chain ts 1788411408 < lapse_at 1788471864 → `window open` revert 확인(정상).
 - 예약 실행: launchd `com.iislab.exp30-k2c-settle` 2026-09-04 07:50 AEST(= 소멸 가능 시각 +6분) → 로그 `exp30/logs/sepolia-v03-k2c-settle.log`. 실패 시 수동 재실행 `zsh exp30/k2c_settle.sh run`.
 - 미착수: K2(c) 2건째(W−60s 개설·풀0·resolveTimeout 리셋→소멸)는 판정자 풀 0 상태를 만들어야 하므로 별도 실행 계획 필요.
+
+### 16.8 K2(c) 1건째 결과 — 확정 (2026-09-03T21:50:04Z, 예약대로 자동 실행)
+
+**독립 재확인(방금, 원본 실행 로그와 별개로 cast 직접 조회):**
+- `claimSettled(H) == true`
+- tx `0x29b03cec6b46ceabf56ecf9a0bb57b06995157a19e1e8311ba3e9b2cb54b4773` — status **1(success)**, block 11629268
+- `from = 0xd9E90164623bFe77d7DfE008d21032943808bb79`(제3자 EOA, 배포자와 다른 주소) → `to = BondedValidatorV3`
+- 로그 3건: `ClaimLapsed`(tag "unchallenged") + 정산 이벤트 2건. 실행 로그(`exp30/logs/sepolia-v03-k2c-settle.log`)의 드라이런(2026-09-03T04:56:50Z, chain ts 1788411408 < lapse_at 1788471864 → "window open" revert)과 실행(21:50:04Z, chain ts 1788472200 > lapse_at → 성공)이 예상대로 갈렸다.
+
+**K2(c) 1건째 사전등록 판정: PASS.** "실주장 1건 미개설 → W 후 제3자 EOA settleUnchallenged 성공(tx 해시·ClaimLapsed)" — 스크립트가 아니라 launchd 자동 스케줄로 사람 개입 없이 재현. 무허가 정산이 설계대로 동작함을 실제 메인넷급 조건(Sepolia, 진짜 가스, 진짜 서명)에서 확인.
+
+**미착수 그대로:** K2(c) 2건째(W−60s 개설·풀0·resolveTimeout 리셋→소멸)는 판정자 풀을 인위적으로 0으로 만들어야 해서 별도 스크립트 필요.
