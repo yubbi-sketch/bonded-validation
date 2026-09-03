@@ -1,0 +1,19 @@
+[THM] C1_chow_equivalence: unsat (expect unsat) OK — τ*=B/(B+R) 는 Chow 기각 규칙의 아핀 재표기 (우리 계산, 원문 인용 아님)
+[THM] C2_ask_never_lowers_floor: unsat (expect unsat) OK — 되묻기 옵션은 답변 임계 τ* 를 절대 낮추지 못함 (Exp18 K2 보존 근거)
+[THM] C3_post_ask_threshold: unsat (expect unsat) OK — τ*_ask = τ* + c/(B+R): 비용 c 는 임계를 위로만 민다
+[THM] C4_ask_vs_answer_now: unsat (expect unsat) OK — 되묻기 이득 조건 = 정보가치 (pp−p)(B+R) 가 비용 c 를 넘을 때
+[THM] C4b_weakest_link_is_target: unsat (expect unsat) OK — rho 가 작을수록 pp 가 큼 → Exp2 최약고리가 되묻기 표적 선택기
+[WIT] H1_hold_unbounded_delay: sat (expect sat) OK — A2A input-required 류 보류: 되묻기 n 회로 정산이 임의 상한 L 을 넘는 증인 존재
+        witness: [n = 1, d = 19/10, L = 1, Tmax = 1/10]
+[ENC] N1_new_utterance_bounded: unsat (expect unsat) OK — R3 무보류: 정산 시각 ≡ Tmax (인코딩 확인 — 구조는 Halmos 로 구현 라운드에 확인)
+[WIT] M1_self_reported_indistinguishable: sat (expect sat) OK — 진짜 p≥τ*(낚시)와 p<τ*(정직)가 같은 신고 phat 를 낼 수 있음 (Exp28 B3 재현)
+        witness: [c = 1,
+ p = 3/4,
+ phat = 1/2,
+ p2 = 1/4,
+ R = 1,
+ B = 1,
+ /0 = [(1, 2) -> 1/2, else -> 0]]
+[ENC] M2_bound_confidence_decidable: unsat (expect unsat) OK — 로짓 바인딩 하에서 '되묻기가 정당했다' 는 공개값으로 결정가능 (회로는 미구현, 인터페이스만)
+numeric: B=5 R=1 c=0.05 → τ*=0.8333, τ*_ask=0.8417
+summary: {'THM': 5, 'WIT': 2, 'ENC': 2} all_pass=True
