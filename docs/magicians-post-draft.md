@@ -2,6 +2,7 @@
 
 > 게시판: ethereum-magicians.org → ERCs 카테고리
 > 제목: **Bonded Validation: a speaker-bond interface on top of ERC-8004**
+> 갱신 2026-09-03: '~30% 흑자' 문장 철회 반영(REPRODUCTION.md 정정 1 — 시뮬은 전 구간 음수, 수익 영역은 Exp13 정리 3 해석적) · 백서 링크 wp-v1.0 · '인류 최초'류 표현 0건 확인(grep 최초/first/unprecedented/world) · '노트북 재현' 서술 → REPRODUCTION 17/17 로 정리.
 
 ---
 
@@ -14,7 +15,8 @@ is locked against it. Wrong claims (score below threshold) are slashed; claims t
 "abstain" settle bond-neutral. Accountability attaches at utterance time — unbonded
 speech is impossible by construction, and honest ignorance is free.
 
-Why abstention neutrality matters (measured, laptop-reproducible): on a synthetic
+Why abstention neutrality matters (measured; independently re-run 17/17 in
+REPRODUCTION.md): on a synthetic
 natural-language logic benchmark, 100% of our pipeline's observed errors sat in the
 lowest 7.3% of model confidence; abstaining below a confidence threshold gave zero
 observed wrong answers at 92.7% coverage. In a 300-utterance live run against local
@@ -53,9 +55,12 @@ one step further:
   panels of 3 are drawn by weighted lottery (newcomers pay a 1.5× entry premium and
   carry 1/5 lottery weight); a dissent escalates to a fresh 5-judge expanded trial,
   and voters against the final majority verdict are slashed.
-- **No winner's bounty** — our attack simulations (Monte Carlo, 20k trials/cell)
-  showed a UMA-style winner's reward turns profitable for a briber at ~30% panel
-  capture. So slashed funds are half-burned and half paid to the agent whose bond
+- **No winner's bounty** — our Monte Carlo attack simulations (20k trials/cell)
+  showed a UMA-style winner's reward subsidises the briber at every capture
+  fraction tested (expected profit rises toward zero but does not cross positive
+  in-sim); that a budget-feasible bounty *can* turn profitable is established
+  analytically (Theorem 3, z3 — Exp13), not by the simulation. So slashed funds
+  are half-burned and half paid to the agent whose bond
   was frozen; judges earn only a fixed outcome-independent fee. Sybil capture of 5%
   of the pool costs ~300× an honest judge's bond under the newcomer premium.
 - **Training wheels removed** — the owner-arbiter escape hatch from v0.1 is gone;
@@ -69,8 +74,8 @@ one step further:
   estimated halo2 rows: replacing "3-of-5 honest re-executors" with a zk proof of
   correct re-execution looks tractable for deterministic claim classes.
 
-Whitepaper draft v0.2 (protocol, threat model, machine-checked theorems,
-stated limitations): https://github.com/yubbi-sketch/bonded-validation/blob/wp-v0.2/docs/whitepaper-draft-v0.2.md
+Whitepaper v1.0 (protocol, threat model, machine-checked theorems, stated
+limitations; git tag `wp-v1.0`): https://github.com/yubbi-sketch/bonded-validation/blob/wp-v1.0/docs/whitepaper-draft.md
 
 Sepolia (all Sourcify-verified): BondedValidator v0.2.1
 `0xE9bA0f2904955D57546911Ef57a75ffd5a03F0f0` · BondedJudgePanelV2
