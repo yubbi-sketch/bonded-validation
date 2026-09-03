@@ -33,7 +33,7 @@ Withdrawal: delay window + no pending claims ← no hit-and-run
 | Errors are localizable | 100% of observed errors sat in the lowest 7.3% of model confidence |
 | Abstention is buyable correctness | τ=0.9 → 0 observed wrong / 910, 92.7% coverage |
 | Hallucination gets a price | 300 bonded utterances on Anvil: hallucinating agent 50→0; abstaining verifier-backed agent 50→50 lossless |
-| Contract safety | 8/8 Foundry tests: bondless speech reverts, abstain is loss-free, double-settle blocked, withdrawal delay blocks hit-and-run |
+| Contract safety | 93/93 Foundry tests (2026-09-03; v0 core cases: bondless speech reverts, abstain is loss-free, double-settle blocked, withdrawal delay blocks hit-and-run |
 
 **Why small models.** Deterministic verification, future zkML proofs, and formal verification
 are only tractable for small components. We optimize under the constraint
