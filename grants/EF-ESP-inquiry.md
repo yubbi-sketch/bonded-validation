@@ -11,7 +11,7 @@
 
 ---
 
-**Project name:** Bonded Validation — a speaker-bonded validation protocol on top of ERC-8004 Trustless Agents
+**Project name:** Speaker Bond Protocol (SBP) — a speaker-bonded validation protocol on top of ERC-8004 Trustless Agents
 
 **Contact:** Independent researcher · yubbi85@gmail.com · github.com/yubbi-sketch
 

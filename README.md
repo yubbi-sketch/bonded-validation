@@ -1,4 +1,4 @@
-# Bonded Validation — speaker-bonded accountability for AI agents
+# Speaker Bond Protocol (SBP) — speaker-bonded accountability for AI agents
 
 **Every agent utterance is signed, bonded, and proven.**
 

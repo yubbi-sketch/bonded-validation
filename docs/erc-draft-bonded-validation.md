@@ -1,4 +1,4 @@
-# [DRAFT] ERC-XXXX: Bonded Validation Interface for Trustless Agents
+# [DRAFT] ERC-XXXX: Speaker Bond Protocol (SBP) — a Bonded Validation Interface for Trustless Agents
 
 > Status: pre-draft for Ethereum Magicians discussion (not yet submitted to ethereum/ERCs)
 > Requires: ERC-8004 · 2026-08-26 · Authors: IIS Lab

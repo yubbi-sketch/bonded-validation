@@ -1,7 +1,7 @@
 # Ethereum Magicians 스레드 초안 (제출은 오너 승인 후)
 
 > 게시판: ethereum-magicians.org → ERCs 카테고리
-> 제목: **Bonded Validation: a speaker-bond interface on top of ERC-8004**
+> 제목: **Speaker Bond Protocol (SBP): a speaker-bond interface on top of ERC-8004**
 > 갱신 2026-09-03: '~30% 흑자' 문장 철회 반영(REPRODUCTION.md 정정 1 — 시뮬은 전 구간 음수, 수익 영역은 Exp13 정리 3 해석적) · 백서 링크 wp-v1.0 · '인류 최초'류 표현 0건 확인(grep 최초/first/unprecedented/world) · '노트북 재현' 서술 → REPRODUCTION 17/17 로 정리.
 
 ---
