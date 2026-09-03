@@ -13,7 +13,7 @@
 
 **Project name:** Bonded Validation — a speaker-bonded validation protocol on top of ERC-8004 Trustless Agents
 
-**Contact:** Independent researcher (Korea/Australia) · yubbi85@gmail.com · github.com/yubbi-sketch
+**Contact:** Independent researcher · yubbi85@gmail.com · github.com/yubbi-sketch
 
 **Inquiry:**
 
@@ -41,7 +41,7 @@ We are asking for a small grant to turn this into a public good for the 8004 eco
 
 **Honest limitations we are explicit about:** verdicts still come from re-executing judges (zk/optimistic paths beyond deterministic claim classes are the research core of the grant period); benchmarks are toy-scale and synthetic, with a disclosed supervision confound; theorems hold in stated state spaces and under stated economic assumptions (the bribery bound is conditional and fails as capture probability approaches 1); the lapse rule's deterrence is conditional on challengers actually appearing; no third-party audit yet; ERC-8004 is still a Draft and we treat registry interfaces as adapters. There is no token in this project: bonds are denominated in existing assets, the Sepolia test asset is valueless by construction, and nothing is sold. A separate repository by the same author (Jeongeum, a transfer-locked game asset on Base) is an unrelated project — not sold, not used by this protocol, and inheriting nothing from it; we mention it only so that a search on the author does not read as an undisclosed asset.
 
-**Team:** Independent researcher (Korea/Australia) working with an AI-assisted research pipeline; prior work includes an account-abstraction policy-enforcement prototype (Foundry, 25/25 tests) that we retired after our own adversarial review concluded ERC-7710/7780 + caveat enforcers already occupy that slot — we would rather kill our own idea than ship a redundant standard. Git history documents the full research trail, including the kills.
+**Team:** Independent researcher working with an AI-assisted research pipeline; prior work includes an account-abstraction policy-enforcement prototype (Foundry, 25/25 tests) that we retired after our own adversarial review concluded ERC-7710/7780 + caveat enforcers already occupy that slot — we would rather kill our own idea than ship a redundant standard. Git history documents the full research trail, including the kills.
 
 **Requested amount:** USD 25,000 (small grant tier) over 6 months.
 
