@@ -321,3 +321,25 @@ python3 policy.py                                       # logs/policy-selftest.l
 # worktree(~/iis-lab-wt/exp29-design)에서는 venv 가 정본 체크아웃에만 있다: ../../../iis-lab/.venv-halmos/bin/python prove_sketch.py
 ```
 2026-09-03 08:03 재실행: 네 로그 전부 커밋본과 바이트 동일(diff 0). 인용한 컨트랙트 줄번호(`dup claim` :96 · `claimedAt` :100 · `engage` :112 · `submitVerdict` :133 · `settleUnchallenged` :144 · abstain 태그 :162)와 Exp16 수치(공개 인스턴스 63 = 해시 1 + 로짓 62, verify 가스 975,182)는 같은 시각 `exp3/contracts/src/BondedValidatorV3.sol`·`exp16/EXP16.md` 에서 재확인.
+
+---
+
+## 13. Phase 1 결과 (오프라인 NumPy 실행, 2026-09-03)
+
+**추출기:** Exp1/Exp2 절차 그대로 재현(seed 42·gen_dataset(3000, seed=1)·40 에폭) — 임베딩 테이블만 Exp29 확장 어휘(69 토큰)로 잡아 encode_sent KeyError를 막았다. 신규 토큰(누락/또는 등 접속사류)은 Exp1 학습 문장에 등장하지 않아 그래디언트를 받지 않는다 — "재학습 없이 재사용"의 실제 구현. 데이터: 모호 900건(범주 3×300, seed 29, decisive 450/vacuous 450) + 대조군 Exp1 4범주 910건(seed 2, 균형 보정으로 800→910). 재현: `python3 run_exp29_phase1.py` → `out/phase1_results.json`(127.7s).
+
+**K1(a) PASS.** decisive 부분집합, κ=0.05, δ=1: ask_policy − abstain_only 이득 = **+0.95**(B=5,R=1) · **+1.84**(B=2,R=3) — 문턱 +0.10 대비 여유 큼. 전체 모호집합(decisive+vacuous 합산)도 κ≤0.1 전 구간 이득 ≥0(+0.40~+0.94). κ 격자 전부(0~0.2)에서 최소 이득 **+0.80** — kill선(+0.05) 근처도 안 감.
+
+**K1(b) PASS.** ask_policy 전체 파라미터 격자(B,R)×κ 전부에서 terminal 오답률 **0.0%**(문턱 ≤0.5%). 참고: speak_always(무조건 답)는 같은 데이터에서 18.9% 오답 — 확신 게이팅이 실제로 하는 일.
+
+**K1(c) PASS.** 대조군 Exp1 910건(비모호)에서 ask 율 **0.0%**(문턱 ≤2%) — k=1(해석 하나)에서는 물어도 얻을 정보가 없다는 §4.3 정리가 실측으로도 그대로.
+
+**K1(d) 박제.** δ=0(상대가 침묵) 전 파라미터에서 ask_policy의 ask 율 **0.0%** — "상대가 절대 답 안 하면 되묻기는 선택되지 않는다"(policy.py 해석 증명)가 900건 실측에서도 반례 0.
+
+**K2(a) PASS.** legit 판별(추출기 재실행: 두 읽기 예측이 갈리는가)과 기계 진실(decisive) 일치율 **100%**(900/900, 문턱 ≥0.98).
+
+**K2(b) PASS.** ask-always(Mirage 스팸)의 vacuous 되묻기 flag 율 **100%**(문턱 ≥95%) ∧ 스팸 담보점수(0.9500) ≤ 정직 ask-정책(0.9748) — 스팸이 정직을 이기지 못한다.
+
+**κ 민감도(부수 관찰, 킬기준 아님):** κ=0일 때만 vacuous-ask 율이 25%로 뛴다(공짜면 밑져야 본전이라 애매해도 물어봄) — κ≥0.05로 올리면 0.7% 이하로 붕괴. 비용이 스팸 억제의 실제 손잡이라는 뜻 — κ=0 배포는 권장하지 않음(§8 영향 정리에 반영 필요).
+
+**정직한 범위:** Phase 2(온체인 anvil, K3·K4)는 미실행 — 무보류·지연상한·경제중립은 아직 실측 전. 확신도 c_i는 Exp1/Exp2 추출기 그대로라 Exp29 전용 재보정 없음(과신/과소신 여부 미검사). 결정 여부는 오너 결재(§10) 대기, main 이식 없음.
