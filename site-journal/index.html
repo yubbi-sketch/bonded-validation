@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Dated notes on what changed and why in the Bonded Validation research program — including the misses.">
+<title>Journal — Bonded Validation</title>
+<style>
+:root{
+  --bg:#F6F3EC; --paper:#FFFDF8; --ink:#181510; --ink-dim:#5B5348;
+  --line:#DDD5C3; --line-soft:#E9E3D4;
+  --bond:#B23A2E; --bond-soft:#F4E2DC;
+  --proof:#2E6B4E; --proof-soft:#E2EEE4;
+  --shadow: 0 1px 1px rgba(24,21,16,.03), 0 10px 30px rgba(24,21,16,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14120E; --paper:#1B1813; --ink:#EDE6D8; --ink-dim:#A79E8C;
+    --line:#332D22; --line-soft:#2A251C;
+    --bond:#E0776F; --bond-soft:#3A211E;
+    --proof:#6FBE93; --proof-soft:#1D3327;
+    --shadow: 0 1px 1px rgba(0,0,0,.3), 0 14px 34px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14120E; --paper:#1B1813; --ink:#EDE6D8; --ink-dim:#A79E8C;
+  --line:#332D22; --line-soft:#2A251C;
+  --bond:#E0776F; --bond-soft:#3A211E;
+  --proof:#6FBE93; --proof-soft:#1D3327;
+  --shadow: 0 1px 1px rgba(0,0,0,.3), 0 14px 34px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;background:var(--bg);color:var(--ink);}
+body{font-family:'Source Serif 4',ui-serif,Georgia,serif;line-height:1.7;-webkit-font-smoothing:antialiased;font-size:16px;}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;}
+h1,h2,h3{font-family:'Fraunces','Source Serif 4',serif;font-weight:600;text-wrap:balance;margin:0;}
+code{font-family:'IBM Plex Mono',monospace;font-size:.9em;background:var(--line-soft);padding:1px 5px;border-radius:3px;}
+a{color:var(--bond);}
+.wrap{max-width:680px;margin:0 auto;padding:56px 24px 90px;}
+
+.top{text-align:center;margin-bottom:52px;padding-bottom:32px;border-bottom:1px solid var(--line);}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:14px;}
+.top h1{font-size:32px;margin-bottom:10px;}
+.top p{color:var(--ink-dim);font-size:15px;font-style:italic;margin:0;}
+
+article{background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:2px;padding:38px 40px;margin-bottom:36px;}
+article .date{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.05em;color:var(--ink-dim);margin-bottom:8px;}
+article h2{font-size:25px;margin-bottom:20px;letter-spacing:-.01em;}
+article h3{font-size:17px;margin:26px 0 10px;color:var(--bond);}
+article p{margin:0 0 15px;font-size:15.3px;}
+article ul,article ol{margin:0 0 15px;padding-left:22px;}
+article li{margin-bottom:6px;font-size:15.3px;}
+article blockquote{border-left:3px solid var(--proof);background:var(--proof-soft);margin:18px 0;padding:14px 18px;font-style:italic;color:var(--ink);border-radius:0 3px 3px 0;}
+article blockquote p{margin:0;font-size:14.8px;}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px;}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;}
+th{background:var(--line-soft);font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.04em;}
+td.mono,th.mono{font-family:'IBM Plex Mono',monospace;}
+.sources{margin-top:24px;padding-top:18px;border-top:1px dashed var(--line);font-size:13px;color:var(--ink-dim);}
+.sources b{color:var(--ink);}
+.pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;}
+.pill.fixed{background:var(--proof-soft);color:var(--proof);}
+.pill.open{background:var(--bond-soft);color:var(--bond);}
+
+footer{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-dim);margin-top:40px;}
+
+/* ---- Nav ---- */
+nav.top-nav{display:flex;align-items:center;justify-content:space-between;max-width:680px;margin:0 auto;padding:22px 24px 0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;}
+nav.top-nav a{text-decoration:none;color:var(--ink-dim);}
+nav.top-nav a.home{color:var(--ink);font-weight:600;}
+nav.top-nav a:hover{color:var(--bond);}
+
+/* ---- Category filter ---- */
+.filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:24px auto 0;max-width:680px;}
+.filters button{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em;padding:6px 14px;border-radius:20px;border:1px solid var(--line);background:var(--paper);color:var(--ink-dim);cursor:pointer;transition:.15s;}
+.filters button:hover{border-color:var(--bond);color:var(--bond);}
+.filters button.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+article[hidden]{display:none;}
+article .cat{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:var(--line-soft);color:var(--ink-dim);padding:2px 9px;border-radius:20px;margin-right:8px;}
+
+@media (max-width:600px){ article{padding:26px 22px;} .top h1{font-size:26px;} }
+</style>
+
+<script>
+function filterJournal(cat, btn){
+  document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('article').forEach(a=>{
+    a.hidden = cat!=='all' && a.dataset.cat!==cat;
+  });
+}
+</script>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+</head>
+<body>
+
+<nav class="top-nav">
+  <a class="home" href="../">&larr; Bonded Validation</a>
+  <a href="https://github.com/yubbi-sketch/bonded-validation/tree/main/journal">github/journal &nearr;</a>
+</nav>
+
+<div class="wrap">
+
+  <div class="top">
+    <div class="kicker">bonded validation · journal</div>
+    <h1>What changed, and why</h1>
+    <p>Dated notes, including the misses — nothing here claims more than the proof or test behind it.</p>
+  </div>
+
+  <div class="filters">
+    <button class="active" onclick="filterJournal('all',this)">All</button>
+    <button onclick="filterJournal('security',this)">Security</button>
+    <button onclick="filterJournal('proofs',this)">Proofs</button>
+    <button onclick="filterJournal('design',this)">Design</button>
+  </div>
+
+  <article data-cat="security">
+    <div class="date">2026-09-04</div>
+    <span class="cat">security</span>
+    <h2>We red-teamed our own live contracts <span class="pill fixed">2 fixed</span><span class="pill open">1 left open</span></h2>
+    <p>Most of what we publish here is a proof or a benchmark. This one is closer to an audit finding — the kind we'd want a third party to write about us, except we found it first and it's on our own live testnet contracts.</p>
+    <p>We went back through <code>BondedValidatorV3</code> / <code>BondedJudgePanelV3</code> with a specific question: not "does this match its own spec" (Halmos already checks that) but "does it correctly assume how the chain underneath it actually behaves." Two real issues came out of that pass. Both are fixed and deployed. One turned out to be a calculation, not a bug, and we're leaving it open on purpose.</p>
+
+    <h3>Fixed — judge votes had no secrecy</h3>
+    <p><code>BondedJudgePanelV3</code>'s panel <em>selection</em> is commit-reveal protected — who becomes a judge can't be predicted in advance. But the votes themselves were not: <code>voteVerdict</code> recorded a judge's score immediately on submission. A judge voting third could see the first two votes before deciding their own. Kleros's and UMA's own designs both depend on voting without seeing each other's answers first — that's what a Schelling-point mechanism actually requires. We had copied the shape of that game theory without copying the part that makes it hold.</p>
+    <p><b>Fix:</b> <code>BondedJudgePanelV4</code> splits <code>voteVerdict</code> into <code>commitVerdict</code> (a hash of your vote) and <code>revealVerdict</code> (the real values, checked against your own commit) — reusing the exact pattern already used for panel selection.</p>
+
+    <h3>Fixed — state updates happened after the external call</h3>
+    <p><code>stake()</code>, <code>registerJudge()</code>, and <code>stakeMore()</code> all called <code>token.transferFrom(...)</code> before updating internal balances — a checks-effects-interactions ordering violation. Not exploitable with our current test token, but the pattern opens a reentrancy window the moment a hook-bearing token is used. Fixed by writing state before the external call.</p>
+
+    <h3>Investigated, not fixed — judge-pool capture cost</h3>
+    <p>Our judge lottery weights veteran judges 5× a newcomer's draw odds. We computed the exact capture probability (full permutation enumeration, not a Monte Carlo estimate) for a colluding minority opening several independent cases and only using the ones that draw in their favor:</p>
+    <table>
+      <tr><th>Pool size</th><th>Colluding share</th><th>P(capture)</th><th>Cost for 90% success</th></tr>
+      <tr><td class="mono">10</td><td>30% of veterans</td><td class="mono">5.0%</td><td class="mono">~405× fee</td></tr>
+      <tr><td class="mono">30</td><td>same</td><td class="mono">0.27%</td><td class="mono">~7,500× fee</td></tr>
+      <tr><td class="mono">100</td><td>same</td><td class="mono">0.014%</td><td class="mono">~148,000× fee</td></tr>
+    </table>
+    <p>Not a code defect — a deployment-parameter question. Small, concentrated pools are cheap to capture; past ~30 diverse participants, they're not. Recorded as a deployment rule, not a fix.</p>
+    <div class="sources"><b>Sources:</b> docs/deployments.md (v0.4) · exp3/RT0033_ANALYSIS.md · regression 99/99 · <span class="mono">0x10b179CfF290052720Fa9D5426C703f1501C2C69</span></div>
+  </article>
+
+  <article data-cat="design">
+    <div class="date">2026-09-03</div>
+    <span class="cat">design</span>
+    <h2>A claim nobody challenges must not lock forever</h2>
+    <p>v0.2.1 of our validator had a liveness gap: an agent locks bond on a claim, and the only release path is a judge's verdict — which only happens if someone pays to open a case. If nobody does, the bond locks with no expiry. We built a system whose stated purpose is bounded settlement time, and it had an unbounded path.</p>
+    <blockquote><p>What we're building is not "a supply of challengers" — it's "an upper bound on how long anything stays locked." If nobody challenges, the claim settles <b>unverified</b>, not verified. We are not manufacturing that probability. We are only pricing it honestly.</p></blockquote>
+    <p>That's LOCK-0 in our design doc, fixed before a line of Solidity, so we couldn't quietly redefine "settled" as "verified" once the design got harder.</p>
+    <h3>What the closest prior systems do</h3>
+    <p>UMA's Optimistic Oracle v3 and OP Stack's fault proofs both fund a supply of challengers by paying the loser's stake to the winner. We can't do that — our own economic theorem says a winner's reward is mathematically equivalent to a bribery subsidy. So the gap we're filling is specifically "an optimistic window with no winner's bounty" — which is also, honestly, our weak point: we have no mechanism that manufactures challengers.</p>
+    <h3>What we built</h3>
+    <p><code>settleUnchallenged</code> — callable by anyone, no reward, no token movement — releases the bond once the challenge window closes unopened, tagged <code>"unchallenged"</code>. Not a verdict; consumers must exclude it from anything counted as verified.</p>
+    <h3>What this costs, honestly</h3>
+    <p>Deterrence is conditional on <code>q</code>, the probability a false claim actually gets challenged. At <code>q = 0.5</code> a hallucinating agent's residual bond stays above our own kill-criterion line — a disclosed weakness, not a hypothetical one.</p>
+    <div class="sources"><b>Sources:</b> exp30/EXP30.md §0, §2, §12.6 · live as BondedValidatorV3 <span class="mono">0xd881d52F10220687297651DeC4d55C1644d3a2A7</span></div>
+  </article>
+
+  <article data-cat="proofs">
+    <div class="date">2026-09-03</div>
+    <span class="cat">proofs</span>
+    <h2>Our machine proof was vacuous</h2>
+    <p>We machine-verify our contracts with Halmos, a symbolic execution tool that checks a property against every possible input in a stated state space. Getting a <code>[PASS]</code> feels like a strong claim. This week we found out one of ours wasn't real.</p>
+    <h3>The property</h3>
+    <p>We had a Halmos property asserting that once two judges agree on a score, a timeout-triggered settlement can never revert. It reported <code>[PASS]</code>.</p>
+    <h3>What Halmos actually checked</h3>
+    <p><code>voteVerdict</code> accepted a raw <code>uint8</code> score with no upper-bound check, while the registry downstream requires <code>&le;100</code>. Two judges voting 101 makes the registry write revert — permanently. The bond locks with no code path out.</p>
+    <p>When a call reverts, Halmos discards that trace instead of flagging it, so a property phrased as "always returns ok" can pass by construction even when every real trace in the danger zone reverts. The concrete counterexample: <code>s1 = s2 = 0x80</code> (128). It reverts, every time. The <code>[PASS]</code> wasn't lying about what it checked — it was vacuously true, because we asked the wrong question.</p>
+    <h3>The fix</h3>
+    <p>v0.3 rejects the vote at submission: <code>require(score &le; MAX_SCORE)</code> inside <code>voteVerdict</code> itself, plus a tag-length cap closing an identical-shaped gas-griefing path found at the same time.</p>
+    <h3>Why we're writing this down</h3>
+    <p>The honest version of "we use formal methods" includes the times formal methods didn't save us. <code>[PASS]</code> is a claim about a specific formalization, not about the code. We'd rather publish the miss than let the green checkmark do more talking than the counterexample.</p>
+    <div class="sources"><b>Sources:</b> exp30/EXP30.md §1.2 · exp3/contracts/src/BondedJudgePanelV3.sol · test/Exp30Lapse.t.sol (K2(b))</div>
+  </article>
+
+  <footer>intelligence-invariant security — guarantees that hold no matter how capable the attacker becomes</footer>
+</body>
+</html>
+</div>
