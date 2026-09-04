@@ -14,6 +14,8 @@ attaches at the moment of utterance, not at audit time.
 > matter how capable the attacker (or the agent) becomes, because they rest on
 > mathematics and consensus rather than vigilance.
 
+📓 [**Journal**](journal/) — dated notes on what changed and why, including the misses.
+
 ## ⏱️ Start here (3 minutes)
 
 New here? Don't read the whole repo. Run the one thing that shows what we do — a
