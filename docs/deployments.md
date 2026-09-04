@@ -1,5 +1,60 @@
 # Deployments
 
+## Sepolia testnet — v0.4 (2026-09-04)
+
+Self-audit against EVM/Solidity foundations (not a peer-comparison pass — a "does our own
+base-layer reasoning hold" pass) found two issues, both fixed here, no other logic changed:
+
+- **RT-0031 (high): judge votes had no secrecy.** `voteVerdict` recorded score/tag
+  immediately on submission — only *panel selection* (who becomes a judge) was
+  commit-reveal protected (since Exp9), not the vote content itself. A late-voting judge
+  could see earlier votes before choosing their own, undermining the Schelling-point
+  independence Kleros/UMA rely on. Fix: `voteVerdict` split into `commitVerdict` (hash
+  only) + `revealVerdict` (real values, checked against the commit) — the same
+  commit-reveal pattern already used for panel selection, reused rather than reinvented.
+  Settlement/fee/slash logic is unchanged; only the vote-aggregation point moved from
+  submission to reveal.
+- **RT-0032 (med): `stake()`/`registerJudge()`/`stakeMore()` called the external
+  `transferFrom` before updating internal state** (checks-effects-interactions order
+  violation). The current LabToken has no callback hooks so this was not exploitable
+  today, but the pattern opens a reentrancy window the moment a hook-bearing token is
+  used. Fix: state updates moved before the external call (safe — a failed transfer
+  reverts the whole transaction, including the earlier state writes).
+
+A third issue (RT-0033: judge-pool weighted-selection capture cost when `VETERAN_WEIGHT`
+concentrates in a colluding minority) was investigated and quantified but is **not** a
+code fix — see `exp3/RT0033_ANALYSIS.md` for the exact-probability calculation and the
+resulting deployment guidance (minimum judge-pool-size threshold, `VETERAN_WEIGHT`
+reconsideration). Not applied to this deployment.
+
+| Contract | Address |
+|---|---|
+| BondedValidatorV4 (judge = panel below) | [`0x10b179CfF290052720Fa9D5426C703f1501C2C69`](https://sepolia.etherscan.io/address/0x10b179CfF290052720Fa9D5426C703f1501C2C69) |
+| BondedJudgePanelV4 (commit-reveal votes + commit-reveal panel selection) | [`0x15B749fA8ac62c4DE1B0311DF264359AC30287b3`](https://sepolia.etherscan.io/address/0x15B749fA8ac62c4DE1B0311DF264359AC30287b3) |
+
+- Deployed from `main` (post-merge of `judge-vote-secrecy`, forge test 99/99) with the
+  same toolchain as v0.3 (forge 1.7.1 / solc 0.8.28 / optimizer 200). Deploy txs: validator
+  `0x4f94a03a73f0e223a942f9ce45fe61a491543beeafd591f8e877fb39501c790b` (nonce 16), panel
+  `0x81e14caa4e2b6de13dd122544f1f78c0549c62b3824f62b1788bda729d274612` (nonce 17). Panel
+  address CREATE-predicted at nonce 17 and passed as the validator's `judge` — matched
+  exactly, no owner key holds any privileged role.
+- Both Sourcify-verified (exact match, confirmed via `GET /v2/contract/11155111/<addr>`).
+- Constructor params unchanged from v0.3: validator `minBondPerClaim = 1e18`,
+  `unbondDelay = 3600s`, `challengeWindow (W) = 86400s`; panel `perCaseBond = 10e18`,
+  `judgeFee = 1e18`, `voteTimeout = 3600s`, `disputeTimeout = 86400s`,
+  `veteranThreshold = 3`, `SEED_WINDOW = 256 blocks`. Reuses the v0 LabToken /
+  IdentityRegistry / ValidationRegistry (same addresses as v0.2 – v0.3, below).
+- Independent post-deploy check (cast, this session): `judge()` on the validator ==
+  panel address, `bonded()` on the panel == validator address, `token()` matches on both
+  and equals the v0 LabToken, `challengeWindow`/`minBondPerClaim`/`perCaseBond`/
+  `judgeFee` all match the intended constants.
+- v0.3 stays live for comparison (addresses below) — not deprecated, RT-0031/0032 do not
+  affect the correctness of v0.3's own machine proofs (T1–T4, L1–L5, PA–P4, PL1–PL3),
+  they only affect a game-theoretic assumption (vote independence) and a reentrancy
+  posture that Halmos's symbolic model doesn't currently encode (no adversarial token).
+- Findings register: RT-0031, RT-0032 → `verified` (this deployment is the approval-ref).
+  RT-0033 → `triaged` (calculation done, no code change scheduled).
+
 ## Sepolia testnet — v0.3 (2026-09-03)
 
 Exp30 closed v0.2.1's liveness gap: a bonded claim could only be released by the

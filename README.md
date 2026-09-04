@@ -78,7 +78,16 @@ agents reach the theorem-predicted honest equilibrium on the deployed contract. 
 
 ## Live on Sepolia
 
-**v0.3 (current):** optimistic lapse — a claim nobody opens inside the 24 h challenge
+**v0.4 (current):** self-audit fixes — judge votes now commit-reveal (RT-0031: only
+panel *selection* was commit-reveal before, vote *content* was submitted in the clear,
+letting a late voter see earlier votes) and a checks-effects-interactions reorder in
+`stake`/`registerJudge` (RT-0032). No economic-rule changes. BondedValidatorV4
+`0x10b179CfF290052720Fa9D5426C703f1501C2C69` · BondedJudgePanelV4
+`0x15B749fA8ac62c4DE1B0311DF264359AC30287b3`. See `docs/deployments.md` for the finding
+writeups and `exp3/RT0033_ANALYSIS.md` for a third finding (judge-pool capture cost)
+that was quantified but left as deployment guidance, not a code change.
+
+**v0.3:** optimistic lapse — a claim nobody opens inside the 24 h challenge
 window settles losslessly by anyone (`settleUnchallenged`: no reward, no token movement,
 tagged "unchallenged", not a validation). BondedValidatorV3
 `0xd881d52F10220687297651DeC4d55C1644d3a2A7` · BondedJudgePanelV3
