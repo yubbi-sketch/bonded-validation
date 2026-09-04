@@ -3,7 +3,7 @@ pragma solidity 0.8.28;
 
 import {LabToken} from "../src/LabToken.sol";
 import {IdentityRegistry, ValidationRegistry} from "../src/Erc8004Registries.sol";
-import {BondedValidatorV3} from "../src/BondedValidatorV3.sol";
+import {BondedValidatorV4} from "../src/BondedValidatorV4.sol";
 import {BondedJudgePanelV4} from "../src/BondedJudgePanelV4.sol";
 
 interface Vm {
@@ -26,7 +26,7 @@ contract BondedJudgePanelV4Test {
     LabToken token;
     IdentityRegistry idReg;
     ValidationRegistry valReg;
-    BondedValidatorV3 bv;
+    BondedValidatorV4 bv;
     BondedJudgePanelV4 panel;
     address wallet = address(uint160(uint256(keccak256("bjp4.wallet"))));
     address[] js;
@@ -43,7 +43,7 @@ contract BondedJudgePanelV4Test {
         idReg = new IdentityRegistry();
         valReg = new ValidationRegistry();
         address predicted = _predictNext(address(this), 5);
-        bv = new BondedValidatorV3(address(token), address(idReg), address(valReg),
+        bv = new BondedValidatorV4(address(token), address(idReg), address(valReg),
                                    predicted, 1e18, 60, W);
         panel = new BondedJudgePanelV4(address(bv), BOND, FEE, VOTE_T, DISP_T, 3);
         require(address(panel) == predicted, "prediction failed");

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {BondedValidatorV3} from "./BondedValidatorV3.sol";
+import {BondedValidatorV4} from "./BondedValidatorV4.sol";
 import {IERC20} from "./BondedValidator.sol";
 
 /// @title BondedJudgePanelV4 — v0.4: 판정 투표 자체를 커밋-리빌로 (RT-0031 수리)
@@ -19,7 +19,7 @@ import {IERC20} from "./BondedValidator.sol";
 ///         패턴 적용. 정산·수수료·슬래싱 로직은 v0.3과 100% 동일(오직 투표 취합
 ///         시점만 커밋→리빌로 이동).
 contract BondedJudgePanelV4 {
-    BondedValidatorV3 public immutable bonded;
+    BondedValidatorV4 public immutable bonded;
     IERC20 public immutable token;
     uint256 public immutable perCaseBond;
     uint256 public immutable judgeFee;
@@ -102,7 +102,7 @@ contract BondedJudgePanelV4 {
 
     constructor(address bonded_, uint256 perCaseBond_, uint256 judgeFee_,
                 uint256 voteTimeout_, uint256 disputeTimeout_, uint256 veteranThreshold_) {
-        bonded = BondedValidatorV3(bonded_);
+        bonded = BondedValidatorV4(bonded_);
         token = bonded.token();
         perCaseBond = perCaseBond_;
         judgeFee = judgeFee_;
@@ -121,25 +121,30 @@ contract BondedJudgePanelV4 {
         return isVeteran(j) ? perCaseBond : perCaseBond * NEWCOMER_NUM / NEWCOMER_DEN;
     }
 
+    /// @dev RT-0032 수리: 상태(effects)를 외부 호출(interaction)보다 먼저 반영한다 —
+    ///      transferFrom 실패 시 트랜잭션 전체가 원자적으로 되돌아가므로 순서를
+    ///      바꿔도 안전하다. 콜백 있는 토큰으로 교체되더라도 재진입 시점에 이미
+    ///      최종 상태가 보이므로 이중 등록·이중 담보 반영 창이 없다.
     function registerJudge(uint256 agentId, uint256 deposit) external {
         Judge storage j = judges[msg.sender];
         require(!j.registered, "registered");
         require(msg.sender == bonded.idReg().getAgentWallet(agentId), "not agent wallet");
         require(deposit >= requiredFreeBond(msg.sender), "deposit below entry bond");
-        require(token.transferFrom(msg.sender, address(this), deposit), "transfer");
         j.registered = true;
         j.agentId = agentId;
         j.bondedAmt = deposit;
         pool.push(msg.sender);
+        require(token.transferFrom(msg.sender, address(this), deposit), "transfer");
         emit JudgeRegistered(msg.sender, agentId, deposit);
     }
 
+    /// @dev RT-0032 수리: 위와 동일한 이유로 순서 변경.
     function stakeMore(uint256 amount) external {
         Judge storage j = judges[msg.sender];
         require(j.registered, "not judge");
-        require(token.transferFrom(msg.sender, address(this), amount), "transfer");
         j.bondedAmt += amount;
         j.unlockAt = 0;
+        require(token.transferFrom(msg.sender, address(this), amount), "transfer");
         emit JudgeStaked(msg.sender, amount);
     }
 
