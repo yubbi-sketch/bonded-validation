@@ -1,0 +1,33 @@
+vocab: exp1=58 ext=69 n=300
+cat: Counter({'omit_rule': 100, 'ambig_ref': 100, 'omit_target': 100})
+decisive: Counter({('omit_rule', True): 50, ('ambig_ref', True): 50, ('omit_target', False): 50, ('ambig_ref', False): 50, ('omit_rule', False): 50, ('omit_target', True): 50})
+|I|: Counter({3: 164, 2: 136})
+
+[ambig_ref] decisive=True labels=[0, 1, 0] theta=1
+    오염 는 사고 를 부른다 .
+    만약 사고 라면 누수 가 따른다 .
+    누수 가 발생하면 정전 로 이어진다 .
+    그것 은 정전 또는 사고 또는 누수 이다 .
+    그것 이 발생하면 사고 로 이어지는가 ?
+  -> pinned r' (last 2): ['누수 가 발생하면 정전 로 이어진다 .', '사고 가 발생하면 사고 로 이어지는가 ?'] label 1
+
+[omit_target] decisive=False labels=[0, 0] theta=0
+    만약 홍수 라면 결빙 가 따른다 .
+    만약 곰팡이 라면 정체 가 따른다 .
+    붕괴 는 무언가 를 부른다 .
+    만약 정체 라면 질병 가 따른다 .
+    무언가 은 곰팡이 또는 결빙 이다 .
+    홍수 가 발생하면 정체 로 이어지는가 ?
+  -> pinned r' (last 2): ['만약 정체 라면 질병 가 따른다 .', '홍수 가 발생하면 정체 로 이어지는가 ?'] label 0
+
+[omit_rule] decisive=True labels=[1, 0, 0] theta=0
+    곰팡이 가 생기면 고장 가 사라진다 .
+    고장 가 생기면 지각 가 생긴다 .
+    지각 가 생기면 폭염 가 생긴다 .
+    규칙 하나 는 나중에 알려준다 .
+    누락 규칙 은 피로 가 고장 를 부른다 또는 고장 가 폭염 를 부른다 또는 고장 가 지각 를 부른다 이다 .
+    피로 가 생기면 폭염 가 생기는가 ?
+  -> pinned r' (last 2): ['피로 가 생기면 고장 가 생긴다 .', '피로 가 생기면 폭염 가 생기는가 ?'] label 1
+
+missing tokens: none
+self-check OK (생성기 자가검사 — 실험 아님)
