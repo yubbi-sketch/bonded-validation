@@ -56,10 +56,18 @@ header.hero{text-align:center;padding-bottom:44px;border-bottom:1px solid var(--
 
 /* ---- Ledger stat row ---- */
 .ledger{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-top:3px solid var(--bond);border-radius:2px;margin:48px 0;background:var(--paper);box-shadow:var(--shadow);}
-.ledger .cell{padding:26px 18px 22px;border-right:1px solid var(--line-soft);text-align:center;}
+.ledger .cell{display:block;padding:26px 18px 22px;border-right:1px solid var(--line-soft);text-align:center;text-decoration:none;color:inherit;transition:background .15s;}
 .ledger .cell:last-child{border-right:none;}
+.ledger .cell:hover{background:var(--bond-soft);}
 .ledger .num{font-family:'IBM Plex Mono',monospace;font-size:44px;font-weight:700;letter-spacing:-.02em;line-height:1;}
 .ledger .lbl{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);margin-top:10px;}
+.ledger .lbl .go{color:var(--bond);}
+.ledger .cell:hover .lbl .go{text-decoration:underline;}
+
+/* ---- CI badge strip ---- */
+.badges{display:flex;justify-content:center;gap:10px;margin-top:26px;flex-wrap:wrap;}
+.badges img{height:20px;display:block;}
+.badges a{line-height:0;}
 
 /* ---- Sections ---- */
 section{margin:64px 0;}
@@ -84,6 +92,8 @@ section p.lede{font-size:16.5px;color:var(--ink-dim);max-width:640px;margin:0 0 
 .deploy .row:last-child{border-bottom:none;}
 .deploy .k{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--bond);}
 .deploy .v{font-family:'IBM Plex Mono',monospace;font-size:13px;word-break:break-all;}
+.deploy .v a{text-decoration-color:var(--line);}
+.deploy .v a:hover{color:var(--bond);text-decoration-color:var(--bond);}
 .deploy .v .fresh{background:var(--proof-soft);color:var(--proof);padding:1px 7px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;margin-left:8px;}
 
 /* ---- Journal / audit trail ---- */
@@ -184,13 +194,32 @@ nav.top-nav a:hover{color:var(--bond);}
     <h1>Bonded Validation</h1>
     <p class="sub">Every agent utterance is signed, bonded, and proven.</p>
     <p class="motto">Most emerging designs bond the <b>validator</b>. This project bonds the <b>speaker</b> — an agent cannot make a claim unless free bond is locked against it. Accountability attaches at the moment of utterance, not at audit time.</p>
+    <div class="badges">
+      <a href="https://github.com/yubbi-sketch/bonded-validation/actions/workflows/tests.yml" title="Live CI — click to see the actual run, not a static image">
+        <img src="https://github.com/yubbi-sketch/bonded-validation/actions/workflows/tests.yml/badge.svg" alt="forge test status">
+      </a>
+      <a href="https://github.com/yubbi-sketch/bonded-validation/blob/main/LICENSE" title="MIT license, full text on GitHub">
+        <img src="https://img.shields.io/github/license/yubbi-sketch/bonded-validation?color=B23A2E&label=license" alt="MIT license">
+      </a>
+      <a href="https://sepolia.etherscan.io/address/0x10b179CfF290052720Fa9D5426C703f1501C2C69#code" title="Verified source code on Sepolia Etherscan">
+        <img src="https://img.shields.io/badge/Sourcify-exact_match-2E6B4E" alt="Sourcify exact match">
+      </a>
+    </div>
   </header>
 
   <div class="ledger">
-    <div class="cell"><div class="num">99/99</div><div class="lbl">Forge tests passing</div></div>
-    <div class="cell"><div class="num">8+13</div><div class="lbl">Halmos theorems (T·L·PA–PL)</div></div>
-    <div class="cell"><div class="num">17/17</div><div class="lbl">Independent reproduction</div></div>
-    <div class="cell"><div class="num">v0.4</div><div class="lbl">Live on Sepolia</div></div>
+    <a class="cell" href="https://github.com/yubbi-sketch/bonded-validation/actions/workflows/tests.yml" title="Runs on every push — click through to the live GitHub Actions log, not a claim">
+      <div class="num">99/99</div><div class="lbl">Forge tests <span class="go">— see the CI run →</span></div>
+    </a>
+    <a class="cell" href="https://github.com/yubbi-sketch/bonded-validation/tree/main/exp3/contracts/test" title="Every *Proofs.t.sol file, runnable with the Halmos command in REPRODUCTION.md">
+      <div class="num">8+13</div><div class="lbl">Halmos theorems <span class="go">— read the proofs →</span></div>
+    </a>
+    <a class="cell" href="https://github.com/yubbi-sketch/bonded-validation/blob/main/REPRODUCTION.md" title="Independent re-run from a clean checkout, item by item, 2026-08-27">
+      <div class="num">17/17</div><div class="lbl">Independent reproduction <span class="go">— read the audit →</span></div>
+    </a>
+    <a class="cell" href="https://github.com/yubbi-sketch/bonded-validation/blob/main/docs/deployments.md" title="Full deployment log, v0 through v0.4, every address and tx hash">
+      <div class="num">v0.4</div><div class="lbl">Live on Sepolia <span class="go">— see the log →</span></div>
+    </a>
   </div>
 
   <section>
@@ -253,10 +282,11 @@ nav.top-nav a:hover{color:var(--bond);}
     <h2>Live on Sepolia — v0.4</h2>
     <p class="lede">Reused registries from v0, unchanged across five versions. Every address below is independently checkable.</p>
     <div class="deploy">
-      <div class="row"><div class="k">Validator</div><div class="v">0x10b179CfF290052720Fa9D5426C703f1501C2C69 <span class="fresh">exact match</span></div></div>
-      <div class="row"><div class="k">Judge panel</div><div class="v">0x15B749fA8ac62c4DE1B0311DF264359AC30287b3 <span class="fresh">exact match</span></div></div>
+      <div class="row"><div class="k">Validator</div><div class="v"><a href="https://sepolia.etherscan.io/address/0x10b179CfF290052720Fa9D5426C703f1501C2C69#code">0x10b179CfF290052720Fa9D5426C703f1501C2C69</a> <span class="fresh">exact match</span></div></div>
+      <div class="row"><div class="k">Judge panel</div><div class="v"><a href="https://sepolia.etherscan.io/address/0x15B749fA8ac62c4DE1B0311DF264359AC30287b3#code">0x15B749fA8ac62c4DE1B0311DF264359AC30287b3</a> <span class="fresh">exact match</span></div></div>
       <div class="row"><div class="k">Challenge window</div><div class="v">86,400s — lower-bounded by measured L1 worst-case inclusion stall, not guessed</div></div>
-      <div class="row"><div class="k">Whitepaper</div><div class="v">tag wp-v1.0, 2026-08-27 — frozen before external review</div></div>
+      <div class="row"><div class="k">Whitepaper</div><div class="v"><a href="https://github.com/yubbi-sketch/bonded-validation/blob/wp-v1.0/docs/whitepaper-draft.md">tag wp-v1.0, 2026-08-27</a> — frozen before external review</div></div>
+      <div class="row"><div class="k">Full log</div><div class="v"><a href="https://github.com/yubbi-sketch/bonded-validation/blob/main/docs/deployments.md">docs/deployments.md</a> — v0 through v0.4, every tx hash</div></div>
     </div>
   </section>
 
